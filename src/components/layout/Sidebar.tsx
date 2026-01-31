@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, Wind, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -26,8 +26,8 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border">
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg gradient-primary">
-          <Wind className="w-5 h-5 text-primary-foreground" />
+        <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden">
+          <img src="/logo.png" alt="Aerium Logo" className="w-full h-full object-cover" />
         </div>
         {!collapsed && (
           <span className="text-lg font-semibold text-foreground">Aerium</span>

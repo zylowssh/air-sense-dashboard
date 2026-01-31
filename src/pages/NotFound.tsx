@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Wind, Home, LayoutDashboard, CloudOff } from 'lucide-react';
+import { Home, LayoutDashboard, CloudOff } from 'lucide-react';
 
 const NotFound = () => {
   const location = useLocation();
@@ -46,11 +46,9 @@ const NotFound = () => {
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild size="lg">
-              <Link to="/">
-                <Home className="h-4 w-4 mr-2" />
-                Retour à l'Accueil
-              </Link>
+            <Button onClick={() => window.history.back()} size="lg">
+              <Home className="h-4 w-4 mr-2" />
+              Retour
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link to="/dashboard">
@@ -63,8 +61,8 @@ const NotFound = () => {
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-border">
             <Link to="/" className="flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <div className="w-6 h-6 rounded bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <Wind className="h-4 w-4 text-primary-foreground" />
+              <div className="w-6 h-6 rounded overflow-hidden flex items-center justify-center">
+                <img src="/logo.png" alt="Aerium Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-semibold">Aerium</span>
             </Link>
