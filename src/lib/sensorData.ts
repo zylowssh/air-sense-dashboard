@@ -85,8 +85,8 @@ export function generateMockSensors(): Sensor[] {
   return [
     {
       id: 'sensor-1',
-      name: 'Main Office',
-      location: 'Building A, Floor 2',
+      name: 'Bureau Principal',
+      location: 'Bâtiment A, Étage 2',
       status: 'online',
       co2: 792,
       temperature: 23.9,
@@ -97,8 +97,8 @@ export function generateMockSensors(): Sensor[] {
     },
     {
       id: 'sensor-2',
-      name: 'Meeting Room Alpha',
-      location: 'Building A, Floor 1',
+      name: 'Salle de Réunion Alpha',
+      location: 'Bâtiment A, Étage 1',
       status: 'online',
       co2: 825,
       temperature: 24.9,
@@ -109,8 +109,8 @@ export function generateMockSensors(): Sensor[] {
     },
     {
       id: 'sensor-3',
-      name: 'Server Room',
-      location: 'Building A, Floor -1',
+      name: 'Salle Serveur',
+      location: 'Bâtiment A, Sous-sol',
       status: 'warning',
       co2: 944,
       temperature: 26.1,
@@ -146,9 +146,9 @@ export function generateMockAlerts(): Alert[] {
     {
       id: 'alert-1',
       sensorId: 'sensor-3',
-      sensorName: 'Server Room',
+      sensorName: 'Salle Serveur',
       type: 'warning',
-      message: 'High CO₂ level detected',
+      message: 'Niveau élevé de CO₂ détecté',
       value: 778,
       timestamp: new Date(Date.now() - 3 * 60 * 1000),
       status: 'new'
@@ -156,9 +156,9 @@ export function generateMockAlerts(): Alert[] {
     {
       id: 'alert-2',
       sensorId: 'sensor-3',
-      sensorName: 'Server Room',
+      sensorName: 'Salle Serveur',
       type: 'warning',
-      message: 'High CO₂ level detected',
+      message: 'Niveau élevé de CO₂ détecté',
       value: 746,
       timestamp: new Date(Date.now() - 5 * 60 * 1000),
       status: 'acknowledged'

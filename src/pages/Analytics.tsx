@@ -45,7 +45,7 @@ const Analytics = () => {
   };
 
   return (
-    <AppLayout title="Analytics" subtitle="Deep analysis of your air quality data">
+    <AppLayout title="Analyses" subtitle="Analyse approfondie de vos données de qualité de l'air">
       <div className="space-y-6">
         {/* Time Range Selector */}
         <div className="flex items-center justify-between">
@@ -64,7 +64,7 @@ const Analytics = () => {
           
           <Button variant="outline" size="sm" className="gap-2">
             <Download className="w-4 h-4" />
-            Export
+            Exporter
           </Button>
         </div>
 
@@ -76,8 +76,8 @@ const Analytics = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Environmental Metrics</h2>
-              <p className="text-sm text-muted-foreground">CO₂, Temperature, and Humidity trends</p>
+              <h2 className="text-lg font-semibold text-foreground">Métriques Environnementales</h2>
+              <p className="text-sm text-muted-foreground">Tendances du CO₂, de la température et de l'humidité</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ const Analytics = () => {
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-success" />
-                <span className="text-sm text-muted-foreground">Humidity</span>
+                <span className="text-sm text-muted-foreground">Humidité</span>
               </div>
             </div>
           </div>
@@ -176,8 +176,8 @@ const Analytics = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Weekly Comparison</h2>
-              <p className="text-sm text-muted-foreground">Average vs Peak CO₂ levels by day</p>
+              <h2 className="text-lg font-semibold text-foreground">Comparaison Hebdomadaire</h2>
+              <p className="text-sm text-muted-foreground">Niveaux moyens vs pics de CO₂ par jour</p>
             </div>
           </div>
 
@@ -205,9 +205,9 @@ const Analytics = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { label: 'Time in Good Range', value: '78%', description: 'CO₂ below 800ppm', trend: '+5%' },
-            { label: 'Average Daily Peak', value: '1,050 ppm', description: 'Usually around 2pm', trend: '-12%' },
-            { label: 'Ventilation Events', value: '23', description: 'Windows opened this week', trend: '+8' }
+            { label: 'Temps dans la Bonne Plage', value: '78%', description: 'CO₂ en dessous de 800ppm', trend: '+5%' },
+            { label: 'Pic Quotidien Moyen', value: '1,050 ppm', description: 'Habituellement vers 14h', trend: '-12%' },
+            { label: 'Événements de Ventilation', value: '23', description: 'Fenêtres ouvertes cette semaine', trend: '+8' }
           ].map((stat, index) => (
             <motion.div
               key={index}

@@ -9,7 +9,7 @@ interface TrendChartProps {
   title?: string | null;
 }
 
-export function TrendChart({ data, height = 250, title = '24-Hour Trend' }: TrendChartProps) {
+export function TrendChart({ data, height = 250, title = 'Tendance sur 24 Heures' }: TrendChartProps) {
   const chartData = useMemo(() => {
     return data.map(reading => ({
       time: format(reading.timestamp, 'h a'),
@@ -118,7 +118,7 @@ export function TrendChart({ data, height = 250, title = '24-Hour Trend' }: Tren
         <div className="flex items-center gap-2 mt-3 text-sm">
           <span className="w-2 h-2 rounded-full bg-warning" />
           <span className="text-muted-foreground">
-            Peak: <span className="font-medium text-foreground">{maxCo2} ppm</span>
+            Pic: <span className="font-medium text-foreground">{maxCo2} ppm</span>
             {' '}at {format(peakData.timestamp, 'h:mm a')}
           </span>
         </div>

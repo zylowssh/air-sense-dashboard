@@ -54,7 +54,7 @@ export function AlertCard({ alert }: AlertCardProps) {
               "text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0",
               alert.status === 'new' ? style.badge : "bg-muted text-muted-foreground"
             )}>
-              {alert.status === 'new' ? 'Online' : 'Acknowledged'}
+              {alert.status === 'new' ? 'En Ligne' : 'Reconnue'}
             </span>
           </div>
           

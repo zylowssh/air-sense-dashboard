@@ -13,29 +13,29 @@ const Settings = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <AppLayout title="Settings" subtitle="Manage your organization and preferences">
+    <AppLayout title="Paramètres" subtitle="Gérer votre organisation et vos préférences">
       <div className="max-w-4xl mx-auto">
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 bg-muted/50">
             <TabsTrigger value="general" className="gap-2">
               <Building className="w-4 h-4" />
-              General
+              Général
             </TabsTrigger>
             <TabsTrigger value="alerts" className="gap-2">
               <Bell className="w-4 h-4" />
-              Alerts
+              Alertes
             </TabsTrigger>
             <TabsTrigger value="appearance" className="gap-2">
               <Palette className="w-4 h-4" />
-              Appearance
+              Apparence
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-2">
               <Users className="w-4 h-4" />
-              Users
+              Utilisateurs
             </TabsTrigger>
             <TabsTrigger value="integrations" className="gap-2">
               <Plug className="w-4 h-4" />
-              Integrations
+              Intégrations
             </TabsTrigger>
           </TabsList>
 
@@ -47,47 +47,47 @@ const Settings = () => {
               className="space-y-6"
             >
               <div className="p-6 rounded-xl bg-card border border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Organization</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Organisation</h3>
                 
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="orgName">Organization Name</Label>
+                      <Label htmlFor="orgName">Nom de l'Organisation</Label>
                       <Input id="orgName" defaultValue="Acme Corporation" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="timezone">Timezone</Label>
+                      <Label htmlFor="timezone">Fuseau Horaire</Label>
                       <Input id="timezone" defaultValue="Europe/London" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="address">Address</Label>
+                    <Label htmlFor="address">Adresse</Label>
                     <Input id="address" defaultValue="123 Business Street, London" />
                   </div>
                 </div>
               </div>
 
               <div className="p-6 rounded-xl bg-card border border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Data Retention</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Conservation des Données</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-foreground">Keep historical data</p>
-                      <p className="text-sm text-muted-foreground">How long to store sensor readings</p>
+                      <p className="font-medium text-foreground">Conserver les données historiques</p>
+                      <p className="text-sm text-muted-foreground">Combien de temps conserver les lectures des capteurs</p>
                     </div>
                     <select className="px-3 py-2 bg-muted border border-border rounded-lg text-foreground">
-                      <option>1 year</option>
-                      <option>2 years</option>
-                      <option>Forever</option>
+                      <option>1 an</option>
+                      <option>2 ans</option>
+                      <option>Toujours</option>
                     </select>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-foreground">Auto-export reports</p>
-                      <p className="text-sm text-muted-foreground">Automatically generate weekly reports</p>
+                      <p className="font-medium text-foreground">Exporter automatiquement les rapports</p>
+                      <p className="text-sm text-muted-foreground">Générer automatiquement des rapports hebdomadaires</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
@@ -104,16 +104,16 @@ const Settings = () => {
               className="space-y-6"
             >
               <div className="p-6 rounded-xl bg-card border border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Threshold Settings</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Paramètres de Seuils</h3>
                 
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Warning Level (ppm)</Label>
+                      <Label>Niveau d'Avertissement (ppm)</Label>
                       <Input type="number" defaultValue="800" />
                     </div>
                     <div className="space-y-2">
-                      <Label>Critical Level (ppm)</Label>
+                      <Label>Niveau Critique (ppm)</Label>
                       <Input type="number" defaultValue="1200" />
                     </div>
                   </div>
@@ -121,14 +121,14 @@ const Settings = () => {
               </div>
 
               <div className="p-6 rounded-xl bg-card border border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Notification Channels</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Canaux de Notification</h3>
                 
                 <div className="space-y-4">
                   {[
-                    { name: 'Email Notifications', description: 'Get alerts sent to your email' },
-                    { name: 'In-App Notifications', description: 'Show alerts in the dashboard' },
-                    { name: 'Slack Integration', description: 'Post alerts to a Slack channel' },
-                    { name: 'Webhook', description: 'Send alerts to a custom endpoint' }
+                    { name: 'Notifications par Email', description: 'Recevoir les alertes par email' },
+                    { name: 'Notifications In-App', description: 'Afficher les alertes dans le tableau de bord' },
+                    { name: 'Intégration Slack', description: 'Publier les alertes sur un canal Slack' },
+                    { name: 'Webhook', description: 'Envoyer les alertes vers un point de terminaison personnalisé' }
                   ].map((channel, index) => (
                     <div key={index} className="flex items-center justify-between py-2">
                       <div>
@@ -151,7 +151,7 @@ const Settings = () => {
               className="space-y-6"
             >
               <div className="p-6 rounded-xl bg-card border border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Theme</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Thème</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <button
@@ -163,7 +163,7 @@ const Settings = () => {
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <Moon className="w-5 h-5 text-primary" />
-                      <span className="font-medium text-foreground">Dark Mode</span>
+                      <span className="font-medium text-foreground">Mode Sombre</span>
                     </div>
                     <div className="h-20 rounded-lg bg-[#0B1220] border border-[#1E2A4A]">
                       <div className="p-2 space-y-1">
@@ -182,7 +182,7 @@ const Settings = () => {
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <Sun className="w-5 h-5 text-warning" />
-                      <span className="font-medium text-foreground">Light Mode</span>
+                      <span className="font-medium text-foreground">Mode Clair</span>
                     </div>
                     <div className="h-20 rounded-lg bg-white border border-gray-200">
                       <div className="p-2 space-y-1">
@@ -195,21 +195,21 @@ const Settings = () => {
               </div>
 
               <div className="p-6 rounded-xl bg-card border border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Display Preferences</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Préférences d'Affichage</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-foreground">Compact Mode</p>
-                      <p className="text-sm text-muted-foreground">Reduce spacing for more data density</p>
+                      <p className="font-medium text-foreground">Mode Compact</p>
+                      <p className="text-sm text-muted-foreground">Réduire l'espacement pour plus de densité de données</p>
                     </div>
                     <Switch />
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-foreground">Show Animations</p>
-                      <p className="text-sm text-muted-foreground">Enable smooth transitions and effects</p>
+                      <p className="font-medium text-foreground">Afficher les Animations</p>
+                      <p className="text-sm text-muted-foreground">Activer les transitions et effets fluides</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
@@ -226,9 +226,9 @@ const Settings = () => {
               className="p-6 rounded-xl bg-card border border-border"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-foreground">Team Members</h3>
+                <h3 className="text-lg font-semibold text-foreground">Membres de l'Équipe</h3>
                 <Button size="sm" className="gradient-primary text-primary-foreground">
-                  Invite User
+                  Inviter un Utilisateur
                 </Button>
               </div>
 
@@ -270,10 +270,10 @@ const Settings = () => {
               className="space-y-4"
             >
               {[
-                { name: 'Slack', description: 'Send alerts to Slack channels', connected: true },
-                { name: 'Google Home', description: 'Voice commands and smart home integration', connected: false },
-                { name: 'Webhooks', description: 'Custom HTTP endpoints for alerts', connected: true },
-                { name: 'IFTTT', description: 'Connect with thousands of apps', connected: false }
+                { name: 'Slack', description: 'Envoyer les alertes sur des canaux Slack', connected: true },
+                { name: 'Google Home', description: 'Commandes vocales et intégration domotique', connected: false },
+                { name: 'Webhooks', description: 'Points de terminaison HTTP personnalisés pour les alertes', connected: true },
+                { name: 'IFTTT', description: 'Se connecter à des milliers d\'applications', connected: false }
               ].map((integration, index) => (
                 <div key={index} className="flex items-center justify-between p-5 rounded-xl bg-card border border-border">
                   <div className="flex items-center gap-4">

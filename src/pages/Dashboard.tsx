@@ -52,35 +52,35 @@ const Dashboard = () => {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <KPICard 
-            label="Average CO₂" 
+            label="CO₂ Moyen" 
             value={avgCo2} 
             unit="ppm" 
             icon={Activity}
             trend={-5}
-            trendLabel="vs yesterday"
+            trendLabel="par rapport à hier"
             status={avgCo2 < 800 ? 'success' : avgCo2 < 1000 ? 'warning' : 'danger'}
           />
           <KPICard 
-            label="Temperature" 
+            label="Température" 
             value={avgTemp} 
             unit="°C" 
             icon={Thermometer}
             status="default"
           />
           <KPICard 
-            label="Humidity" 
+            label="Humidité" 
             value={avgHumidity} 
             unit="%" 
             icon={Droplets}
             status="default"
           />
           <KPICard 
-            label="Health Score" 
+            label="Score de Santé" 
             value={healthScore} 
             unit="/100" 
             icon={Heart}
             trend={5}
-            trendLabel="improvement"
+            trendLabel="amélioration"
             status={healthScore >= 80 ? 'success' : healthScore >= 60 ? 'warning' : 'danger'}
           />
         </div>
@@ -104,7 +104,7 @@ const Dashboard = () => {
               transition={{ delay: 0.1 }}
               className="p-5 rounded-xl bg-card border border-border"
             >
-              <h3 className="text-base font-semibold text-foreground mb-4">Recent Alerts</h3>
+              <h3 className="text-base font-semibold text-foreground mb-4">Alertes Récentes</h3>
               <div className="space-y-3">
                 {alerts.slice(0, 3).map((alert, index) => (
                   <AlertCard key={alert.id} alert={alert} />
@@ -125,7 +125,7 @@ const Dashboard = () => {
 
         {/* Active Sensors */}
         <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">Active Sensors</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">Capteurs Actifs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sensors.map((sensor, index) => (
               <SensorCard 

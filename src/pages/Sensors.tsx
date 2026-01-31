@@ -49,17 +49,17 @@ const Sensors = () => {
   };
 
   return (
-    <AppLayout title="Sensors" subtitle="Manage your monitoring devices">
+    <AppLayout title="Capteurs" subtitle="Gérer vos appareils de surveillance">
       <div className="space-y-6">
         {/* Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="gap-2">
               <Filter className="w-4 h-4" />
-              All Sensors
+              Tous les Capteurs
             </Button>
-            <Button variant="outline" size="sm">Room</Button>
-            <Button variant="outline" size="sm">Status</Button>
+            <Button variant="outline" size="sm">Salle</Button>
+            <Button variant="outline" size="sm">Statut</Button>
           </div>
 
           <div className="flex items-center gap-3">
@@ -86,7 +86,7 @@ const Sensors = () => {
 
             <Button size="sm" className="gap-2 gradient-primary text-primary-foreground">
               <Plus className="w-4 h-4" />
-              Add Sensor
+              Ajouter un Capteur
             </Button>
           </div>
         </div>
@@ -100,13 +100,13 @@ const Sensors = () => {
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Device Stats</TableHead>
-                <TableHead className="text-muted-foreground">Room</TableHead>
-                <TableHead className="text-muted-foreground">Location</TableHead>
+                <TableHead className="text-muted-foreground">Statistiques de l'Appareil</TableHead>
+                <TableHead className="text-muted-foreground">Salle</TableHead>
+                <TableHead className="text-muted-foreground">Emplacement</TableHead>
                 <TableHead className="text-muted-foreground text-right">CO₂</TableHead>
-                <TableHead className="text-muted-foreground text-right">Temperature</TableHead>
-                <TableHead className="text-muted-foreground text-right">Humidity</TableHead>
-                <TableHead className="text-muted-foreground text-center">Sensor</TableHead>
+                <TableHead className="text-muted-foreground text-right">Température</TableHead>
+                <TableHead className="text-muted-foreground text-right">Humidité</TableHead>
+                <TableHead className="text-muted-foreground text-center">Capteur</TableHead>
                 <TableHead className="text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -164,7 +164,7 @@ const Sensors = () => {
                   <TableCell className="text-center">
                     <Button variant="outline" size="sm" className="gap-1.5">
                       <Radio className="w-3.5 h-3.5" />
-                      Sensors
+                      Capteurs
                     </Button>
                   </TableCell>
                   <TableCell className="text-right">
@@ -177,9 +177,9 @@ const Sensors = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate(`/sensors/${sensor.id}`); }}>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Calibrate</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate(`/sensors/${sensor.id}`); }}>Voir les Détails</DropdownMenuItem>
+                          <DropdownMenuItem>Étalonner</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive">Supprimer</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -193,10 +193,10 @@ const Sensors = () => {
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
-            { label: 'Total Sensors', value: sensors.length, icon: Radio },
-            { label: 'Online', value: sensors.filter(s => s.status === 'online').length, color: 'text-success' },
-            { label: 'Warnings', value: sensors.filter(s => s.status === 'warning').length, color: 'text-warning' },
-            { label: 'Offline', value: sensors.filter(s => s.status === 'offline').length, color: 'text-muted-foreground' }
+            { label: 'Total des Capteurs', value: sensors.length, icon: Radio },
+            { label: 'En Ligne', value: sensors.filter(s => s.status === 'online').length, color: 'text-success' },
+            { label: 'Avertissements', value: sensors.filter(s => s.status === 'warning').length, color: 'text-warning' },
+            { label: 'Hors Ligne', value: sensors.filter(s => s.status === 'offline').length, color: 'text-muted-foreground' }
           ].map((stat, index) => (
             <motion.div
               key={index}

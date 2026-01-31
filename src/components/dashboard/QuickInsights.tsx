@@ -18,23 +18,23 @@ export function QuickInsights({
 }: QuickInsightsProps) {
   const insights = [
     {
-      label: 'Sensors Online',
+      label: 'Capteurs En Ligne',
       value: `${sensorsOnline}/${totalSensors}`,
       icon: Radio
     },
     {
-      label: 'Readings Today',
+      label: 'Lectures Aujourd\'hui',
       value: readingsToday.toString(),
       icon: Activity
     },
     {
-      label: 'Peak CO₂ Today',
+      label: 'Pic CO₂ Aujourd\'hui',
       value: `${peakCO2.toLocaleString()} ppm`,
       icon: TrendingUp,
       highlight: true
     },
     {
-      label: 'Best Air Time',
+      label: 'Meilleur Moment d\'Air',
       value: bestAirTime,
       icon: Clock,
       accent: true
@@ -47,7 +47,7 @@ export function QuickInsights({
       animate={{ opacity: 1, y: 0 }}
       className="p-5 rounded-xl bg-card border border-border"
     >
-      <h3 className="text-base font-semibold text-foreground mb-4">Quick Insights</h3>
+      <h3 className="text-base font-semibold text-foreground mb-4">Aperçus Rapides</h3>
       
       <div className="space-y-4">
         {insights.map((insight, index) => (

@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { to: '/sensors', icon: Radio, label: 'Sensors' },
-  { to: '/alerts', icon: Bell, label: 'Alerts' },
-  { to: '/reports', icon: FileText, label: 'Reports' },
+  { to: '/', icon: LayoutDashboard, label: 'Tableau de Bord' },
+  { to: '/analytics', icon: BarChart3, label: 'Analyses' },
+  { to: '/sensors', icon: Radio, label: 'Capteurs' },
+  { to: '/alerts', icon: Bell, label: 'Alertes' },
+  { to: '/reports', icon: FileText, label: 'Rapports' },
   { to: '/admin', icon: ShieldCheck, label: 'Admin' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/settings', icon: Settings, label: 'Paramètres' },
 ];
 
 export function Sidebar() {

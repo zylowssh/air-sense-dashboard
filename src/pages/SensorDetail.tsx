@@ -152,7 +152,7 @@ const SensorDetail = () => {
           </div>
           <Button variant="outline" className="gap-2">
             <Download className="w-4 h-4" />
-            Export Data
+            Exporter les Données
           </Button>
         </div>
 
@@ -195,15 +195,15 @@ const SensorDetail = () => {
           <TabsList className="bg-muted/50">
             <TabsTrigger value="history" className="gap-2">
               <Activity className="w-4 h-4" />
-              History
+              Historique
             </TabsTrigger>
             <TabsTrigger value="calibration" className="gap-2">
               <Settings2 className="w-4 h-4" />
-              Calibration
+              Étalonnage
             </TabsTrigger>
             <TabsTrigger value="firmware" className="gap-2">
               <Cpu className="w-4 h-4" />
-              Firmware
+              Micrologiciel
             </TabsTrigger>
           </TabsList>
 
@@ -212,7 +212,7 @@ const SensorDetail = () => {
             <Card className="bg-card border-border">
               <CardHeader className="pb-4">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between">
-                  <CardTitle className="text-lg">Historical Data</CardTitle>
+                  <CardTitle className="text-lg">Données Historiques</CardTitle>
                   <div className="flex gap-2">
                     {(['24h', '7d', '30d'] as const).map((range) => (
                       <Button
@@ -281,12 +281,12 @@ const SensorDetail = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="text-lg">Sensor Offsets</CardTitle>
+                  <CardTitle className="text-lg">Décalages des Capteurs</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <Label>CO₂ Offset</Label>
+                      <Label>Décalage CO₂</Label>
                       <span className="text-sm text-muted-foreground">{calibration.co2Offset} ppm</span>
                     </div>
                     <Slider
@@ -299,7 +299,7 @@ const SensorDetail = () => {
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <Label>Temperature Offset</Label>
+                      <Label>Décalage Température</Label>
                       <span className="text-sm text-muted-foreground">{calibration.temperatureOffset}°C</span>
                     </div>
                     <Slider
@@ -312,7 +312,7 @@ const SensorDetail = () => {
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <Label>Humidity Offset</Label>
+                      <Label>Décalage Humidité</Label>
                       <span className="text-sm text-muted-foreground">{calibration.humidityOffset}%</span>
                     </div>
                     <Slider
@@ -327,12 +327,12 @@ const SensorDetail = () => {
                     {isCalibrating ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin" />
-                        Calibrating...
+                        Étalonnage en cours...
                       </>
                     ) : (
                       <>
                         <RefreshCw className="w-4 h-4" />
-                        Apply Calibration
+                        Appliquer l'Étalonnage
                       </>
                     )}
                   </Button>
@@ -341,11 +341,11 @@ const SensorDetail = () => {
 
               <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="text-lg">Sampling Settings</CardTitle>
+                  <CardTitle className="text-lg">Paramètres d'Échantillonnage</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="sampling">Sampling Interval (seconds)</Label>
+                    <Label htmlFor="sampling">Intervalle d'Échantillonnage (secondes)</Label>
                     <Input
                       id="sampling"
                       type="number"
@@ -355,7 +355,7 @@ const SensorDetail = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="transmit">Transmit Interval (seconds)</Label>
+                    <Label htmlFor="transmit">Intervalle de Transmission (secondes)</Label>
                     <Input
                       id="transmit"
                       type="number"
@@ -367,7 +367,7 @@ const SensorDetail = () => {
                   <div className="p-4 rounded-lg bg-muted/50 space-y-2">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Last Calibration</span>
+                        <span className="text-sm text-muted-foreground">Dernier Étalonnage</span>
                     </div>
                     <p className="font-medium text-foreground">{mockSensor.lastCalibration}</p>
                   </div>
@@ -380,16 +380,16 @@ const SensorDetail = () => {
           <TabsContent value="firmware">
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-lg">Device Information</CardTitle>
+                <CardTitle className="text-lg">Informations sur l'Appareil</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     {[
-                      { label: 'Model', value: mockSensor.model, icon: Cpu },
-                      { label: 'Serial Number', value: mockSensor.serialNumber, icon: Radio },
-                      { label: 'Firmware Version', value: mockSensor.firmware, icon: Settings2 },
-                      { label: 'Install Date', value: mockSensor.installDate, icon: Clock },
+                      { label: 'Modèle', value: mockSensor.model, icon: Cpu },
+                      { label: 'Numéro de Série', value: mockSensor.serialNumber, icon: Radio },
+                      { label: 'Version du Micrologiciel', value: mockSensor.firmware, icon: Settings2 },
+                      { label: 'Date d\'Installation', value: mockSensor.installDate, icon: Clock },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
                         <div className="p-2 rounded-lg bg-background">
@@ -405,7 +405,7 @@ const SensorDetail = () => {
                   <div className="space-y-4">
                     <div className="p-4 rounded-lg bg-muted/30">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-muted-foreground">Signal Strength</span>
+                        <span className="text-sm text-muted-foreground">Force du Signal</span>
                         <div className="flex items-center gap-2">
                           <Wifi className="w-4 h-4 text-success" />
                           <span className="font-medium text-foreground">{mockSensor.signalStrength} dBm</span>
@@ -421,15 +421,15 @@ const SensorDetail = () => {
                     <div className="p-4 rounded-lg border border-primary/30 bg-primary/5">
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle2 className="w-4 h-4 text-primary" />
-                        <span className="font-medium text-primary">Firmware Up to Date</span>
+                        <span className="font-medium text-primary">Micrologiciel à Jour</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Your sensor is running the latest firmware version.
+                        Votre capteur fonctionne avec la dernière version du micrologiciel.
                       </p>
                     </div>
                     <Button variant="outline" className="w-full gap-2">
                       <RefreshCw className="w-4 h-4" />
-                      Check for Updates
+                      Vérifier les Mises à Jour
                     </Button>
                   </div>
                 </div>

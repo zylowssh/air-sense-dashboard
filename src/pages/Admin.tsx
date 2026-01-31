@@ -47,19 +47,19 @@ const mockUsers = [
 ];
 
 const mockAuditLogs = [
-  { id: '1', user: 'Sarah Chen', action: 'Updated sensor threshold', target: 'Meeting Room A', timestamp: '2 mins ago', type: 'settings' },
-  { id: '2', user: 'Marcus Johnson', action: 'Acknowledged alert', target: 'High CO₂ Warning', timestamp: '15 mins ago', type: 'alert' },
-  { id: '3', user: 'System', action: 'Sensor offline detected', target: 'Lobby Sensor', timestamp: '1 hour ago', type: 'system' },
-  { id: '4', user: 'Emily Davis', action: 'Exported report', target: 'Weekly Summary', timestamp: '2 hours ago', type: 'report' },
-  { id: '5', user: 'Sarah Chen', action: 'Added new user', target: 'Jordan Lee', timestamp: '3 hours ago', type: 'user' },
-  { id: '6', user: 'System', action: 'Database backup completed', target: 'Production DB', timestamp: '6 hours ago', type: 'system' },
+  { id: '1', user: 'Sarah Chen', action: 'Seuil de capteur mis à jour', target: 'Salle de réunion A', timestamp: '2 mins ago', type: 'settings' },
+  { id: '2', user: 'Marcus Johnson', action: 'Alerte reconnue', target: 'Avertissement CO₂ élevé', timestamp: '15 mins ago', type: 'alert' },
+  { id: '3', user: 'System', action: 'Capteur hors ligne détecté', target: 'Capteur du hall', timestamp: '1 hour ago', type: 'system' },
+  { id: '4', user: 'Emily Davis', action: 'Rapport exporté', target: 'Résumé hebdomadaire', timestamp: '2 hours ago', type: 'report' },
+  { id: '5', user: 'Sarah Chen', action: 'Nouvel utilisateur ajouté', target: 'Jordan Lee', timestamp: '3 hours ago', type: 'user' },
+  { id: '6', user: 'System', action: 'Sauvegarde de base de données terminée', target: 'Base de données de production', timestamp: '6 hours ago', type: 'system' },
 ];
 
 const systemHealthMetrics = [
-  { label: 'API Uptime', value: '99.9%', status: 'healthy', icon: Server },
-  { label: 'Database', value: '45ms', status: 'healthy', icon: Database },
-  { label: 'Active Connections', value: '127', status: 'healthy', icon: Activity },
-  { label: 'Last Backup', value: '6h ago', status: 'warning', icon: Clock },
+  { label: 'Temps de Fonctionnement de l\'API', value: '99.9%', status: 'healthy', icon: Server },
+  { label: 'Base de Données', value: '45ms', status: 'healthy', icon: Database },
+  { label: 'Connexions Actives', value: '127', status: 'healthy', icon: Activity },
+  { label: 'Dernière Sauvegarde', value: '6h ago', status: 'warning', icon: Clock },
 ];
 
 const getRoleBadge = (role: string) => {
@@ -103,8 +103,8 @@ const Admin = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
-            <p className="text-muted-foreground">Manage users, monitor system health, and view audit logs</p>
+            <h1 className="text-2xl font-bold text-foreground">Panneau d'Administration</h1>
+            <p className="text-muted-foreground">Gérer les utilisateurs, surveiller la santé du système et consulter les journaux d'audit</p>
           </div>
         </div>
 
@@ -152,11 +152,11 @@ const Admin = () => {
           <TabsList className="bg-muted/50">
             <TabsTrigger value="users" className="gap-2">
               <Users className="w-4 h-4" />
-              Users
+              Utilisateurs
             </TabsTrigger>
             <TabsTrigger value="audit" className="gap-2">
               <Clock className="w-4 h-4" />
-              Audit Logs
+              Journaux d'Audit
             </TabsTrigger>
           </TabsList>
 
@@ -165,12 +165,12 @@ const Admin = () => {
             <Card className="bg-card border-border">
               <CardHeader className="pb-4">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between">
-                  <CardTitle className="text-lg">User Management</CardTitle>
+                  <CardTitle className="text-lg">Gestion des Utilisateurs</CardTitle>
                   <div className="flex gap-2">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
-                        placeholder="Search users..."
+                        placeholder="Rechercher des utilisateurs..."
                         className="pl-9 w-full sm:w-64 bg-background"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -178,7 +178,7 @@ const Admin = () => {
                     </div>
                     <Button className="gap-2">
                       <UserPlus className="w-4 h-4" />
-                      <span className="hidden sm:inline">Add User</span>
+                      <span className="hidden sm:inline">Ajouter un Utilisateur</span>
                     </Button>
                   </div>
                 </div>
@@ -188,10 +188,10 @@ const Admin = () => {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/50 hover:bg-muted/50">
-                        <TableHead>User</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Last Active</TableHead>
+                        <TableHead>Utilisateur</TableHead>
+                        <TableHead>Rôle</TableHead>
+                        <TableHead>Statut</TableHead>
+                        <TableHead>Dernière Activité</TableHead>
                         <TableHead className="w-12"></TableHead>
                       </TableRow>
                     </TableHeader>
@@ -230,10 +230,10 @@ const Admin = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem>Edit User</DropdownMenuItem>
-                                <DropdownMenuItem>Change Role</DropdownMenuItem>
+                                <DropdownMenuItem>Modifier l'Utilisateur</DropdownMenuItem>
+                                <DropdownMenuItem>Changer le Rôle</DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive">
-                                  {user.status === 'active' ? 'Suspend User' : 'Activate User'}
+                                  {user.status === 'active' ? 'Suspendre l\'Utilisateur' : 'Activer l\'Utilisateur'}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>

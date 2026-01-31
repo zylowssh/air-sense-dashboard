@@ -24,30 +24,30 @@ const Reports = () => {
   ];
 
   return (
-    <AppLayout title="Reports" subtitle="Generate and export air quality reports">
+    <AppLayout title="Rapports" subtitle="Générer et exporter des rapports de qualité de l'air">
       <div className="space-y-6">
         {/* Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="gap-2">
               <Calendar className="w-4 h-4" />
-              This Month
+              Ce Mois
             </Button>
-            <Button variant="outline" size="sm">All Reports</Button>
+            <Button variant="outline" size="sm">Tous les Rapports</Button>
           </div>
 
           <Button size="sm" className="gap-2 gradient-primary text-primary-foreground">
             <Plus className="w-4 h-4" />
-            New Report
+            Nouveau Rapport
           </Button>
         </div>
 
         {/* Report Types */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { title: 'Daily Summary', description: 'Automated daily air quality overview', icon: FileText, color: 'text-primary' },
-            { title: 'Weekly Analysis', description: 'Trends and patterns over the week', icon: BarChart3, color: 'text-warning' },
-            { title: 'Compliance Report', description: 'Regulatory compliance documentation', icon: FileText, color: 'text-success' }
+            { title: 'Résumé Quotidien', description: 'Aperçu quotidien automatisé de la qualité de l\'air', icon: FileText, color: 'text-primary' },
+            { title: 'Analyse Hebdomadaire', description: 'Tendances et modèles sur la semaine', icon: BarChart3, color: 'text-warning' },
+            { title: 'Rapport de Conformité', description: 'Documentation de conformité réglementaire', icon: FileText, color: 'text-success' }
           ].map((type, index) => (
             <motion.div
               key={index}
@@ -73,20 +73,20 @@ const Reports = () => {
           className="rounded-xl border border-border bg-card overflow-hidden"
         >
           <div className="p-4 border-b border-border flex items-center justify-between">
-            <h3 className="font-semibold text-foreground">Recent Reports</h3>
+            <h3 className="font-semibold text-foreground">Rapports Récents</h3>
             <Button variant="outline" size="sm" className="gap-2">
               <Eye className="w-4 h-4" />
-              View Report List
+              Voir la Liste des Rapports
             </Button>
           </div>
 
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Report Name</TableHead>
+                <TableHead className="text-muted-foreground">Nom du Rapport</TableHead>
                 <TableHead className="text-muted-foreground">Date</TableHead>
                 <TableHead className="text-muted-foreground">Type</TableHead>
-                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground">Statut</TableHead>
                 <TableHead className="text-muted-foreground text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -135,17 +135,17 @@ const Reports = () => {
           className="rounded-xl border border-border bg-card overflow-hidden"
         >
           <div className="p-4 border-b border-border">
-            <h3 className="font-semibold text-foreground">Quick Export by Sensor</h3>
+            <h3 className="font-semibold text-foreground">Export Rapide par Capteur</h3>
           </div>
 
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Sensor</TableHead>
-                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground">Capteur</TableHead>
+                <TableHead className="text-muted-foreground">Statut</TableHead>
                 <TableHead className="text-muted-foreground text-right">CO₂</TableHead>
-                <TableHead className="text-muted-foreground text-right">Temperature</TableHead>
-                <TableHead className="text-muted-foreground text-right">Humidity</TableHead>
+                <TableHead className="text-muted-foreground text-right">Température</TableHead>
+                <TableHead className="text-muted-foreground text-right">Humidité</TableHead>
                 <TableHead className="text-muted-foreground text-right">Export</TableHead>
               </TableRow>
             </TableHeader>

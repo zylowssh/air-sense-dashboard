@@ -53,7 +53,7 @@ export function SensorCard({ sensor, miniChartData }: SensorCardProps) {
               : "bg-muted border-muted-foreground/30 text-muted-foreground"
           )}>
             <span className={cn("w-1.5 h-1.5 rounded-full", statusColors[sensor.status].split(' ')[0])} />
-            {sensor.status === 'online' ? 'Online' : sensor.status === 'warning' ? 'Warning' : 'Offline'}
+            {sensor.status === 'online' ? 'En Ligne' : sensor.status === 'warning' ? 'Avertissement' : 'Hors Ligne'}
           </span>
         </div>
       </div>
@@ -102,7 +102,7 @@ export function SensorCard({ sensor, miniChartData }: SensorCardProps) {
         </div>
         <div className="flex items-center gap-1.5 text-sm">
           <Droplets className="w-4 h-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Humidity</span>
+          <span className="text-muted-foreground">Humidité</span>
           <span className="text-foreground font-medium">{sensor.humidity}%</span>
         </div>
       </div>

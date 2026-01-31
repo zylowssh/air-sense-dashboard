@@ -23,15 +23,15 @@ export function Co2DonutGauge({ co2, size = 200 }: Co2DonutGaugeProps) {
   const getMessage = () => {
     switch (level) {
       case "excellent":
-        return "Excellent air quality";
+        return "Excellente qualité de l'air";
       case "good":
-        return "Good air quality";
+        return "Bonne qualité de l'air";
       case "moderate":
-        return "Consider improving ventilation";
+        return "Envisager d'améliorer la ventilation";
       case "poor":
-        return "Open windows recommended";
+        return "Ouverture des fenêtres recommandée";
       case "hazardous":
-        return "Immediate action needed";
+        return "Action immédiate requise";
       default:
         return "";
     }

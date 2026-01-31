@@ -14,9 +14,9 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
   // Get greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return 'Bonjour';
+    if (hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
   };
 
   return (
@@ -29,19 +29,19 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
           <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
         )}
         {title === "Dashboard" && (
-          <p className="text-sm text-muted-foreground mt-0.5">Here's your air quality overview</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Voici votre aperçu de la qualité de l'air</p>
         )}
       </div>
 
       <div className="flex items-center gap-3">
         <Button variant="outline" size="sm" className="gap-2">
           <Download className="w-4 h-4" />
-          Export Data
+          Exporter les Données
         </Button>
         
         <Button size="sm" className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
           <Plus className="w-4 h-4" />
-          Add Sensor
+          Ajouter un Capteur
         </Button>
 
         <div className="flex items-center gap-1 ml-2">

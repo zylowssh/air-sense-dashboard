@@ -67,7 +67,7 @@ const Alerts = () => {
   };
 
   return (
-    <AppLayout title="Alerts" subtitle="Monitor and manage air quality alerts">
+    <AppLayout title="Alertes" subtitle="Surveiller et gérer les alertes de qualité de l'air">
       <div className="space-y-6">
         {/* Filter Controls */}
         <div className="flex items-center justify-between">
@@ -80,7 +80,11 @@ const Alerts = () => {
                 onClick={() => setFilter(f)}
                 className={filter === f ? 'gradient-primary text-primary-foreground' : ''}
               >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
+                {f.charAt(0).toUpperCase() + f.slice(1) === 'All' ? 'Toutes' :
+                 f.charAt(0).toUpperCase() + f.slice(1) === 'New' ? 'Nouvelles' :
+                 f.charAt(0).toUpperCase() + f.slice(1) === 'Acknowledged' ? 'Reconnu' :
+                 f.charAt(0).toUpperCase() + f.slice(1) === 'Resolved' ? 'Résolues' :
+                 f.charAt(0).toUpperCase() + f.slice(1)}
                 {f === 'new' && (
                   <span className="ml-1.5 px-1.5 py-0.5 bg-destructive/20 text-destructive rounded-full text-xs">
                     {alerts.filter(a => a.status === 'new').length}
@@ -92,17 +96,17 @@ const Alerts = () => {
 
           <Button variant="outline" size="sm" className="gap-2">
             <Plus className="w-4 h-4" />
-            Add Rule
+            Ajouter une Règle
           </Button>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
-            { label: 'Total Alerts', value: alerts.length, icon: Bell },
-            { label: 'New', value: alerts.filter(a => a.status === 'new').length, color: 'text-destructive' },
-            { label: 'Acknowledged', value: alerts.filter(a => a.status === 'acknowledged').length, color: 'text-warning' },
-            { label: 'Resolved', value: alerts.filter(a => a.status === 'resolved').length, color: 'text-success' }
+            { label: 'Total des Alertes', value: alerts.length, icon: Bell },
+            { label: 'Nouvelles', value: alerts.filter(a => a.status === 'new').length, color: 'text-destructive' },
+            { label: 'Reconnues', value: alerts.filter(a => a.status === 'acknowledged').length, color: 'text-warning' },
+            { label: 'Résolues', value: alerts.filter(a => a.status === 'resolved').length, color: 'text-success' }
           ].map((stat, index) => (
             <motion.div
               key={index}
@@ -154,10 +158,10 @@ const Alerts = () => {
                         {alert.status === 'new' && (
                           <>
                             <Button size="sm" variant="outline" onClick={() => acknowledgeAlert(alert.id)}>
-                              Acknowledge
+                              Reconnaître
                             </Button>
                             <Button size="sm" className="gradient-primary text-primary-foreground" onClick={() => resolveAlert(alert.id)}>
-                              Resolve
+                              Résoudre
                             </Button>
                           </>
                         )}
@@ -169,7 +173,7 @@ const Alerts = () => {
                         {alert.status === 'resolved' && (
                           <span className="flex items-center gap-1.5 text-sm text-success">
                             <CheckCircle className="w-4 h-4" />
-                            Resolved
+                            Résolue
                           </span>
                         )}
                       </div>
@@ -186,7 +190,10 @@ const Alerts = () => {
                         alert.status === 'acknowledged' ? 'bg-warning/10 border-warning/30 text-warning' :
                         'bg-success/10 border-success/30 text-success'
                       )}>
-                        {alert.status.charAt(0).toUpperCase() + alert.status.slice(1)}
+                        {alert.status.charAt(0).toUpperCase() + alert.status.slice(1) === 'New' ? 'Nouvelle' :
+                        alert.status.charAt(0).toUpperCase() + alert.status.slice(1) === 'Acknowledged' ? 'Reconnue' :
+                        alert.status.charAt(0).toUpperCase() + alert.status.slice(1) === 'Resolved' ? 'Résolue' :
+                        alert.status.charAt(0).toUpperCase() + alert.status.slice(1)}
                       </span>
                     </div>
                   </div>
