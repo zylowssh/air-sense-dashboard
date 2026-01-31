@@ -33,11 +33,11 @@ export function AirQualityOverviewCard({
       )}
       aria-labelledby="air-quality-overview"
     >
-      {/* ✅ FIXED: Ambient highlight using CSS variable for opacity */}
+      {/* Ambient highlight */}
       <div
         className={cn(
           'pointer-events-none absolute -top-24 -left-24 h-64 w-64 rounded-full blur-3xl',
-          'bg-primary ambient-highlight'  // Uses --aerium-highlight-opacity from CSS
+          'bg-primary/10'
         )}
       />
 

@@ -44,14 +44,13 @@
 
     --radius: 0.75rem;
 
-    /* Custom Aerium tokens - Dark Mode */
+    /* Custom Aerium tokens */
     --aerium-bg-primary: 220 40% 7%;
     --aerium-bg-secondary: 220 40% 11%;
     --aerium-card: 220 45% 13%;
     --aerium-card-secondary: 220 45% 11%;
     --aerium-border: 220 40% 18%;
     --aerium-glow: 174 80% 55%;
-    --aerium-highlight-opacity: 0.10; /* For ambient highlights */
 
     --sidebar-background: 220 40% 8%;
     --sidebar-foreground: 220 20% 75%;
@@ -98,14 +97,12 @@
     --input: 220 15% 85%;
     --ring: 174 70% 40%;
 
-    /* ✅ FIXED: Custom Aerium tokens - Light Mode */
     --aerium-bg-primary: 220 20% 97%;
     --aerium-bg-secondary: 220 15% 94%;
-    --aerium-card: 0 0% 100%;           /* Pure white for main card */
-    --aerium-card-secondary: 220 15% 96%; /* Slightly darker for contrast */
+    --aerium-card: 214 32% 91%;
+    --aerium-card-secondary: 214 32% 91%;
     --aerium-border: 220 15% 88%;
     --aerium-glow: 174 70% 40%;
-    --aerium-highlight-opacity: 0.03;   /* ✅ Much lower opacity for light mode */
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 15% 40%;
@@ -150,19 +147,12 @@
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(174 80% 45%));
   }
 
-  /* ✅ FIXED: Gradient card - Better contrast in both modes */
   .gradient-card {
-    background: linear-gradient(180deg, hsl(var(--aerium-card)), hsl(var(--aerium-card-secondary)));
-  }
+      background: linear-gradient(180deg, hsl(var(--aerium-card)), hsl(var(--aerium-card-secondary)));
+    }
 
-  /* ✅ FIXED: Light mode gradient with more contrast */
-  .light .gradient-card {
-    background: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 98%));
-  }
-
-  /* ✅ NEW: Utility class for ambient highlights */
-  .ambient-highlight {
-    opacity: var(--aerium-highlight-opacity);
+    .light .gradient-card {
+      background: linear-gradient(180deg, hsl(var(--aerium-card)), hsl(220 15% 94%));
   }
 
   .text-gradient-primary {
@@ -186,26 +176,6 @@
     }
     to {
       box-shadow: 0 0 20px hsl(var(--primary) / 0.4), 0 0 40px hsl(var(--primary) / 0.2);
-    }
-  }
-
-  /* ✅ NEW: Smooth theme transitions */
-  * {
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
-  }
-
-  /* Don't transition transforms and other interactive properties */
-  button, a, input, select, [role="button"] {
-    transition-property: background-color, border-color, color, transform, box-shadow;
-    transition-duration: 150ms;
-  }
-
-  /* Disable transitions for motion-reduced users */
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      transition-duration: 0.01ms !important;
     }
   }
 }
