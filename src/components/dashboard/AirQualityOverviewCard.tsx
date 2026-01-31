@@ -44,10 +44,10 @@ export function AirQualityOverviewCard({
       <header className="relative flex items-start justify-between gap-4">
         <div>
           <h2 id="air-quality-overview" className="text-lg font-semibold text-foreground">
-            Air Quality Overview
+            Aperçu de la Qualité de l'Air
           </h2>
           <p className="text-sm text-muted-foreground">
-            Real-time monitoring across all sensors
+            Surveillance en temps réel de tous les capteurs
           </p>
         </div>
 
@@ -63,7 +63,7 @@ export function AirQualityOverviewCard({
             <div className="rounded-lg border border-border bg-background/30 p-3">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Activity className="h-4 w-4" />
-                <span>Peak (range)</span>
+                <span>Pic (plage)</span>
               </div>
               <div className="mt-1 text-sm font-semibold text-foreground tabular-nums">
                 {peak} ppm
@@ -72,7 +72,7 @@ export function AirQualityOverviewCard({
             <div className="rounded-lg border border-border bg-background/30 p-3">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Radio className="h-4 w-4" />
-                <span>Sensors online</span>
+                <span>Capteurs en ligne</span>
               </div>
               <div className="mt-1 text-sm font-semibold text-foreground tabular-nums">
                 {sensorsOnline}/{totalSensors}
