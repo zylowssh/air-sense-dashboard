@@ -40,7 +40,7 @@ const NotFound = () => {
 
           {/* Fun message */}
           <div className="flex items-center justify-center gap-2 mb-8 p-3 rounded-lg bg-muted/50 text-sm">
-            <Wind className="h-4 w-4 text-primary animate-pulse" />
+            <CloudOff className="h-4 w-4 text-primary animate-pulse" />
             <span className="text-muted-foreground italic">Peut-être que la qualité de l'air est si bonne que même les pages disparaissent ! 🌬️</span>
           </div>
 
