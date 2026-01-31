@@ -3,12 +3,10 @@ import { motion } from 'framer-motion';
 import { Thermometer, Droplets, Activity, Heart } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { KPICard } from '@/components/dashboard/KPICard';
-import { AirQualityGauge } from '@/components/dashboard/AirQualityGauge';
-import { TrendChart } from '@/components/dashboard/TrendChart';
+import { AirQualityOverviewCard } from '@/components/dashboard/AirQualityOverviewCard';
 import { SensorCard } from '@/components/dashboard/SensorCard';
 import { AlertCard } from '@/components/dashboard/AlertCard';
 import { QuickInsights } from '@/components/dashboard/QuickInsights';
-import { LiveIndicator } from '@/components/dashboard/LiveIndicator';
 import { 
   generateMockSensors, 
   generate24HourData, 
@@ -29,6 +27,8 @@ const Dashboard = () => {
   const avgTemp = (sensors.reduce((acc, s) => acc + s.temperature, 0) / sensors.length).toFixed(1);
   const avgHumidity = Math.round(sensors.reduce((acc, s) => acc + s.humidity, 0) / sensors.length);
   const healthScore = getHealthScore(avgCo2, parseFloat(avgTemp), avgHumidity);
+  const sensorsOnline = sensors.filter(s => s.status === 'online').length;
+  const totalSensors = sensors.length;
 
   // Simulate real-time updates
   useEffect(() => {
@@ -87,29 +87,13 @@ const Dashboard = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Air Quality Overview - Takes 2 columns */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-2 p-6 rounded-xl bg-card border border-border"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">Air Quality Overview</h2>
-                <p className="text-sm text-muted-foreground">Real-time monitoring across all sensors</p>
-              </div>
-              <LiveIndicator isRefreshing={isRefreshing} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
-              <div className="md:col-span-2 flex items-center justify-center py-4">
-                <AirQualityGauge co2={avgCo2} size={200} />
-              </div>
-              <div className="md:col-span-3">
-                <TrendChart data={trendData} height={200} />
-              </div>
-            </div>
-          </motion.div>
+          <AirQualityOverviewCard
+            avgCo2={avgCo2}
+            trendData={trendData}
+            isRefreshing={isRefreshing}
+            sensorsOnline={sensorsOnline}
+            totalSensors={totalSensors}
+          />
 
           {/* Right Column - Alerts and Insights */}
           <div className="space-y-6">
@@ -130,8 +114,8 @@ const Dashboard = () => {
 
             {/* Quick Insights */}
             <QuickInsights
-              sensorsOnline={sensors.filter(s => s.status === 'online').length}
-              totalSensors={sensors.length}
+              sensorsOnline={sensorsOnline}
+              totalSensors={totalSensors}
               readingsToday={156}
               peakCO2={Math.max(...trendData.map(d => d.co2))}
               bestAirTime="6:00 AM"

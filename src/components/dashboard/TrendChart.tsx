@@ -6,9 +6,10 @@ import { format } from 'date-fns';
 interface TrendChartProps {
   data: Reading[];
   height?: number;
+  title?: string | null;
 }
 
-export function TrendChart({ data, height = 250 }: TrendChartProps) {
+export function TrendChart({ data, height = 250, title = '24-Hour Trend' }: TrendChartProps) {
   const chartData = useMemo(() => {
     return data.map(reading => ({
       time: format(reading.timestamp, 'h a'),
@@ -36,9 +37,11 @@ export function TrendChart({ data, height = 250 }: TrendChartProps) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-medium text-muted-foreground">24-Hour Trend</h3>
-      </div>
+      {title !== null && (
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-medium text-muted-foreground">{title}</h3>
+        </div>
+      )}
       
       <ResponsiveContainer width="100%" height={height}>
         <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
