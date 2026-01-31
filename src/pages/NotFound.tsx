@@ -56,6 +56,7 @@ const NotFound = () => {
               <Link to="/dashboard">
                 <LayoutDashboard className="h-4 w-4 mr-2" />
                 Aller au Tableau de Bord
+              </Link>
             </Button>
           </div>
 
