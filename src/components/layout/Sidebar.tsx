@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, Wind, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, Wind, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -9,6 +9,7 @@ const navItems = [
   { to: '/sensors', icon: Radio, label: 'Sensors' },
   { to: '/alerts', icon: Bell, label: 'Alerts' },
   { to: '/reports', icon: FileText, label: 'Reports' },
+  { to: '/admin', icon: ShieldCheck, label: 'Admin' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 

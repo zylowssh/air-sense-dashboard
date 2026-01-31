@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { generateMockSensors, Sensor } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -23,6 +24,7 @@ import {
 const Sensors = () => {
   const [sensors] = useState<Sensor[]>(generateMockSensors());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const navigate = useNavigate();
 
   const StatusBadge = ({ status }: { status: Sensor['status'] }) => {
     const styles = {
@@ -110,7 +112,11 @@ const Sensors = () => {
             </TableHeader>
             <TableBody>
               {sensors.map((sensor, index) => (
-                <TableRow key={sensor.id} className="border-border hover:bg-muted/30">
+                <TableRow 
+                  key={sensor.id} 
+                  className="border-border hover:bg-muted/30 cursor-pointer"
+                  onClick={() => navigate(`/sensors/${sensor.id}`)}
+                >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className={cn(
@@ -171,7 +177,7 @@ const Sensors = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate(`/sensors/${sensor.id}`); }}>View Details</DropdownMenuItem>
                           <DropdownMenuItem>Calibrate</DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
