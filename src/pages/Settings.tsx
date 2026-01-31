@@ -286,7 +286,7 @@ const Settings = () => {
                     </div>
                   </div>
                   <Button variant={integration.connected ? 'outline' : 'default'} size="sm">
-                    {integration.connected ? 'Configure' : 'Connect'}
+                    {integration.connected ? 'Configurer' : 'Connecter'}
                   </Button>
                 </div>
               ))}
