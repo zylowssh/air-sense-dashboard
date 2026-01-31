@@ -101,11 +101,13 @@ const Dashboard = () => {
               <LiveIndicator isRefreshing={isRefreshing} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex items-center justify-center">
-                <AirQualityGauge co2={avgCo2} size={220} />
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+              <div className="md:col-span-2 flex items-center justify-center py-4">
+                <AirQualityGauge co2={avgCo2} size={200} />
               </div>
-              <TrendChart data={trendData} height={220} />
+              <div className="md:col-span-3">
+                <TrendChart data={trendData} height={200} />
+              </div>
             </div>
           </motion.div>
 
