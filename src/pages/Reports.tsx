@@ -156,11 +156,11 @@ const Reports = () => {
                   <TableCell>
                     <span className={cn(
                       "text-xs px-2 py-0.5 rounded-full border",
-                      sensor.status === 'online' 
+                      sensor.status === 'en ligne' 
                         ? 'bg-success/10 border-success/30 text-success' 
                         : 'bg-warning/10 border-warning/30 text-warning'
                     )}>
-                      {sensor.status.charAt(0).toUpperCase() + sensor.status.slice(1)}
+                      {sensor.status === 'en ligne' ? 'En Ligne' : sensor.status === 'avertissement' ? 'Avertissement' : 'Hors Ligne'}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">

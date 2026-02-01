@@ -28,9 +28,15 @@ const Sensors = () => {
 
   const StatusBadge = ({ status }: { status: Sensor['status'] }) => {
     const styles = {
-      online: 'bg-success/10 border-success/30 text-success',
-      offline: 'bg-muted border-muted-foreground/30 text-muted-foreground',
-      warning: 'bg-warning/10 border-warning/30 text-warning'
+      'en ligne': 'bg-success/10 border-success/30 text-success',
+      'hors ligne': 'bg-muted border-muted-foreground/30 text-muted-foreground',
+      'avertissement': 'bg-warning/10 border-warning/30 text-warning'
+    };
+
+    const labels = {
+      'en ligne': 'En Ligne',
+      'hors ligne': 'Hors Ligne',
+      'avertissement': 'Avertissement'
     };
 
     return (
@@ -39,11 +45,11 @@ const Sensors = () => {
         styles[status]
       )}>
         <span className={cn("w-1.5 h-1.5 rounded-full", {
-          'bg-success': status === 'online',
-          'bg-muted-foreground': status === 'offline',
-          'bg-warning': status === 'warning'
+          'bg-success': status === 'en ligne',
+          'bg-muted-foreground': status === 'hors ligne',
+          'bg-warning': status === 'avertissement'
         })} />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {labels[status]}
       </span>
     );
   };
@@ -121,13 +127,13 @@ const Sensors = () => {
                     <div className="flex items-center gap-3">
                       <div className={cn(
                         "p-2 rounded-lg",
-                        sensor.status === 'online' ? 'bg-primary/10' : 
-                        sensor.status === 'warning' ? 'bg-warning/10' : 'bg-muted'
+                        sensor.status === 'en ligne' ? 'bg-primary/10' : 
+                        sensor.status === 'avertissement' ? 'bg-warning/10' : 'bg-muted'
                       )}>
                         <Radio className={cn(
                           "w-4 h-4",
-                          sensor.status === 'online' ? 'text-primary' : 
-                          sensor.status === 'warning' ? 'text-warning' : 'text-muted-foreground'
+                          sensor.status === 'en ligne' ? 'text-primary' : 
+                          sensor.status === 'avertissement' ? 'text-warning' : 'text-muted-foreground'
                         )} />
                       </div>
                       <div>
@@ -194,9 +200,9 @@ const Sensors = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
             { label: 'Total des Capteurs', value: sensors.length, icon: Radio },
-            { label: 'En Ligne', value: sensors.filter(s => s.status === 'online').length, color: 'text-success' },
-            { label: 'Avertissements', value: sensors.filter(s => s.status === 'warning').length, color: 'text-warning' },
-            { label: 'Hors Ligne', value: sensors.filter(s => s.status === 'offline').length, color: 'text-muted-foreground' }
+            { label: 'En Ligne', value: sensors.filter(s => s.status === 'en ligne').length, color: 'text-success' },
+            { label: 'Avertissements', value: sensors.filter(s => s.status === 'avertissement').length, color: 'text-warning' },
+            { label: 'Hors Ligne', value: sensors.filter(s => s.status === 'hors ligne').length, color: 'text-muted-foreground' }
           ].map((stat, index) => (
             <motion.div
               key={index}

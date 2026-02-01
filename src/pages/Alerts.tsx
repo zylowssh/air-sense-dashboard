@@ -14,11 +14,11 @@ const Alerts = () => {
       id: 'alert-3',
       sensorId: 'sensor-1',
       sensorName: 'Main Office',
-      type: 'critical',
+      type: 'critique',
       message: 'Critical CO₂ level exceeded',
       value: 1250,
       timestamp: new Date(Date.now() - 15 * 60 * 1000),
-      status: 'acknowledged'
+      status: 'reconnue'
     },
     {
       id: 'alert-4',
@@ -28,11 +28,11 @@ const Alerts = () => {
       message: 'Sensor back online',
       value: 650,
       timestamp: new Date(Date.now() - 45 * 60 * 1000),
-      status: 'resolved'
+      status: 'résolue'
     }
   ]);
 
-  const [filter, setFilter] = useState<'all' | 'new' | 'acknowledged' | 'resolved'>('all');
+  const [filter, setFilter] = useState<'all' | 'nouvelle' | 'reconnue' | 'résolue'>('all');
 
   const filteredAlerts = alerts.filter(alert => 
     filter === 'all' ? true : alert.status === filter
@@ -40,28 +40,28 @@ const Alerts = () => {
 
   const acknowledgeAlert = (id: string) => {
     setAlerts(prev => prev.map(a => 
-      a.id === id ? { ...a, status: 'acknowledged' as const } : a
+      a.id === id ? { ...a, status: 'reconnue' as const } : a
     ));
   };
 
   const resolveAlert = (id: string) => {
     setAlerts(prev => prev.map(a => 
-      a.id === id ? { ...a, status: 'resolved' as const } : a
+      a.id === id ? { ...a, status: 'résolue' as const } : a
     ));
   };
 
   const getAlertIcon = (type: Alert['type']) => {
     switch (type) {
-      case 'warning': return AlertTriangle;
-      case 'critical': return XCircle;
+      case 'avertissement': return AlertTriangle;
+      case 'critique': return XCircle;
       case 'info': return Bell;
     }
   };
 
   const getAlertStyles = (type: Alert['type']) => {
     switch (type) {
-      case 'warning': return { bg: 'bg-warning/10', border: 'border-warning/30', text: 'text-warning' };
-      case 'critical': return { bg: 'bg-destructive/10', border: 'border-destructive/30', text: 'text-destructive' };
+      case 'avertissement': return { bg: 'bg-warning/10', border: 'border-warning/30', text: 'text-warning' };
+      case 'critique': return { bg: 'bg-destructive/10', border: 'border-destructive/30', text: 'text-destructive' };
       case 'info': return { bg: 'bg-primary/10', border: 'border-primary/30', text: 'text-primary' };
     }
   };
@@ -72,7 +72,7 @@ const Alerts = () => {
         {/* Filter Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {(['all', 'new', 'acknowledged', 'resolved'] as const).map((f) => (
+            {(['all', 'nouvelle', 'reconnue', 'résolue'] as const).map((f) => (
               <Button
                 key={f}
                 variant={filter === f ? 'default' : 'outline'}
@@ -80,14 +80,13 @@ const Alerts = () => {
                 onClick={() => setFilter(f)}
                 className={filter === f ? 'gradient-primary text-primary-foreground' : ''}
               >
-                {f.charAt(0).toUpperCase() + f.slice(1) === 'All' ? 'Toutes' :
-                 f.charAt(0).toUpperCase() + f.slice(1) === 'New' ? 'Nouvelles' :
-                 f.charAt(0).toUpperCase() + f.slice(1) === 'Acknowledged' ? 'Reconnu' :
-                 f.charAt(0).toUpperCase() + f.slice(1) === 'Resolved' ? 'Résolues' :
-                 f.charAt(0).toUpperCase() + f.slice(1)}
-                {f === 'new' && (
+                {f === 'all' ? 'Toutes' :
+                 f === 'nouvelle' ? 'Nouvelles' :
+                 f === 'reconnue' ? 'Reconnues' :
+                 'Résolues'}
+                {f === 'nouvelle' && (
                   <span className="ml-1.5 px-1.5 py-0.5 bg-destructive/20 text-destructive rounded-full text-xs">
-                    {alerts.filter(a => a.status === 'new').length}
+                    {alerts.filter(a => a.status === 'nouvelle').length}
                   </span>
                 )}
               </Button>
@@ -104,9 +103,9 @@ const Alerts = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
             { label: 'Total des Alertes', value: alerts.length, icon: Bell },
-            { label: 'Nouvelles', value: alerts.filter(a => a.status === 'new').length, color: 'text-destructive' },
-            { label: 'Reconnues', value: alerts.filter(a => a.status === 'acknowledged').length, color: 'text-warning' },
-            { label: 'Résolues', value: alerts.filter(a => a.status === 'resolved').length, color: 'text-success' }
+            { label: 'Nouvelles', value: alerts.filter(a => a.status === 'nouvelle').length, color: 'text-destructive' },
+            { label: 'Reconnues', value: alerts.filter(a => a.status === 'reconnue').length, color: 'text-warning' },
+            { label: 'Résolues', value: alerts.filter(a => a.status === 'résolue').length, color: 'text-success' }
           ].map((stat, index) => (
             <motion.div
               key={index}
@@ -137,7 +136,7 @@ const Alerts = () => {
                 transition={{ delay: 0.05 * index }}
                 className={cn(
                   "p-4 rounded-xl border bg-card",
-                  alert.status === 'new' ? styles.border : 'border-border'
+                  alert.status === 'nouvelle' ? styles.border : 'border-border'
                 )}
               >
                 <div className="flex items-start gap-4">
@@ -155,7 +154,7 @@ const Alerts = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {alert.status === 'new' && (
+                        {alert.status === 'nouvelle' && (
                           <>
                             <Button size="sm" variant="outline" onClick={() => acknowledgeAlert(alert.id)}>
                               Reconnaître
@@ -165,12 +164,12 @@ const Alerts = () => {
                             </Button>
                           </>
                         )}
-                        {alert.status === 'acknowledged' && (
+                        {alert.status === 'reconnue' && (
                           <Button size="sm" className="gradient-primary text-primary-foreground" onClick={() => resolveAlert(alert.id)}>
-                            Resolve
+                            Résoudre
                           </Button>
                         )}
-                        {alert.status === 'resolved' && (
+                        {alert.status === 'résolue' && (
                           <span className="flex items-center gap-1.5 text-sm text-success">
                             <CheckCircle className="w-4 h-4" />
                             Résolue
@@ -186,14 +185,13 @@ const Alerts = () => {
                       </span>
                       <span className={cn(
                         "px-2 py-0.5 rounded-full border",
-                        alert.status === 'new' ? 'bg-destructive/10 border-destructive/30 text-destructive' :
-                        alert.status === 'acknowledged' ? 'bg-warning/10 border-warning/30 text-warning' :
+                        alert.status === 'nouvelle' ? 'bg-destructive/10 border-destructive/30 text-destructive' :
+                        alert.status === 'reconnue' ? 'bg-warning/10 border-warning/30 text-warning' :
                         'bg-success/10 border-success/30 text-success'
                       )}>
-                        {alert.status.charAt(0).toUpperCase() + alert.status.slice(1) === 'New' ? 'Nouvelle' :
-                        alert.status.charAt(0).toUpperCase() + alert.status.slice(1) === 'Acknowledged' ? 'Reconnue' :
-                        alert.status.charAt(0).toUpperCase() + alert.status.slice(1) === 'Resolved' ? 'Résolue' :
-                        alert.status.charAt(0).toUpperCase() + alert.status.slice(1)}
+                        {alert.status === 'nouvelle' ? 'Nouvelle' :
+                        alert.status === 'reconnue' ? 'Reconnue' :
+                        'Résolue'}
                       </span>
                     </div>
                   </div>

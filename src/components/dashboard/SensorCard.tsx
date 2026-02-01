@@ -13,9 +13,9 @@ export function SensorCard({ sensor, miniChartData }: SensorCardProps) {
   const level = getAirQualityLevel(sensor.co2);
   
   const statusColors = {
-    online: 'bg-success text-success',
-    offline: 'bg-muted-foreground text-muted-foreground',
-    warning: 'bg-warning text-warning'
+    'en ligne': 'bg-success',
+    'hors ligne': 'bg-muted-foreground',
+    'avertissement': 'bg-warning'
   };
 
   const chartData = miniChartData?.map((value, index) => ({ value, index })) || [];
@@ -46,14 +46,14 @@ export function SensorCard({ sensor, miniChartData }: SensorCardProps) {
         <div className="flex items-center gap-2">
           <span className={cn(
             "flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full border",
-            sensor.status === 'online' 
+            sensor.status === 'en ligne' 
               ? "bg-success/10 border-success/30 text-success"
-              : sensor.status === 'warning'
+              : sensor.status === 'avertissement'
               ? "bg-warning/10 border-warning/30 text-warning"
               : "bg-muted border-muted-foreground/30 text-muted-foreground"
           )}>
-            <span className={cn("w-1.5 h-1.5 rounded-full", statusColors[sensor.status].split(' ')[0])} />
-            {sensor.status === 'online' ? 'En Ligne' : sensor.status === 'warning' ? 'Avertissement' : 'Hors Ligne'}
+            <span className={cn("w-1.5 h-1.5 rounded-full", statusColors[sensor.status])} />
+            {sensor.status === 'en ligne' ? 'En Ligne' : sensor.status === 'avertissement' ? 'Avertissement' : 'Hors Ligne'}
           </span>
         </div>
       </div>

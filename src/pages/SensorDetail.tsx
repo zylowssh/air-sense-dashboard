@@ -63,7 +63,7 @@ const mockSensor = {
   id: 'sensor-001',
   name: 'Meeting Room A',
   location: 'Floor 2, Building A',
-  status: 'online',
+  status: 'en ligne' as const,
   co2: 847,
   temperature: 22.4,
   humidity: 48,
@@ -137,12 +137,12 @@ const SensorDetail = () => {
               <Badge 
                 variant="outline" 
                 className={cn(
-                  mockSensor.status === 'online' 
+                  mockSensor.status === 'en ligne' 
                     ? 'bg-success/20 text-success border-success/30' 
                     : 'bg-destructive/20 text-destructive border-destructive/30'
                 )}
               >
-                {mockSensor.status}
+                {mockSensor.status === 'en ligne' ? 'En Ligne' : mockSensor.status === 'avertissement' ? 'Avertissement' : 'Hors Ligne'}
               </Badge>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground mt-1">
