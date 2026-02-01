@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Bell, Moon, Sun, User, Download, Plus } from 'lucide-react';
+import { Bell, Moon, Sun, User, Download, Plus, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
 import { ExportDataModal } from '@/components/widgets/ExportDataModal';
 import { AddSensorModal } from '@/components/widgets/AddSensorModal';
 import { ProfileModal } from '@/components/widgets/ProfileModal';
 import { NotificationsPanel } from '@/components/widgets/NotificationsPanel';
+import { AlertThresholdsModal } from '@/components/widgets/AlertThresholdsModal';
+import { MobileNav } from './MobileNav';
 
 interface TopBarProps {
   title?: string;
@@ -19,6 +21,7 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
   const [addSensorOpen, setAddSensorOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [thresholdsOpen, setThresholdsOpen] = useState(false);
   
   // Get greeting based on time of day
   const getGreeting = () => {
@@ -30,31 +33,39 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
 
   return (
     <>
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-background/50 backdrop-blur-sm">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">
-            {title === "Dashboard" ? `${getGreeting()}, ${userName}` : title}
-          </h1>
-          {subtitle && (
-            <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
-          )}
-          {title === "Dashboard" && (
-            <p className="text-sm text-muted-foreground mt-0.5">Voici votre aperçu de la qualité de l'air</p>
-          )}
+      <header className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-border bg-background/50 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <MobileNav />
+          <div>
+            <h1 className="text-xl md:text-2xl font-semibold text-foreground">
+              {title === "Dashboard" ? `${getGreeting()}, ${userName}` : title}
+            </h1>
+            {subtitle && (
+              <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
+            )}
+            {title === "Dashboard" && (
+              <p className="text-sm text-muted-foreground mt-0.5 hidden sm:block">Voici votre aperçu de la qualité de l'air</p>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => setExportOpen(true)}>
+        <div className="flex items-center gap-2 md:gap-3">
+          <Button variant="outline" size="sm" className="gap-2 hidden md:flex" onClick={() => setExportOpen(true)}>
             <Download className="w-4 h-4" />
-            Exporter les Données
+            <span className="hidden lg:inline">Exporter les Données</span>
           </Button>
           
-          <Button size="sm" className="gap-2 gradient-primary text-primary-foreground hover:opacity-90" onClick={() => setAddSensorOpen(true)}>
+          <Button variant="outline" size="sm" className="gap-2 hidden sm:flex" onClick={() => setThresholdsOpen(true)}>
+            <SlidersHorizontal className="w-4 h-4" />
+            <span className="hidden lg:inline">Seuils</span>
+          </Button>
+          
+          <Button size="sm" className="gap-2 gradient-primary text-primary-foreground hover:opacity-90 hidden sm:flex" onClick={() => setAddSensorOpen(true)}>
             <Plus className="w-4 h-4" />
-            Ajouter un Capteur
+            <span className="hidden lg:inline">Ajouter un Capteur</span>
           </Button>
 
-          <div className="flex items-center gap-1 ml-2">
+          <div className="flex items-center gap-1 ml-1 md:ml-2">
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -89,6 +100,7 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
       <AddSensorModal open={addSensorOpen} onOpenChange={setAddSensorOpen} />
       <ProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
       <NotificationsPanel open={notificationsOpen} onOpenChange={setNotificationsOpen} />
+      <AlertThresholdsModal open={thresholdsOpen} onOpenChange={setThresholdsOpen} />
     </>
   );
 }

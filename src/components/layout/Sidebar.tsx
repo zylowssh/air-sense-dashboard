@@ -1,11 +1,13 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, ChevronLeft, ChevronRight, ShieldCheck, MapPin, Lightbulb, Wrench } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, ChevronLeft, ChevronRight, ShieldCheck, MapPin, Lightbulb, Wrench, GitCompare, Home } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Tableau de Bord' },
+  { to: '/', icon: Home, label: 'Accueil' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Tableau de Bord' },
   { to: '/analytics', icon: BarChart3, label: 'Analyses' },
+  { to: '/comparison', icon: GitCompare, label: 'Comparaison' },
   { to: '/sensors', icon: Radio, label: 'Capteurs' },
   { to: '/sensor-map', icon: MapPin, label: 'Carte' },
   { to: '/alerts', icon: Bell, label: 'Alertes' },
@@ -23,7 +25,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "sticky top-0 flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
+        "sticky top-0 hidden md:flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
         collapsed ? "w-16" : "w-60"
       )}
     >
