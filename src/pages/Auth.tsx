@@ -1,0 +1,293 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from 'sonner';
+import { Leaf, Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email({ message: "Adresse email invalide" }),
+  password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" })
+});
+
+const signupSchema = z.object({
+  email: z.string().email({ message: "Adresse email invalide" }),
+  password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }),
+  fullName: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" })
+});
+
+const Auth = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupFullName, setSignupFullName] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+    
+    const validation = loginSchema.safeParse({ email: loginEmail, password: loginPassword });
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error('Email ou mot de passe incorrect');
+        } else if (error.message.includes('Email not confirmed')) {
+          toast.error('Veuillez confirmer votre email avant de vous connecter');
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
+
+      toast.success('Connexion réussie !');
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error('Une erreur est survenue');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+    
+    const validation = signupSchema.safeParse({ 
+      email: signupEmail, 
+      password: signupPassword,
+      fullName: signupFullName 
+    });
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email: signupEmail,
+        password: signupPassword,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: signupFullName,
+          }
+        }
+      });
+
+      if (error) {
+        if (error.message.includes('already registered')) {
+          toast.error('Cet email est déjà utilisé');
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
+
+      toast.success('Compte créé ! Vérifiez votre email pour confirmer votre inscription.');
+    } catch (error) {
+      toast.error('Une erreur est survenue');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
+        <div className="mb-8 text-center">
+          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
+            <ArrowLeft className="w-4 h-4" />
+            Retour à l'accueil
+          </Link>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl overflow-hidden">
+              <img src="/logo.png" alt="Aerium" className="w-full h-full object-cover" />
+            </div>
+            <span className="text-2xl font-bold text-foreground">Aerium</span>
+          </div>
+          <p className="text-muted-foreground">
+            Connectez-vous pour accéder à votre tableau de bord
+          </p>
+        </div>
+
+        <Card className="border-border/50 shadow-xl">
+          <CardHeader className="text-center pb-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Leaf className="w-6 h-6 text-primary" />
+            </div>
+            <CardTitle className="text-xl">Bienvenue</CardTitle>
+            <CardDescription>
+              Gérez la qualité de l'air de vos espaces
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="login">Connexion</TabsTrigger>
+                <TabsTrigger value="signup">Inscription</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="login">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="login-email"
+                        type="email"
+                        placeholder="votre@email.com"
+                        className="pl-10"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                      />
+                    </div>
+                    {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="login-password">Mot de passe</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="login-password"
+                        type="password"
+                        placeholder="••••••••"
+                        className="pl-10"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                      />
+                    </div>
+                    {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                  </div>
+                  <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
+                    {isLoading ? 'Connexion...' : 'Se connecter'}
+                  </Button>
+                </form>
+
+                <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-border">
+                  <p className="text-sm font-medium text-foreground mb-2">Comptes de démonstration :</p>
+                  <div className="space-y-2 text-xs text-muted-foreground">
+                    <p><strong>Admin :</strong> admin@aerium.com / admin123</p>
+                    <p><strong>Utilisateur :</strong> user@aerium.com / user123</p>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="signup">
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-name">Nom complet</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signup-name"
+                        type="text"
+                        placeholder="Jean Dupont"
+                        className="pl-10"
+                        value={signupFullName}
+                        onChange={(e) => setSignupFullName(e.target.value)}
+                      />
+                    </div>
+                    {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="votre@email.com"
+                        className="pl-10"
+                        value={signupEmail}
+                        onChange={(e) => setSignupEmail(e.target.value)}
+                      />
+                    </div>
+                    {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Mot de passe</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signup-password"
+                        type="password"
+                        placeholder="••••••••"
+                        className="pl-10"
+                        value={signupPassword}
+                        onChange={(e) => setSignupPassword(e.target.value)}
+                      />
+                    </div>
+                    {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                  </div>
+                  <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
+                    {isLoading ? 'Création...' : 'Créer un compte'}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+};
+
+export default Auth;
