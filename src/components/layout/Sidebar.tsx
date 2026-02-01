@@ -28,7 +28,7 @@ export function Sidebar() {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 pl-4 py-5 border-b border-sidebar-border">
+      <div className="flex items-center gap-3 pl-[0.85rem] py-5 border-b border-sidebar-border">
         <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden">
           <img src="/logo.png" alt="Aerium Logo" className="w-full h-full object-fill" />
         </div>
