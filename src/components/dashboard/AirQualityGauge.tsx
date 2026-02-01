@@ -28,11 +28,12 @@ export function AirQualityGauge({ co2, size = 200 }: AirQualityGaugeProps) {
 
   const getMessage = () => {
     switch (level) {
-      case 'excellent': return 'Excellent air quality';
-      case 'good': return 'Good air quality';
-      case 'moderate': return 'Consider improving ventilation';
-      case 'poor': return 'Open windows recommended';
-      case 'hazardous': return 'Immediate action needed';
+      case 'excellente': return "Excellente qualité de l'air";
+      case 'bonne': return "Bonne qualité de l'air";
+      case 'modérée': return "Envisager d'améliorer la ventilation";
+      case 'médiocre': return "Ouverture des fenêtres recommandée";
+      case 'dangereuse': return "Action immédiate requise";
+      default: return '';
     }
   };
 

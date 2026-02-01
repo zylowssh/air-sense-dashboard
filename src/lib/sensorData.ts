@@ -4,7 +4,7 @@ export interface Sensor {
   id: string;
   name: string;
   location: string;
-  status: 'online' | 'offline' | 'warning';
+  status: 'en ligne' | 'hors ligne' | 'avertissement';
   co2: number;
   temperature: number;
   humidity: number;
@@ -24,30 +24,30 @@ export interface Alert {
   id: string;
   sensorId: string;
   sensorName: string;
-  type: 'warning' | 'critical' | 'info';
+  type: 'avertissement' | 'critique' | 'info';
   message: string;
   value: number;
   timestamp: Date;
-  status: 'new' | 'acknowledged' | 'resolved';
+  status: 'nouvelle' | 'reconnue' | 'résolue';
 }
 
-export type AirQualityLevel = 'excellent' | 'good' | 'moderate' | 'poor' | 'hazardous';
+export type AirQualityLevel = 'excellente' | 'bonne' | 'modérée' | 'médiocre' | 'dangereuse';
 
 export function getAirQualityLevel(co2: number): AirQualityLevel {
-  if (co2 < 400) return 'excellent';
-  if (co2 < 800) return 'good';
-  if (co2 < 1000) return 'moderate';
-  if (co2 < 1500) return 'poor';
-  return 'hazardous';
+  if (co2 < 400) return 'excellente';
+  if (co2 < 800) return 'bonne';
+  if (co2 < 1000) return 'modérée';
+  if (co2 < 1500) return 'médiocre';
+  return 'dangereuse';
 }
 
 export function getAirQualityColor(level: AirQualityLevel): string {
   switch (level) {
-    case 'excellent': return 'text-success';
-    case 'good': return 'text-primary';
-    case 'moderate': return 'text-warning';
-    case 'poor': return 'text-destructive';
-    case 'hazardous': return 'text-destructive';
+    case 'excellente': return 'text-success';
+    case 'bonne': return 'text-primary';
+    case 'modérée': return 'text-warning';
+    case 'médiocre': return 'text-destructive';
+    case 'dangereuse': return 'text-destructive';
   }
 }
 
@@ -86,8 +86,8 @@ export function generateMockSensors(): Sensor[] {
     {
       id: 'sensor-1',
       name: 'Bureau Principal',
-      location: 'Bâtiment A, Étage 2',
-      status: 'online',
+      location: 'Bâtiment A, 2ᵉ étage',
+      status: 'en ligne',
       co2: 792,
       temperature: 23.9,
       humidity: 44,
@@ -97,9 +97,9 @@ export function generateMockSensors(): Sensor[] {
     },
     {
       id: 'sensor-2',
-      name: 'Salle de Réunion Alpha',
-      location: 'Bâtiment A, Étage 1',
-      status: 'online',
+      name: 'Salle de réunion Alpha',
+      location: 'Bâtiment A, 1ᵉʳ étage',
+      status: 'en ligne',
       co2: 825,
       temperature: 24.9,
       humidity: 59,
@@ -109,9 +109,9 @@ export function generateMockSensors(): Sensor[] {
     },
     {
       id: 'sensor-3',
-      name: 'Salle Serveur',
-      location: 'Bâtiment A, Sous-sol',
-      status: 'warning',
+      name: 'Salle des serveurs',
+      location: 'Bâtiment A, sous-sol',
+      status: 'avertissement',
       co2: 944,
       temperature: 26.1,
       humidity: 69,
@@ -147,21 +147,21 @@ export function generateMockAlerts(): Alert[] {
       id: 'alert-1',
       sensorId: 'sensor-3',
       sensorName: 'Salle Serveur',
-      type: 'warning',
+      type: 'avertissement',
       message: 'Niveau élevé de CO₂ détecté',
       value: 778,
       timestamp: new Date(Date.now() - 3 * 60 * 1000),
-      status: 'new'
+      status: 'nouvelle'
     },
     {
       id: 'alert-2',
       sensorId: 'sensor-3',
       sensorName: 'Salle Serveur',
-      type: 'warning',
+      type: 'avertissement',
       message: 'Niveau élevé de CO₂ détecté',
       value: 746,
       timestamp: new Date(Date.now() - 5 * 60 * 1000),
-      status: 'acknowledged'
+      status: 'reconnue'
     }
   ];
 }

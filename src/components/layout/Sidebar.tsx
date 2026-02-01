@@ -20,14 +20,14 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
+        "sticky top-0 flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
         collapsed ? "w-16" : "w-60"
       )}
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border">
         <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden">
-          <img src="/logo.png" alt="Aerium Logo" className="w-full h-full object-cover" />
+          <img src="/logo.png" alt="Aerium Logo" className="w-full h-full object-fill" />
         </div>
         {!collapsed && (
           <span className="text-lg font-semibold text-foreground">Aerium</span>

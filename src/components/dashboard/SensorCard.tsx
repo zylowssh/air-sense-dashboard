@@ -4,7 +4,7 @@ import { Sensor, getAirQualityLevel } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
-interface SensorCardProps {
+export interface SensorCardProps {
   sensor: Sensor;
   miniChartData?: number[];
 }

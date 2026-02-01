@@ -13,7 +13,8 @@ import {
   generateMockAlerts,
   simulateSensorUpdate,
   getHealthScore,
-  Sensor
+  Sensor,
+  Alert
 } from '@/lib/sensorData';
 
 const Dashboard = () => {
@@ -27,7 +28,7 @@ const Dashboard = () => {
   const avgTemp = (sensors.reduce((acc, s) => acc + s.temperature, 0) / sensors.length).toFixed(1);
   const avgHumidity = Math.round(sensors.reduce((acc, s) => acc + s.humidity, 0) / sensors.length);
   const healthScore = getHealthScore(avgCo2, parseFloat(avgTemp), avgHumidity);
-  const sensorsOnline = sensors.filter(s => s.status === 'online').length;
+  const sensorsOnline = sensors.filter(s => s.status === 'en ligne').length;
   const totalSensors = sensors.length;
 
   // Simulate real-time updates
@@ -106,7 +107,7 @@ const Dashboard = () => {
             >
               <h3 className="text-base font-semibold text-foreground mb-4">Alertes Récentes</h3>
               <div className="space-y-3">
-                {alerts.slice(0, 3).map((alert, index) => (
+                {alerts.slice(0, 3).map((alert: Alert) => (
                   <AlertCard key={alert.id} alert={alert} />
                 ))}
               </div>
@@ -127,7 +128,7 @@ const Dashboard = () => {
         <div>
           <h2 className="text-lg font-semibold text-foreground mb-4">Capteurs Actifs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sensors.map((sensor, index) => (
+            {sensors.map((sensor: Sensor) => (
               <SensorCard 
                 key={sensor.id} 
                 sensor={sensor}

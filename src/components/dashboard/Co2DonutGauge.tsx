@@ -22,15 +22,15 @@ export function Co2DonutGauge({ co2, size = 200 }: Co2DonutGaugeProps) {
 
   const getMessage = () => {
     switch (level) {
-      case "excellent":
+      case "excellente":
         return "Excellente qualité de l'air";
-      case "good":
+      case "bonne":
         return "Bonne qualité de l'air";
-      case "moderate":
+      case "modérée":
         return "Envisager d'améliorer la ventilation";
-      case "poor":
+      case "médiocre":
         return "Ouverture des fenêtres recommandée";
-      case "hazardous":
+      case "dangereuse":
         return "Action immédiate requise";
       default:
         return "";
@@ -38,11 +38,11 @@ export function Co2DonutGauge({ co2, size = 200 }: Co2DonutGaugeProps) {
   };
 
   const ringColorClass =
-    level === "excellent"
+    level === "excellente"
       ? "text-success"
-      : level === "good"
+      : level === "bonne"
         ? "text-primary"
-        : level === "moderate"
+        : level === "modérée"
           ? "text-warning"
           : "text-destructive";
 

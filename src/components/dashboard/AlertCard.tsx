@@ -4,19 +4,19 @@ import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
 
-interface AlertCardProps {
+export interface AlertCardProps {
   alert: Alert;
 }
 
 export function AlertCard({ alert }: AlertCardProps) {
   const typeStyles = {
-    warning: {
+    avertissement: {
       bg: 'bg-warning/10',
       border: 'border-warning/30',
       icon: 'text-warning',
       badge: 'bg-warning/20 text-warning'
     },
-    critical: {
+    critique: {
       bg: 'bg-destructive/10',
       border: 'border-destructive/30',
       icon: 'text-destructive',
@@ -52,9 +52,9 @@ export function AlertCard({ alert }: AlertCardProps) {
             <h4 className="font-medium text-foreground truncate">{alert.sensorName}</h4>
             <span className={cn(
               "text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0",
-              alert.status === 'new' ? style.badge : "bg-muted text-muted-foreground"
+              alert.status === 'nouvelle' ? style.badge : "bg-muted text-muted-foreground"
             )}>
-              {alert.status === 'new' ? 'En Ligne' : 'Reconnue'}
+              {alert.status === 'nouvelle' ? 'En Ligne' : 'Reconnue'}
             </span>
           </div>
           
