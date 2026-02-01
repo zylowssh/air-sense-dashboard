@@ -12,6 +12,7 @@ from routes.sensors import sensors_bp
 from routes.readings import readings_bp
 from routes.users import users_bp
 from routes.alerts import alerts_bp
+from routes.reports import reports_bp
 from scheduler import init_scheduler
 
 load_dotenv()
@@ -49,6 +50,7 @@ def create_app():
     app.register_blueprint(readings_bp, url_prefix='/api/readings')
     app.register_blueprint(users_bp, url_prefix='/api/users')
     app.register_blueprint(alerts_bp, url_prefix='/api/alerts')
+    app.register_blueprint(reports_bp, url_prefix='/api/reports')
     
     # Health check endpoint
     @app.route('/api/health')

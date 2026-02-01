@@ -1,220 +1,318 @@
-import { useState } from 'react';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download, Calendar, Plus, Eye, BarChart3 } from 'lucide-react';
+import { Download, BarChart3, TrendingUp, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { GenerateReportModal } from '@/components/widgets/GenerateReportModal';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { toast } from 'sonner';
-import { useSensors } from '@/hooks/useSensors';
-import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { Card } from '@/components/ui/card';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { apiClient } from '@/lib/apiClient';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+
+interface AlertStats {
+  totalAlerts: number;
+  triggered: number;
+  acknowledged: number;
+  resolved: number;
+  byType: {
+    [key: string]: number;
+  };
+  byMetric: {
+    [key: string]: number;
+  };
+}
+
+const COLORS = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'];
 
 const Reports = () => {
-  const { sensors, isLoading } = useSensors();
-  const [generateReportOpen, setGenerateReportOpen] = useState(false);
+  const [stats, setStats] = useState<AlertStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedDays, setSelectedDays] = useState(30);
 
-  const reports = [
-    { id: 1, name: 'Résumé Hebdomadaire Qualité de l\'Air', date: '22 Jan 2026', type: 'Automatisé', status: 'Prêt' },
-    { id: 2, name: 'Rapport de Conformité Mensuel', date: '1 Jan 2026', type: 'Automatisé', status: 'Prêt' },
-    { id: 3, name: 'Analyse T4 2025', date: '31 Déc 2025', type: 'Personnalisé', status: 'Prêt' },
-    { id: 4, name: 'Audit Salle Serveur', date: '15 Jan 2026', type: 'Personnalisé', status: 'En cours' }
+  useEffect(() => {
+    fetchStats();
+  }, [selectedDays]);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get(`/alerts/history/stats?days=${selectedDays}`);
+      setStats(response.data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      const response = await apiClient.get('/reports/export/pdf', {
+        responseType: 'blob',
+        params: { days: selectedDays }
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `rapport-alertes-${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const response = await apiClient.get('/reports/export/csv', {
+        responseType: 'blob',
+        params: { days: selectedDays }
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `alertes-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <AppLayout title="Rapports" subtitle="Analyses et rapports sur les alertes">
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Chargement des rapports...</p>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <AppLayout title="Rapports" subtitle="Analyses et rapports sur les alertes">
+        <p className="text-muted-foreground">Erreur lors du chargement des données</p>
+      </AppLayout>
+    );
+  }
+
+  // Prepare data for charts
+  const typeData = Object.entries(stats.byType).map(([key, value]) => ({
+    name: key,
+    value: value
+  }));
+
+  const metricData = Object.entries(stats.byMetric).map(([key, value]) => ({
+    name: key,
+    value: value
+  }));
+
+  const statusData = [
+    { name: 'Déclenchées', value: stats.triggered },
+    { name: 'Accusées', value: stats.acknowledged },
+    { name: 'Résolues', value: stats.resolved }
   ];
 
-  const handleDownload = (reportName: string) => {
-    toast.success('Téléchargement lancé', {
-      description: `${reportName} est en cours de téléchargement.`,
-    });
-  };
-
-  const handleExport = (sensorName: string) => {
-    toast.success('Export lancé', {
-      description: `Données de ${sensorName} en cours d'export.`,
-    });
-  };
-
   return (
-    <AppLayout title="Rapports" subtitle="Générer et exporter des rapports de qualité de l'air">
+    <AppLayout title="Rapports" subtitle="Analyses et rapports sur les alertes">
       <div className="space-y-6">
-        {/* Controls */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              Ce Mois
-            </Button>
-            <Button variant="outline" size="sm">Tous les Rapports</Button>
-          </div>
-
-          <Button size="sm" className="gap-2 gradient-primary text-primary-foreground" onClick={() => setGenerateReportOpen(true)}>
-            <Plus className="w-4 h-4" />
-            Nouveau Rapport
+        {/* Export Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex gap-2 justify-end"
+        >
+          <Button
+            variant="outline"
+            onClick={handleExportCSV}
+            className="gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Exporter CSV
           </Button>
-        </div>
+          <Button
+            onClick={handleExportPDF}
+            className="gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Exporter PDF
+          </Button>
+        </motion.div>
 
-        {/* Report Types */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { title: 'Résumé Quotidien', description: 'Aperçu quotidien automatisé de la qualité de l\'air', icon: FileText, color: 'text-primary' },
-            { title: 'Analyse Hebdomadaire', description: 'Tendances et modèles sur la semaine', icon: BarChart3, color: 'text-warning' },
-            { title: 'Rapport de Conformité', description: 'Documentation de conformité réglementaire', icon: FileText, color: 'text-success' }
-          ].map((type, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * index }}
-              className="p-5 rounded-xl bg-card border border-border hover:border-primary/30 transition-all cursor-pointer group"
+        {/* Period Selector */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex gap-2"
+        >
+          {[7, 30, 90, 180].map((days) => (
+            <Button
+              key={days}
+              variant={selectedDays === days ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSelectedDays(days)}
             >
-              <div className={cn("p-2 rounded-lg bg-muted w-fit mb-3", `group-hover:${type.color.replace('text-', 'bg-')}/10`)}>
-                <type.icon className={cn("w-5 h-5", type.color)} />
-              </div>
-              <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">{type.title}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{type.description}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Recent Reports */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-xl border border-border bg-card overflow-hidden"
-        >
-          <div className="p-4 border-b border-border flex items-center justify-between">
-            <h3 className="font-semibold text-foreground">Rapports Récents</h3>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Eye className="w-4 h-4" />
-              Voir la Liste des Rapports
+              {days === 7 ? '7j' : days === 30 ? '30j' : days === 90 ? '90j' : '6m'}
             </Button>
-          </div>
-
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Nom du Rapport</TableHead>
-                <TableHead className="text-muted-foreground">Date</TableHead>
-                <TableHead className="text-muted-foreground">Type</TableHead>
-                <TableHead className="text-muted-foreground">Statut</TableHead>
-                <TableHead className="text-muted-foreground text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {reports.map((report) => (
-                <TableRow key={report.id} className="border-border hover:bg-muted/30">
-                  <TableCell className="font-medium text-foreground">{report.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{report.date}</TableCell>
-                  <TableCell>
-                    <span className={cn(
-                      "text-xs px-2 py-0.5 rounded-full",
-                      report.type === 'Automatisé' 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'bg-muted text-muted-foreground'
-                    )}>
-                      {report.type}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className={cn(
-                      "text-xs px-2 py-0.5 rounded-full",
-                      report.status === 'Prêt' 
-                        ? 'bg-success/10 text-success' 
-                        : 'bg-warning/10 text-warning'
-                    )}>
-                      {report.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-1.5" 
-                      disabled={report.status !== 'Prêt'}
-                      onClick={() => handleDownload(report.name)}
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Télécharger
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          ))}
         </motion.div>
 
-        {/* Sensor Export */}
+        {/* Key Stats */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="rounded-xl border border-border bg-card overflow-hidden"
+          transition={{ delay: 0.15 }}
+          className="grid grid-cols-1 md:grid-cols-4 gap-4"
         >
-          <div className="p-4 border-b border-border">
-            <h3 className="font-semibold text-foreground">Export Rapide par Capteur</h3>
-          </div>
+          <Card className="p-6 bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20">
+            <div className="text-sm text-muted-foreground mb-1">Total des Alertes</div>
+            <div className="text-3xl font-bold text-foreground">{stats.totalAlerts}</div>
+          </Card>
 
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Capteur</TableHead>
-                <TableHead className="text-muted-foreground">Statut</TableHead>
-                <TableHead className="text-muted-foreground text-right">CO₂</TableHead>
-                <TableHead className="text-muted-foreground text-right">Température</TableHead>
-                <TableHead className="text-muted-foreground text-right">Humidité</TableHead>
-                <TableHead className="text-muted-foreground text-right">Export</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sensors.map((sensor) => (
-                <TableRow key={sensor.id} className="border-border hover:bg-muted/30">
-                  <TableCell className="font-medium text-foreground">{sensor.name}</TableCell>
-                  <TableCell>
-                    <span className={cn(
-                      "text-xs px-2 py-0.5 rounded-full border",
-                      sensor.status === 'en ligne' 
-                        ? 'bg-success/10 border-success/30 text-success' 
-                        : 'bg-warning/10 border-warning/30 text-warning'
-                    )}>
-                      {sensor.status === 'en ligne' ? 'En Ligne' : sensor.status === 'avertissement' ? 'Avertissement' : 'Hors Ligne'}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-medium text-foreground">{sensor.co2}</span>
-                    <span className="text-muted-foreground ml-1">ppm</span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-medium text-foreground">{sensor.temperature}</span>
-                    <span className="text-muted-foreground">°C</span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-medium text-foreground">{sensor.humidity}</span>
-                    <span className="text-muted-foreground">%</span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-1.5 gradient-primary text-primary-foreground border-0"
-                      onClick={() => handleExport(sensor.name)}
-                    >
-                      Exporter
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Card className="p-6 bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20">
+            <div className="text-sm text-muted-foreground mb-1">Déclenchées</div>
+            <div className="text-3xl font-bold text-orange-500">{stats.triggered}</div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20">
+            <div className="text-sm text-muted-foreground mb-1">Accusées</div>
+            <div className="text-3xl font-bold text-yellow-500">{stats.acknowledged}</div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+            <div className="text-sm text-muted-foreground mb-1">Résolues</div>
+            <div className="text-3xl font-bold text-green-500">{stats.resolved}</div>
+          </Card>
         </motion.div>
 
-        <GenerateReportModal open={generateReportOpen} onOpenChange={setGenerateReportOpen} />
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Alert Type Distribution */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="p-6">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Distribution par Type
+              </h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={typeData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {typeData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
+
+          {/* Metric Distribution */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.25 }}
+          >
+            <Card className="p-6">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Distribution par Métrique
+              </h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={metricData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
+
+          {/* Status Distribution */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="p-6">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                Distribution par Statut
+              </h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={statusData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#10b981" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </motion.div>
+
+          {/* Summary Stats */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.35 }}
+          >
+            <Card className="p-6">
+              <h2 className="text-lg font-semibold mb-4">Résumé</h2>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center pb-3 border-b border-border">
+                  <span className="text-muted-foreground">Taux de résolution</span>
+                  <span className="font-semibold">
+                    {stats.totalAlerts > 0 
+                      ? ((stats.resolved / stats.totalAlerts) * 100).toFixed(1) 
+                      : 0}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center pb-3 border-b border-border">
+                  <span className="text-muted-foreground">Alertes en attente</span>
+                  <span className="font-semibold">{stats.triggered + stats.acknowledged}</span>
+                </div>
+                <div className="flex justify-between items-center pb-3 border-b border-border">
+                  <span className="text-muted-foreground">Type dominant</span>
+                  <span className="font-semibold">
+                    {typeData.length > 0
+                      ? typeData.reduce((prev, curr) =>
+                          curr.value > prev.value ? curr : prev
+                        ).name
+                      : '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Métrique dominante</span>
+                  <span className="font-semibold">
+                    {metricData.length > 0
+                      ? metricData.reduce((prev, curr) =>
+                          curr.value > prev.value ? curr : prev
+                        ).name
+                      : '-'}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </AppLayout>
   );

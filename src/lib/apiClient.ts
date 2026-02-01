@@ -181,6 +181,27 @@ class ApiClient {
     const response = await this.client.get('/health');
     return response.data;
   }
+
+  // Generic methods for custom endpoints
+  async get(endpoint: string, config?: Record<string, any>) {
+    const response = await this.client.get(endpoint, config);
+    return response;
+  }
+
+  async post(endpoint: string, data?: any, config?: Record<string, any>) {
+    const response = await this.client.post(endpoint, data, config);
+    return response;
+  }
+
+  async put(endpoint: string, data?: any, config?: Record<string, any>) {
+    const response = await this.client.put(endpoint, data, config);
+    return response;
+  }
+
+  async delete(endpoint: string, config?: Record<string, any>) {
+    const response = await this.client.delete(endpoint, config);
+    return response;
+  }
 }
 
 export const apiClient = new ApiClient();

@@ -100,6 +100,8 @@ class Alert(db.Model):
     message = db.Column(db.String(500), nullable=False)
     value = db.Column(db.Float)
     status = db.Column(db.String(50), default='nouvelle')  # 'nouvelle', 'reconnue', 'résolue'
+    acknowledged_at = db.Column(db.DateTime)
+    resolved_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def to_dict(self):
@@ -112,7 +114,44 @@ class Alert(db.Model):
             'message': self.message,
             'value': self.value,
             'status': self.status,
-            'timestamp': self.created_at.isoformat()
+            'timestamp': self.created_at.isoformat(),
+            'acknowledgedAt': self.acknowledged_at.isoformat() if self.acknowledged_at else None,
+            'resolvedAt': self.resolved_at.isoformat() if self.resolved_at else None
+        }
+
+
+class AlertHistory(db.Model):
+    __tablename__ = 'alert_history'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    alert_type = db.Column(db.String(50), nullable=False)  # 'avertissement', 'critique', 'info'
+    metric = db.Column(db.String(100), nullable=False)  # 'co2', 'temperature', 'humidity'
+    metric_value = db.Column(db.Float, nullable=False)
+    threshold_value = db.Column(db.Float)
+    message = db.Column(db.String(500), nullable=False)
+    status = db.Column(db.String(50), default='triggered')  # 'triggered', 'acknowledged', 'resolved'
+    acknowledged_at = db.Column(db.DateTime)
+    resolved_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        sensor = Sensor.query.get(self.sensor_id)
+        return {
+            'id': str(self.id),
+            'sensorId': str(self.sensor_id),
+            'sensorName': sensor.name if sensor else 'Unknown',
+            'sensorLocation': sensor.location if sensor else 'Unknown',
+            'alertType': self.alert_type,
+            'metric': self.metric,
+            'metricValue': self.metric_value,
+            'thresholdValue': self.threshold_value,
+            'message': self.message,
+            'status': self.status,
+            'createdAt': self.created_at.isoformat(),
+            'acknowledgedAt': self.acknowledged_at.isoformat() if self.acknowledged_at else None,
+            'resolvedAt': self.resolved_at.isoformat() if self.resolved_at else None
         }
 
 

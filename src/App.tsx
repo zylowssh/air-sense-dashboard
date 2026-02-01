@@ -14,6 +14,7 @@ import Sensors from "./pages/Sensors";
 import SensorDetail from "./pages/SensorDetail";
 import SensorMap from "./pages/SensorMap";
 import Alerts from "./pages/Alerts";
+import AlertHistory from "./pages/AlertHistory";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/sensors/:sensorId" element={<SensorDetail />} />
               <Route path="/sensor-map" element={<SensorMap />} />
               <Route path="/alerts" element={<Alerts />} />
+              <Route path="/alert-history" element={<AlertHistory />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/maintenance" element={<Maintenance />} />
