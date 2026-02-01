@@ -1,78 +1,60 @@
 import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { apiClient } from '@/lib/apiClient';
 
-interface UserRole {
+interface User {
+  id: number;
+  email: string;
+  full_name?: string;
   role: 'admin' | 'user';
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Defer role fetching with setTimeout to avoid deadlock
-        if (session?.user) {
-          setTimeout(() => {
-            fetchUserRole(session.user.id);
-          }, 0);
-        } else {
-          setUserRole(null);
-        }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchUserRole(session.user.id);
-      }
+    // Check if user is already logged in
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      fetchCurrentUser();
+    } else {
       setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
   }, []);
 
-  const fetchUserRole = async (userId: string) => {
+  const fetchCurrentUser = async () => {
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching user role:', error);
-        setUserRole('user');
-        return;
-      }
-
-      setUserRole(data?.role as 'admin' | 'user' || 'user');
+      const currentUser = await apiClient.getCurrentUser();
+      setUser(currentUser);
     } catch (error) {
-      console.error('Error fetching user role:', error);
-      setUserRole('user');
+      console.error('Error fetching current user:', error);
+      // Clear invalid tokens
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setUserRole(null);
+    try {
+      await apiClient.logout();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      setUser(null);
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+    }
   };
 
-  const isAdmin = userRole === 'admin';
+  const isAdmin = user?.role === 'admin';
+  const userRole = user?.role || null;
+  const session = user ? { user } : null;
 
   return {
     user,
@@ -81,5 +63,6 @@ export const useAuth = () => {
     userRole,
     isAdmin,
     signOut,
+    refetch: fetchCurrentUser,
   };
 };

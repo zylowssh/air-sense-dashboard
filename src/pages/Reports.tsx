@@ -3,7 +3,6 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { motion } from 'framer-motion';
 import { FileText, Download, Calendar, Plus, Eye, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { generateMockSensors } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
 import { GenerateReportModal } from '@/components/widgets/GenerateReportModal';
 import {
@@ -15,9 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from 'sonner';
+import { useSensors } from '@/hooks/useSensors';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 
 const Reports = () => {
-  const sensors = generateMockSensors();
+  const { sensors, isLoading } = useSensors();
   const [generateReportOpen, setGenerateReportOpen] = useState(false);
 
   const reports = [

@@ -6,25 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { generateMockSensors, Sensor } from '@/lib/sensorData';
+import { Sensor } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { useSensors } from '@/hooks/useSensors';
 
 const SensorMap = () => {
-  const [sensors, setSensors] = useState<Sensor[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { sensors, isLoading } = useSensors();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSensors(generateMockSensors());
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
 
   const filteredSensors = sensors.filter(sensor => {
     const matchesSearch = sensor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -133,7 +125,7 @@ const SensorMap = () => {
         </motion.div>
 
         {/* Sensors Grid/List */}
-        {loading ? (
+        {isLoading ? (
           <LoadingSkeleton variant="sensor" count={6} />
         ) : (
           <div className={cn(
@@ -201,7 +193,7 @@ const SensorMap = () => {
           </div>
         )}
 
-        {filteredSensors.length === 0 && !loading && (
+        {filteredSensors.length === 0 && !isLoading && (
           <div className="text-center py-12">
             <Radio className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
             <p className="text-lg font-medium text-foreground">Aucun capteur trouvé</p>

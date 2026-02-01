@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Users, 
@@ -38,16 +38,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { UserRoleModal } from '@/components/widgets/UserRoleModal';
 import { InviteUserModal } from '@/components/widgets/InviteUserModal';
+import { apiClient } from '@/lib/apiClient';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { useToast } from '@/hooks/use-toast';
 
-// Mock data
-const mockUsers = [
-  { id: '1', name: 'Sarah Chen', email: 'sarah@aerium.io', role: 'admin', status: 'active', lastActive: '2 mins ago' },
-  { id: '2', name: 'Marcus Johnson', email: 'marcus@company.com', role: 'manager', status: 'active', lastActive: '15 mins ago' },
-  { id: '3', name: 'Emily Davis', email: 'emily@company.com', role: 'viewer', status: 'active', lastActive: '1 hour ago' },
-  { id: '4', name: 'Alex Thompson', email: 'alex@company.com', role: 'manager', status: 'inactive', lastActive: '3 days ago' },
-  { id: '5', name: 'Jordan Lee', email: 'jordan@company.com', role: 'viewer', status: 'active', lastActive: '30 mins ago' },
-];
-
+// Mock audit logs (would come from API in production)
 const mockAuditLogs = [
   { id: '1', user: 'Sarah Chen', action: 'Seuil de capteur mis à jour', target: 'Salle de réunion A', timestamp: '2 mins ago', type: 'settings' },
   { id: '2', user: 'Marcus Johnson', action: 'Alerte reconnue', target: 'Avertissement CO₂ élevé', timestamp: '15 mins ago', type: 'alert' },
@@ -95,14 +90,38 @@ const Admin = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [userRoleOpen, setUserRoleOpen] = useState(false);
   const [inviteUserOpen, setInviteUserOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  const filteredUsers = mockUsers.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  // Fetch users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersData = await apiClient.getAllUsers();
+        setUsers(usersData);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de charger les utilisateurs',
+          variant: 'destructive'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = users.filter(user =>
+    user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEditUser = (user: typeof mockUsers[0]) => {
+  const handleEditUser = (user: any) => {
     setSelectedUser(user);
     setUserRoleOpen(true);
   };
@@ -194,14 +213,17 @@ const Admin = () => {
                 </div>
               </CardHeader>
               <CardContent>
+                {isLoading ? (
+                  <LoadingSkeleton variant="table" count={5} />
+                ) : (
                 <div className="rounded-lg border border-border overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/50 hover:bg-muted/50">
                         <TableHead>Utilisateur</TableHead>
                         <TableHead>Rôle</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead>Dernière Activité</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Créé le</TableHead>
                         <TableHead className="w-12"></TableHead>
                       </TableRow>
                     </TableHeader>
@@ -212,11 +234,11 @@ const Admin = () => {
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                                 <span className="text-sm font-medium text-primary">
-                                  {user.name.split(' ').map(n => n[0]).join('')}
+                                  {user.full_name ? user.full_name.split(' ').map((n: string) => n[0]).join('') : user.email[0].toUpperCase()}
                                 </span>
                               </div>
                               <div>
-                                <p className="font-medium text-foreground">{user.name}</p>
+                                <p className="font-medium text-foreground">{user.full_name || 'Anonymous'}</p>
                                 <p className="text-sm text-muted-foreground">{user.email}</p>
                               </div>
                             </div>
@@ -226,12 +248,10 @@ const Admin = () => {
                               {user.role}
                             </Badge>
                           </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className={cn("capitalize", getStatusBadge(user.status))}>
-                              {user.status}
-                            </Badge>
+                          <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {new Date(user.created_at).toLocaleDateString('fr-FR')}
                           </TableCell>
-                          <TableCell className="text-muted-foreground">{user.lastActive}</TableCell>
                           <TableCell>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -243,7 +263,7 @@ const Admin = () => {
                                 <DropdownMenuItem onClick={() => handleEditUser(user)}>Modifier l'Utilisateur</DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handleEditUser(user)}>Changer le Rôle</DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive">
-                                  {user.status === 'active' ? 'Suspendre l\'Utilisateur' : 'Activer l\'Utilisateur'}
+                                  Supprimer l'Utilisateur
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -253,6 +273,7 @@ const Admin = () => {
                     </TableBody>
                   </Table>
                 </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

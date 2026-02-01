@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { GitCompare, Plus, X, TrendingUp, TrendingDown } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -6,18 +6,77 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { generateMockSensors, generate24HourData, getAirQualityLevel, Sensor } from '@/lib/sensorData';
+import { getAirQualityLevel, Sensor } from '@/lib/sensorData';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { useSensors } from '@/hooks/useSensors';
+import { apiClient } from '@/lib/apiClient';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--warning))', 'hsl(var(--success))'];
 
 const Comparison = () => {
-  const allSensors = generateMockSensors();
-  const [selectedSensors, setSelectedSensors] = useState<string[]>([allSensors[0]?.id || '']);
+  const { sensors, isLoading } = useSensors();
+  const [selectedSensors, setSelectedSensors] = useState<string[]>([]);
   const [metric, setMetric] = useState<'co2' | 'temperature' | 'humidity'>('co2');
+  const [comparisonData, setComparisonData] = useState<any[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(false);
+
+  // Initialize with first sensor when sensors load
+  useEffect(() => {
+    if (sensors.length > 0 && selectedSensors.length === 0) {
+      setSelectedSensors([sensors[0].id]);
+    }
+  }, [sensors]);
+
+  // Fetch comparison data when sensors or metric changes
+  useEffect(() => {
+    const fetchComparisonData = async () => {
+      if (selectedSensors.length === 0) return;
+
+      setIsLoadingData(true);
+      try {
+        // Fetch readings for all selected sensors
+        const readingsPromises = selectedSensors.map(sensorId =>
+          apiClient.getSensorReadings(sensorId, 24, 48)
+            .catch(() => [])
+        );
+        const allReadings = await Promise.all(readingsPromises);
+
+        // Group by timestamp
+        const timeMap = new Map<string, any>();
+        
+        allReadings.forEach((readings, sensorIndex) => {
+          const sensorId = selectedSensors[sensorIndex];
+          const sensor = sensors.find(s => s.id === sensorId);
+          
+          readings.forEach((reading: any) => {
+            const time = new Date(reading.recorded_at).toLocaleTimeString('fr-FR', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+            
+            if (!timeMap.has(time)) {
+              timeMap.set(time, { time });
+            }
+            
+            const entry = timeMap.get(time);
+            entry[sensor?.name || sensorId] = reading[metric];
+          });
+        });
+
+        setComparisonData(Array.from(timeMap.values()).slice(-24));
+      } catch (error) {
+        console.error('Error fetching comparison data:', error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchComparisonData();
+  }, [selectedSensors, metric, sensors]);
 
   const addSensor = () => {
-    const availableSensors = allSensors.filter(s => !selectedSensors.includes(s.id));
+    const availableSensors = sensors.filter(s => !selectedSensors.includes(s.id));
     if (availableSensors.length > 0 && selectedSensors.length < 4) {
       setSelectedSensors([...selectedSensors, availableSensors[0].id]);
     }
@@ -35,27 +94,6 @@ const Comparison = () => {
     setSelectedSensors(newSelected);
   };
 
-  // Generate comparison data
-  const comparisonData = Array.from({ length: 24 }, (_, i) => {
-    const hour = new Date();
-    hour.setHours(hour.getHours() - (23 - i));
-    
-    const dataPoint: Record<string, any> = {
-      time: hour.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    selectedSensors.forEach((sensorId, index) => {
-      const sensor = allSensors.find(s => s.id === sensorId);
-      if (sensor) {
-        const baseValue = metric === 'co2' ? sensor.co2 : metric === 'temperature' ? sensor.temperature : sensor.humidity;
-        const variation = (Math.random() - 0.5) * (metric === 'co2' ? 150 : metric === 'temperature' ? 2 : 10);
-        dataPoint[sensor.name] = Math.round((baseValue + variation + (i * (Math.random() - 0.5) * 10)) * 10) / 10;
-      }
-    });
-
-    return dataPoint;
-  });
-
   const getMetricLabel = () => {
     switch (metric) {
       case 'co2': return 'CO₂ (ppm)';
@@ -64,9 +102,13 @@ const Comparison = () => {
     }
   };
 
-  const getSensorStats = (sensor: Sensor) => {
-    const data = comparisonData;
-    const values = data.map(d => d[sensor.name]).filter(v => v !== undefined);
+  const getSensorStats = (sensorId: string) => {
+    const sensor = sensors.find(s => s.id === sensorId);
+    if (!sensor) return { avg: '0', min: '0', max: '0', trend: 0 };
+
+    const values = comparisonData.map(d => d[sensor.name]).filter(v => v !== undefined);
+    if (values.length === 0) return { avg: '0', min: '0', max: '0', trend: 0 };
+
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -74,6 +116,14 @@ const Comparison = () => {
 
     return { avg: avg.toFixed(1), min: min.toFixed(1), max: max.toFixed(1), trend };
   };
+
+  if (isLoading) {
+    return (
+      <AppLayout title="Comparaison" subtitle="Comparez les données de plusieurs capteurs">
+        <LoadingSkeleton variant="chart" count={2} />
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout title="Comparaison" subtitle="Comparez les données de plusieurs capteurs">
@@ -99,7 +149,7 @@ const Comparison = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {allSensors.map(sensor => (
+                      {sensors.map(sensor => (
                         <SelectItem 
                           key={sensor.id} 
                           value={sensor.id}
@@ -156,12 +206,15 @@ const Comparison = () => {
               <CardTitle>Évolution sur 24 Heures - {getMetricLabel()}</CardTitle>
             </CardHeader>
             <CardContent>
+              {isLoadingData ? (
+                <LoadingSkeleton variant="chart" />
+              ) : (
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={comparisonData}>
                     <defs>
                       {selectedSensors.map((sensorId, index) => {
-                        const sensor = allSensors.find(s => s.id === sensorId);
+                        const sensor = sensors.find(s => s.id === sensorId);
                         return sensor ? (
                           <linearGradient key={sensor.id} id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor={COLORS[index]} stopOpacity={0.3} />
@@ -182,7 +235,7 @@ const Comparison = () => {
                     />
                     <Legend />
                     {selectedSensors.map((sensorId, index) => {
-                      const sensor = allSensors.find(s => s.id === sensorId);
+                      const sensor = sensors.find(s => s.id === sensorId);
                       return sensor ? (
                         <Area
                           key={sensor.id}
@@ -197,6 +250,7 @@ const Comparison = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -204,10 +258,10 @@ const Comparison = () => {
         {/* Sensor Stats Comparison */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {selectedSensors.map((sensorId, index) => {
-            const sensor = allSensors.find(s => s.id === sensorId);
+            const sensor = sensors.find(s => s.id === sensorId);
             if (!sensor) return null;
             
-            const stats = getSensorStats(sensor);
+            const stats = getSensorStats(sensorId);
             const quality = getAirQualityLevel(sensor.co2);
 
             return (

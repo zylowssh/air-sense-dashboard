@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import { apiClient } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,19 +33,11 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate('/dashboard');
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/dashboard');
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    // Check if user is already logged in
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      navigate('/dashboard');
+    }
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -66,26 +58,16 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
-
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Email ou mot de passe incorrect');
-        } else if (error.message.includes('Email not confirmed')) {
-          toast.error('Veuillez confirmer votre email avant de vous connecter');
-        } else {
-          toast.error(error.message);
-        }
-        return;
-      }
-
+      await apiClient.login(loginEmail, loginPassword);
       toast.success('Connexion réussie !');
-      navigate('/dashboard');
-    } catch (error) {
-      toast.error('Une erreur est survenue');
+      window.location.href = '/dashboard';
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.error || 'Une erreur est survenue';
+      if (errorMsg.includes('Invalid login credentials')) {
+        toast.error('Email ou mot de passe incorrect');
+      } else {
+        toast.error(errorMsg);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -113,31 +95,18 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: signupFullName,
-          }
-        }
-      });
-
-      if (error) {
-        if (error.message.includes('already registered')) {
-          toast.error('Cet email est déjà utilisé');
-        } else {
-          toast.error(error.message);
-        }
-        return;
+      await apiClient.register(signupEmail, signupPassword, signupFullName);
+      toast.success('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
+      // Auto-login after registration
+      await apiClient.login(signupEmail, signupPassword);
+      window.location.href = '/dashboard';
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.error || 'Une erreur est survenue';
+      if (errorMsg.includes('already registered')) {
+        toast.error('Cet email est déjà utilisé');
+      } else {
+        toast.error(errorMsg);
       }
-
-      toast.success('Compte créé ! Vérifiez votre email pour confirmer votre inscription.');
-    } catch (error) {
-      toast.error('Une erreur est survenue');
     } finally {
       setIsLoading(false);
     }
@@ -145,6 +114,21 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      {/* Demo Credentials Banner */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-2 text-sm">
+          <p className="text-center font-medium text-foreground mb-1">🎯 Demo Accounts Available</p>
+          <div className="flex gap-6 text-xs text-muted-foreground">
+            <div>
+              <strong>User:</strong> demo@aerium.app / demo123
+            </div>
+            <div>
+              <strong>Admin:</strong> admin@aerium.app / admin123
+            </div>
+          </div>
+        </div>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -2,52 +2,86 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { motion } from 'framer-motion';
 import { Bell, CheckCircle, AlertTriangle, XCircle, Clock, Filter, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { generateMockAlerts, Alert } from '@/lib/sensorData';
+import { Alert } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { apiClient } from '@/lib/apiClient';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const Alerts = () => {
-  const [alerts, setAlerts] = useState<Alert[]>(() => [
-    ...generateMockAlerts(),
-    {
-      id: 'alert-3',
-      sensorId: 'sensor-1',
-      sensorName: 'Main Office',
-      type: 'critique',
-      message: 'Critical CO₂ level exceeded',
-      value: 1250,
-      timestamp: new Date(Date.now() - 15 * 60 * 1000),
-      status: 'reconnue'
-    },
-    {
-      id: 'alert-4',
-      sensorId: 'sensor-2',
-      sensorName: 'Meeting Room Alpha',
-      type: 'info',
-      message: 'Sensor back online',
-      value: 650,
-      timestamp: new Date(Date.now() - 45 * 60 * 1000),
-      status: 'résolue'
-    }
-  ]);
-
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'nouvelle' | 'reconnue' | 'résolue'>('all');
+  const { toast } = useToast();
+
+  // Fetch alerts
+  useEffect(() => {
+    fetchAlerts();
+    // Poll for new alerts every 10 seconds
+    const interval = setInterval(fetchAlerts, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchAlerts = async () => {
+    try {
+      const alertsData = await apiClient.getAlerts(undefined, 100);
+      setAlerts(alertsData);
+    } catch (error) {
+      console.error('Error fetching alerts:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les alertes',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredAlerts = alerts.filter(alert => 
     filter === 'all' ? true : alert.status === filter
   );
 
-  const acknowledgeAlert = (id: string) => {
-    setAlerts(prev => prev.map(a => 
-      a.id === id ? { ...a, status: 'reconnue' as const } : a
-    ));
+  const acknowledgeAlert = async (id: string) => {
+    try {
+      await apiClient.updateAlertStatus(id, 'reconnue');
+      setAlerts(prev => prev.map(a => 
+        a.id === id ? { ...a, status: 'reconnue' as const } : a
+      ));
+      toast({
+        title: 'Alerte reconnue',
+        description: 'L\'alerte a été marquée comme reconnue'
+      });
+    } catch (error) {
+      console.error('Error acknowledging alert:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de reconnaître l\'alerte',
+        variant: 'destructive'
+      });
+    }
   };
 
-  const resolveAlert = (id: string) => {
-    setAlerts(prev => prev.map(a => 
-      a.id === id ? { ...a, status: 'résolue' as const } : a
-    ));
+  const resolveAlert = async (id: string) => {
+    try {
+      await apiClient.updateAlertStatus(id, 'résolue');
+      setAlerts(prev => prev.map(a => 
+        a.id === id ? { ...a, status: 'résolue' as const } : a
+      ));
+      toast({
+        title: 'Alerte résolue',
+        description: 'L\'alerte a été marquée comme résolue'
+      });
+    } catch (error) {
+      console.error('Error resolving alert:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de résoudre l\'alerte',
+        variant: 'destructive'
+      });
+    }
   };
 
   const getAlertIcon = (type: Alert['type']) => {
@@ -99,28 +133,32 @@ const Alerts = () => {
           </Button>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[
-            { label: 'Total des Alertes', value: alerts.length, icon: Bell },
-            { label: 'Nouvelles', value: alerts.filter(a => a.status === 'nouvelle').length, color: 'text-destructive' },
-            { label: 'Reconnues', value: alerts.filter(a => a.status === 'reconnue').length, color: 'text-warning' },
-            { label: 'Résolues', value: alerts.filter(a => a.status === 'résolue').length, color: 'text-success' }
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * index }}
-              className="p-4 rounded-xl bg-card border border-border"
-            >
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-              <p className={cn("text-2xl font-bold mt-1", stat.color || 'text-foreground')}>
-                {stat.value}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+        {isLoading ? (
+          <LoadingSkeleton variant="list" count={5} />
+        ) : (
+          <>
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {[
+                { label: 'Total des Alertes', value: alerts.length, icon: Bell },
+                { label: 'Nouvelles', value: alerts.filter(a => a.status === 'nouvelle').length, color: 'text-destructive' },
+                { label: 'Reconnues', value: alerts.filter(a => a.status === 'reconnue').length, color: 'text-warning' },
+                { label: 'Résolues', value: alerts.filter(a => a.status === 'résolue').length, color: 'text-success' }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 * index }}
+                  className="p-4 rounded-xl bg-card border border-border"
+                >
+                  <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  <p className={cn("text-2xl font-bold mt-1", stat.color || 'text-foreground')}>
+                    {stat.value}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
 
         {/* Alerts List */}
         <div className="space-y-3">
@@ -181,7 +219,7 @@ const Alerts = () => {
                     <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5" />
-                        {formatDistanceToNow(alert.timestamp, { addSuffix: true })}
+                        {formatDistanceToNow(new Date(alert.timestamp), { addSuffix: true })}
                       </span>
                       <span className={cn(
                         "px-2 py-0.5 rounded-full border",
@@ -200,6 +238,8 @@ const Alerts = () => {
             );
           })}
         </div>
+          </>
+        )}
       </div>
     </AppLayout>
   );

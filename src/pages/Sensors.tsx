@@ -2,10 +2,13 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { motion } from 'framer-motion';
 import { Plus, Radio, MapPin, Battery, Edit, Trash2, MoreHorizontal, Grid, List, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { generateMockSensors, Sensor } from '@/lib/sensorData';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { useSensors } from '@/hooks/useSensors';
+import { Sensor } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AddSensorDialog from '@/components/sensors/AddSensorDialog';
 import {
   Table,
   TableBody,
@@ -22,8 +25,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Sensors = () => {
-  const [sensors] = useState<Sensor[]>(generateMockSensors());
+  const { sensors, isLoading } = useSensors();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const StatusBadge = ({ status }: { status: Sensor['status'] }) => {
@@ -89,13 +93,19 @@ const Sensors = () => {
                 <List className="w-4 h-4" />
               </button>
             </div>
-
-            <Button size="sm" className="gap-2 gradient-primary text-primary-foreground">
+            <Button 
+              size="sm" 
+              className="gap-2 gradient-primary text-primary-foreground"
+              onClick={() => setIsAddDialogOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               Ajouter un Capteur
             </Button>
           </div>
         </div>
+
+        {/* Add Sensor Dialog */}
+        <AddSensorDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} />
 
         {/* Sensors Table */}
         <motion.div
@@ -103,6 +113,9 @@ const Sensors = () => {
           animate={{ opacity: 1, y: 0 }}
           className="rounded-xl border border-border bg-card overflow-hidden"
         >
+          {isLoading ? (
+            <LoadingSkeleton variant="table" count={5} />
+          ) : (
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
@@ -117,7 +130,20 @@ const Sensors = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sensors.map((sensor, index) => (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center">
+                    Chargement des capteurs...
+                  </TableCell>
+                </TableRow>
+              ) : sensors.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center text-muted-foreground">
+                    Aucun capteur trouvé. Cliquez sur "Ajouter un Capteur" pour commencer.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sensors.map((sensor, index) => (
                 <TableRow 
                   key={sensor.id} 
                   className="border-border hover:bg-muted/30 cursor-pointer"
@@ -191,9 +217,11 @@ const Sensors = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
+          )}
         </motion.div>
 
         {/* Summary Stats */}
