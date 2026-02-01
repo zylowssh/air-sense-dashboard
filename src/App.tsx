@@ -4,8 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SettingsProvider } from "./contexts/SettingsContext";
+import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
+import Comparison from "./pages/Comparison";
 import Sensors from "./pages/Sensors";
 import SensorDetail from "./pages/SensorDetail";
 import SensorMap from "./pages/SensorMap";
@@ -27,8 +29,10 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/comparison" element={<Comparison />} />
             <Route path="/sensors" element={<Sensors />} />
             <Route path="/sensors/:sensorId" element={<SensorDetail />} />
             <Route path="/sensor-map" element={<SensorMap />} />
