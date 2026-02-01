@@ -62,7 +62,7 @@ const NotFound = () => {
           <div className="mt-8 pt-6 border-t border-border">
             <Link to="/" className="flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <div className="w-6 h-6 rounded overflow-hidden flex items-center justify-center">
-                <img src="/logo.png" alt="Aerium Logo" className="w-full h-full object-cover" />
+                <img src="/logo.png" alt="Aerium Logo" className="w-full h-full object-fill" />
               </div>
               <span className="font-semibold">Aerium</span>
             </Link>

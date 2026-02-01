@@ -142,7 +142,7 @@ const Auth = () => {
           </Link>
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-xl overflow-hidden">
-              <img src="/logo.png" alt="Aerium" className="w-full h-full object-cover" />
+              <img src="/logo.png" alt="Aerium" className="w-full h-full object-fill" />
             </div>
             <span className="text-2xl font-bold text-foreground">Aerium</span>
           </div>

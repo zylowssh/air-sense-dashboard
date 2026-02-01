@@ -51,7 +51,7 @@ export function MobileNav() {
         <SheetHeader className="p-4 border-b border-border">
           <SheetTitle className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg overflow-hidden">
-              <img src="/logo.png" alt="Aerium" className="w-full h-full object-cover" />
+              <img src="/logo.png" alt="Aerium" className="w-full h-full object-fill" />
             </div>
             <span className="text-lg font-semibold">Aerium</span>
           </SheetTitle>

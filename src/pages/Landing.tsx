@@ -84,7 +84,7 @@ const Landing = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg overflow-hidden">
-                <img src="/logo.png" alt="Aerium" className="w-full h-full object-cover" />
+                <img src="/logo.png" alt="Aerium" className="w-full h-full object-fill" />
               </div>
               <span className="text-xl font-bold text-foreground">Aerium</span>
             </div>
@@ -273,7 +273,7 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg overflow-hidden">
-                <img src="/logo.png" alt="Aerium" className="w-full h-full object-cover" />
+                <img src="/logo.png" alt="Aerium" className="w-full h-full object-fill" />
               </div>
               <span className="font-semibold text-foreground">Aerium</span>
             </div>
