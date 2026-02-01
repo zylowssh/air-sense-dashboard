@@ -2,13 +2,16 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from database import db, Sensor, SensorReading, User
 from datetime import datetime
+from audit_logger import log_action
+import logging
 
 sensors_bp = Blueprint('sensors', __name__)
+logger = logging.getLogger(__name__)
 
 @sensors_bp.route('', methods=['GET'])
 @jwt_required()
 def get_sensors():
-    """Get all sensors for the current user"""
+    """Get all sensors for the current user with optional filtering and search"""
     try:
         current_user_id = get_jwt_identity()
         
@@ -21,18 +24,70 @@ def get_sensors():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         
+        # Get query parameters for filtering and search
+        search = request.args.get('search', '').strip()
+        status = request.args.get('status')  # 'en ligne', 'avertissement', 'offline'
+        sensor_type = request.args.get('type')
+        is_active = request.args.get('active')
+        sort_by = request.args.get('sort', 'name')  # 'name', 'updated_at', 'status'
+        limit = request.args.get('limit', 100, type=int)
+        
         # Admin can see all sensors, regular users only their own
         if user.role == 'admin':
-            sensors = Sensor.query.all()
+            query = Sensor.query
         else:
-            sensors = Sensor.query.filter_by(user_id=current_user_id).all()
+            query = Sensor.query.filter_by(user_id=current_user_id)
+        
+        # Apply search filter
+        if search:
+            query = query.filter(
+                db.or_(
+                    Sensor.name.ilike(f'%{search}%'),
+                    Sensor.location.ilike(f'%{search}%'),
+                    Sensor.external_id.ilike(f'%{search}%')
+                )
+            )
+        
+        # Apply status filter
+        if status:
+            query = query.filter_by(status=status)
+        
+        # Apply sensor type filter
+        if sensor_type:
+            query = query.filter_by(sensor_type=sensor_type)
+        
+        # Apply active status filter
+        if is_active is not None:
+            is_active_bool = is_active.lower() == 'true'
+            query = query.filter_by(is_active=is_active_bool)
+        
+        # Apply sorting
+        if sort_by == 'updated_at':
+            query = query.order_by(Sensor.updated_at.desc())
+        elif sort_by == 'status':
+            query = query.order_by(Sensor.status)
+        else:  # default: name
+            query = query.order_by(Sensor.name)
+        
+        sensors = query.limit(limit).all()
         
         # Include latest readings for each sensor
         sensors_data = [sensor.to_dict(include_latest_reading=True) for sensor in sensors]
         
-        return jsonify({'sensors': sensors_data}), 200
+        return jsonify({
+            'sensors': sensors_data,
+            'count': len(sensors_data),
+            'filters': {
+                'search': search,
+                'status': status,
+                'type': sensor_type,
+                'active': is_active,
+                'sort': sort_by
+            }
+        }), 200
         
     except Exception as e:
+        logger.error(f"Error fetching sensors: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -97,6 +152,13 @@ def create_sensor():
         db.session.add(new_sensor)
         db.session.commit()
         
+        # Log the action
+        log_action(current_user_id, 'CREATE', 'SENSOR', resource_id=new_sensor.id, details={
+            'name': name,
+            'location': location,
+            'sensor_type': sensor_type
+        })
+        
         return jsonify({
             'message': 'Sensor created successfully',
             'sensor': new_sensor.to_dict()
@@ -104,6 +166,7 @@ def create_sensor():
         
     except Exception as e:
         db.session.rollback()
+        logger.error(f"Error creating sensor: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -145,6 +208,10 @@ def update_sensor(sensor_id):
             sensor.is_live = data['is_live']
         
         sensor.updated_at = datetime.utcnow()
+        
+        # Log the action
+        log_action(current_user_id, 'UPDATE', 'SENSOR', resource_id=sensor_id, details=data)
+        
         db.session.commit()
         
         return jsonify({
@@ -154,6 +221,7 @@ def update_sensor(sensor_id):
         
     except Exception as e:
         db.session.rollback()
+        logger.error(f"Error updating sensor: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -178,6 +246,12 @@ def delete_sensor(sensor_id):
         # Check ownership unless admin
         if user.role != 'admin' and sensor.user_id != current_user_id:
             return jsonify({'error': 'Unauthorized access to this sensor'}), 403
+        
+        # Log the action before deletion
+        log_action(current_user_id, 'DELETE', 'SENSOR', resource_id=sensor_id, details={
+            'name': sensor.name,
+            'location': sensor.location
+        })
         
         db.session.delete(sensor)
         db.session.commit()

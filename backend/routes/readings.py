@@ -1,9 +1,13 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from database import db, SensorReading, Sensor, User
+from database import db, SensorReading, Sensor, User, Alert, AlertHistory
 from datetime import datetime, timedelta
+from email_service import send_alert_email
+from audit_logger import log_action
+import logging
 
 readings_bp = Blueprint('readings', __name__)
+logger = logging.getLogger(__name__)
 
 @readings_bp.route('/sensor/<int:sensor_id>', methods=['GET'])
 @jwt_required()
@@ -89,6 +93,9 @@ def add_reading():
         
         db.session.add(new_reading)
         
+        # Check thresholds and trigger alerts
+        check_thresholds(sensor, current_user_id, co2, temperature, humidity)
+        
         # Update sensor status based on CO2 levels
         if co2 > 1200:
             sensor.status = 'avertissement'
@@ -99,6 +106,9 @@ def add_reading():
         
         db.session.commit()
         
+        # Log the action
+        log_action(current_user_id, 'CREATE', 'READING', resource_id=new_reading.id)
+        
         return jsonify({
             'message': 'Reading added successfully',
             'reading': new_reading.to_dict()
@@ -106,7 +116,75 @@ def add_reading():
         
     except Exception as e:
         db.session.rollback()
+        logger.error(f"Error adding reading: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+
+def check_thresholds(sensor, user_id, co2, temperature, humidity):
+    """Check if readings exceed configured thresholds and trigger alerts"""
+    try:
+        # Get configured thresholds
+        co2_threshold = current_app.config.get('ALERT_CO2_THRESHOLD', 1200)
+        temp_min = current_app.config.get('ALERT_TEMP_MIN', 15)
+        temp_max = current_app.config.get('ALERT_TEMP_MAX', 28)
+        humidity_threshold = current_app.config.get('ALERT_HUMIDITY_THRESHOLD', 80)
+        
+        user = User.query.get(user_id)
+        
+        # Check CO2 levels
+        if co2 > co2_threshold:
+            send_threshold_alert(
+                sensor, user, 'High CO2', f'CO2 level {co2} ppm exceeds threshold {co2_threshold} ppm',
+                co2, co2_threshold
+            )
+        
+        # Check temperature
+        if temperature < temp_min or temperature > temp_max:
+            threshold = temp_min if temperature < temp_min else temp_max
+            send_threshold_alert(
+                sensor, user, f'Temperature Alert', f'Temperature {temperature}°C outside range',
+                temperature, threshold
+            )
+        
+        # Check humidity
+        if humidity > humidity_threshold:
+            send_threshold_alert(
+                sensor, user, 'High Humidity', f'Humidity level {humidity}% exceeds threshold {humidity_threshold}%',
+                humidity, humidity_threshold
+            )
+    
+    except Exception as e:
+        logger.error(f"Error checking thresholds: {str(e)}")
+
+
+def send_threshold_alert(sensor, user, alert_type, message, value, threshold):
+    """Send alert when threshold is exceeded"""
+    try:
+        # Create alert history record
+        alert_history = AlertHistory(
+            user_id=user.id,
+            sensor_id=sensor.id,
+            alert_type=alert_type.lower().replace(' ', '_'),
+            message=message,
+            status='triggered'
+        )
+        db.session.add(alert_history)
+        db.session.commit()
+        
+        # Send email notification if enabled
+        if current_app.config.get('ENABLE_EMAIL_NOTIFICATIONS') and user.email:
+            send_alert_email(
+                to_email=user.email,
+                sensor_name=sensor.name,
+                alert_type=alert_type,
+                alert_value=value,
+                threshold=threshold
+            )
+        
+        logger.info(f"Alert triggered for sensor {sensor.id}: {alert_type}")
+    
+    except Exception as e:
+        logger.error(f"Error sending threshold alert: {str(e)}")
 
 
 @readings_bp.route('/aggregate', methods=['GET'])
