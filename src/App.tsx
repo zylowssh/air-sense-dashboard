@@ -8,10 +8,13 @@ import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Sensors from "./pages/Sensors";
 import SensorDetail from "./pages/SensorDetail";
+import SensorMap from "./pages/SensorMap";
 import Alerts from "./pages/Alerts";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
+import Recommendations from "./pages/Recommendations";
+import Maintenance from "./pages/Maintenance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,8 +31,11 @@ const App = () => (
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/sensors" element={<Sensors />} />
             <Route path="/sensors/:sensorId" element={<SensorDetail />} />
+            <Route path="/sensor-map" element={<SensorMap />} />
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/recommendations" element={<Recommendations />} />
+            <Route path="/maintenance" element={<Maintenance />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, ChevronLeft, ChevronRight, ShieldCheck, MapPin, Lightbulb, Wrench } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -7,8 +7,11 @@ const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Tableau de Bord' },
   { to: '/analytics', icon: BarChart3, label: 'Analyses' },
   { to: '/sensors', icon: Radio, label: 'Capteurs' },
+  { to: '/sensor-map', icon: MapPin, label: 'Carte' },
   { to: '/alerts', icon: Bell, label: 'Alertes' },
   { to: '/reports', icon: FileText, label: 'Rapports' },
+  { to: '/recommendations', icon: Lightbulb, label: 'Recommandations' },
+  { to: '/maintenance', icon: Wrench, label: 'Maintenance' },
   { to: '/admin', icon: ShieldCheck, label: 'Admin' },
   { to: '/settings', icon: Settings, label: 'Paramètres' },
 ];

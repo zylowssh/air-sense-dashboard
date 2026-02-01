@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { motion } from 'framer-motion';
 import { FileText, Download, Calendar, Plus, Eye, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMockSensors } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
+import { GenerateReportModal } from '@/components/widgets/GenerateReportModal';
 import {
   Table,
   TableBody,
@@ -12,16 +14,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from 'sonner';
 
 const Reports = () => {
   const sensors = generateMockSensors();
+  const [generateReportOpen, setGenerateReportOpen] = useState(false);
 
   const reports = [
-    { id: 1, name: 'Weekly Air Quality Summary', date: 'Jan 22, 2026', type: 'Automated', status: 'Ready' },
-    { id: 2, name: 'Monthly Compliance Report', date: 'Jan 1, 2026', type: 'Automated', status: 'Ready' },
-    { id: 3, name: 'Q4 2025 Analysis', date: 'Dec 31, 2025', type: 'Custom', status: 'Ready' },
-    { id: 4, name: 'Server Room Audit', date: 'Jan 15, 2026', type: 'Custom', status: 'Processing' }
+    { id: 1, name: 'Résumé Hebdomadaire Qualité de l\'Air', date: '22 Jan 2026', type: 'Automatisé', status: 'Prêt' },
+    { id: 2, name: 'Rapport de Conformité Mensuel', date: '1 Jan 2026', type: 'Automatisé', status: 'Prêt' },
+    { id: 3, name: 'Analyse T4 2025', date: '31 Déc 2025', type: 'Personnalisé', status: 'Prêt' },
+    { id: 4, name: 'Audit Salle Serveur', date: '15 Jan 2026', type: 'Personnalisé', status: 'En cours' }
   ];
+
+  const handleDownload = (reportName: string) => {
+    toast.success('Téléchargement lancé', {
+      description: `${reportName} est en cours de téléchargement.`,
+    });
+  };
+
+  const handleExport = (sensorName: string) => {
+    toast.success('Export lancé', {
+      description: `Données de ${sensorName} en cours d'export.`,
+    });
+  };
 
   return (
     <AppLayout title="Rapports" subtitle="Générer et exporter des rapports de qualité de l'air">
@@ -36,7 +52,7 @@ const Reports = () => {
             <Button variant="outline" size="sm">Tous les Rapports</Button>
           </div>
 
-          <Button size="sm" className="gap-2 gradient-primary text-primary-foreground">
+          <Button size="sm" className="gap-2 gradient-primary text-primary-foreground" onClick={() => setGenerateReportOpen(true)}>
             <Plus className="w-4 h-4" />
             Nouveau Rapport
           </Button>
@@ -98,7 +114,7 @@ const Reports = () => {
                   <TableCell>
                     <span className={cn(
                       "text-xs px-2 py-0.5 rounded-full",
-                      report.type === 'Automated' 
+                      report.type === 'Automatisé' 
                         ? 'bg-primary/10 text-primary' 
                         : 'bg-muted text-muted-foreground'
                     )}>
@@ -108,7 +124,7 @@ const Reports = () => {
                   <TableCell>
                     <span className={cn(
                       "text-xs px-2 py-0.5 rounded-full",
-                      report.status === 'Ready' 
+                      report.status === 'Prêt' 
                         ? 'bg-success/10 text-success' 
                         : 'bg-warning/10 text-warning'
                     )}>
@@ -116,9 +132,15 @@ const Reports = () => {
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm" className="gap-1.5" disabled={report.status !== 'Ready'}>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-1.5" 
+                      disabled={report.status !== 'Prêt'}
+                      onClick={() => handleDownload(report.name)}
+                    >
                       <Download className="w-3.5 h-3.5" />
-                      Download
+                      Télécharger
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -176,8 +198,13 @@ const Reports = () => {
                     <span className="text-muted-foreground">%</span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm" className="gap-1.5 gradient-primary text-primary-foreground border-0">
-                      Export
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-1.5 gradient-primary text-primary-foreground border-0"
+                      onClick={() => handleExport(sensor.name)}
+                    >
+                      Exporter
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -185,6 +212,8 @@ const Reports = () => {
             </TableBody>
           </Table>
         </motion.div>
+
+        <GenerateReportModal open={generateReportOpen} onOpenChange={setGenerateReportOpen} />
       </div>
     </AppLayout>
   );
