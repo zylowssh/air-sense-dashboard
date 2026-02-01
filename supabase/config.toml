@@ -1,1 +1,7 @@
 project_id = "sqmllvsasvmvqhmpwfdz"
+
+[functions.sensor-websocket]
+verify_jwt = false
+
+[functions.simulate-sensor]
+verify_jwt = false

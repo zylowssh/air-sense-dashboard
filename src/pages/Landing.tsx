@@ -11,9 +11,11 @@ import {
   CheckCircle2,
   Leaf,
   Building2,
-  Users
+  Users,
+  LogIn
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import VideoSection from '@/components/landing/VideoSection';
 
 const features = [
   {
@@ -87,10 +89,13 @@ const Landing = () => {
               <span className="text-xl font-bold text-foreground">Aerium</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link to="/dashboard">
-                <Button variant="ghost">Tableau de Bord</Button>
+              <Link to="/auth">
+                <Button variant="ghost" className="gap-2">
+                  <LogIn className="w-4 h-4" />
+                  Connexion
+                </Button>
               </Link>
-              <Link to="/dashboard">
+              <Link to="/auth">
                 <Button className="gradient-primary text-primary-foreground">
                   Commencer
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -124,15 +129,15 @@ const Landing = () => {
               de vos espaces en temps réel pour un environnement plus sain.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/dashboard">
+              <Link to="/auth">
                 <Button size="lg" className="gradient-primary text-primary-foreground px-8">
-                  Accéder au Tableau de Bord
+                  Créer un Compte
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Link to="/sensors">
+              <Link to="/auth">
                 <Button size="lg" variant="outline" className="px-8">
-                  Voir les Capteurs
+                  Se Connecter
                 </Button>
               </Link>
             </div>
@@ -156,6 +161,9 @@ const Landing = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Video Section */}
+      <VideoSection />
 
       {/* Features Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
@@ -235,7 +243,7 @@ const Landing = () => {
             Commencez dès maintenant à surveiller la qualité de l'air de vos espaces.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button size="lg" className="gradient-primary text-primary-foreground px-8">
                 Démarrer Maintenant
                 <ArrowRight className="w-5 h-5 ml-2" />
