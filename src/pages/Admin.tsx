@@ -36,6 +36,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { UserRoleModal } from '@/components/widgets/UserRoleModal';
+import { InviteUserModal } from '@/components/widgets/InviteUserModal';
 
 // Mock data
 const mockUsers = [
@@ -91,11 +93,19 @@ const getActionIcon = (type: string) => {
 
 const Admin = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [userRoleOpen, setUserRoleOpen] = useState(false);
+  const [inviteUserOpen, setInviteUserOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
 
   const filteredUsers = mockUsers.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleEditUser = (user: typeof mockUsers[0]) => {
+    setSelectedUser(user);
+    setUserRoleOpen(true);
+  };
 
   return (
     <AppLayout>
@@ -176,7 +186,7 @@ const Admin = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
-                    <Button className="gap-2">
+                    <Button className="gap-2" onClick={() => setInviteUserOpen(true)}>
                       <UserPlus className="w-4 h-4" />
                       <span className="hidden sm:inline">Ajouter un Utilisateur</span>
                     </Button>
@@ -230,8 +240,8 @@ const Admin = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem>Modifier l'Utilisateur</DropdownMenuItem>
-                                <DropdownMenuItem>Changer le Rôle</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleEditUser(user)}>Modifier l'Utilisateur</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleEditUser(user)}>Changer le Rôle</DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive">
                                   {user.status === 'active' ? 'Suspendre l\'Utilisateur' : 'Activer l\'Utilisateur'}
                                 </DropdownMenuItem>
@@ -247,15 +257,14 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          {/* Audit Logs Tab */}
           <TabsContent value="audit">
             <Card className="bg-card border-border">
               <CardHeader className="pb-4">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between">
-                  <CardTitle className="text-lg">Audit Logs</CardTitle>
+                  <CardTitle className="text-lg">Journaux d'Audit</CardTitle>
                   <Button variant="outline" className="gap-2">
                     <Filter className="w-4 h-4" />
-                    Filter
+                    Filtrer
                   </Button>
                 </div>
               </CardHeader>
@@ -287,6 +296,13 @@ const Admin = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <UserRoleModal 
+          open={userRoleOpen} 
+          onOpenChange={setUserRoleOpen}
+          user={selectedUser ? { id: selectedUser.id, name: selectedUser.name, email: selectedUser.email, role: selectedUser.role } : undefined}
+        />
+        <InviteUserModal open={inviteUserOpen} onOpenChange={setInviteUserOpen} />
       </div>
     </AppLayout>
   );
