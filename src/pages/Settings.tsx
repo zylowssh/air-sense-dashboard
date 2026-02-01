@@ -1,16 +1,18 @@
 import { AppLayout } from '@/components/layout/AppLayout';
 import { motion } from 'framer-motion';
-import { Building, Bell, Shield, Users, Plug, Palette, Moon, Sun, Save } from 'lucide-react';
+import { Building, Bell, Users, Plug, Palette, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTheme } from '@/hooks/useTheme';
+import { useSettings } from '@/contexts/SettingsContext';
 import { cn } from '@/lib/utils';
 
 const Settings = () => {
   const { theme, toggleTheme } = useTheme();
+  const { compactMode, setCompactMode, animationsEnabled, setAnimationsEnabled } = useSettings();
 
   return (
     <AppLayout title="Paramètres" subtitle="Gérer votre organisation et vos préférences">
@@ -203,7 +205,7 @@ const Settings = () => {
                       <p className="font-medium text-foreground">Mode Compact</p>
                       <p className="text-sm text-muted-foreground">Réduire l'espacement pour plus de densité de données</p>
                     </div>
-                    <Switch />
+                    <Switch checked={compactMode} onCheckedChange={setCompactMode} />
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -211,7 +213,7 @@ const Settings = () => {
                       <p className="font-medium text-foreground">Afficher les Animations</p>
                       <p className="text-sm text-muted-foreground">Activer les transitions et effets fluides</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch checked={animationsEnabled} onCheckedChange={setAnimationsEnabled} />
                   </div>
                 </div>
               </div>
