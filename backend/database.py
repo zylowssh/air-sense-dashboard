@@ -106,7 +106,7 @@ class Alert(db.Model):
     
     def to_dict(self):
         sensor = Sensor.query.get(self.sensor_id)
-        return {
+        result = {
             'id': str(self.id),
             'sensorId': str(self.sensor_id),
             'sensorName': sensor.name if sensor else 'Unknown',
@@ -114,10 +114,14 @@ class Alert(db.Model):
             'message': self.message,
             'value': self.value,
             'status': self.status,
-            'timestamp': self.created_at.isoformat(),
-            'acknowledgedAt': self.acknowledged_at.isoformat() if self.acknowledged_at else None,
-            'resolvedAt': self.resolved_at.isoformat() if self.resolved_at else None
+            'timestamp': self.created_at.isoformat()
         }
+        # Add optional fields if they exist
+        if hasattr(self, 'acknowledged_at') and self.acknowledged_at:
+            result['acknowledgedAt'] = self.acknowledged_at.isoformat()
+        if hasattr(self, 'resolved_at') and self.resolved_at:
+            result['resolvedAt'] = self.resolved_at.isoformat()
+        return result
 
 
 class AlertHistory(db.Model):

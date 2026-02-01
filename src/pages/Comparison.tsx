@@ -173,7 +173,7 @@ const Comparison = () => {
                 </div>
               ))}
               
-              {selectedSensors.length < 4 && selectedSensors.length < allSensors.length && (
+              {selectedSensors.length < 4 && selectedSensors.length < sensors.length && (
                 <Button variant="outline" size="sm" onClick={addSensor}>
                   <Plus className="w-4 h-4 mr-2" />
                   Ajouter

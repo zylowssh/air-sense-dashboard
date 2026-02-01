@@ -11,6 +11,11 @@ def get_profile():
     """Get current user profile"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         if not user:
@@ -28,6 +33,11 @@ def update_profile():
     """Update current user profile"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         if not user:
@@ -58,6 +68,11 @@ def change_password():
     """Change user password"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         if not user:
@@ -93,6 +108,11 @@ def get_all_users():
     """Get all users (admin only)"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         if not user or user.role != 'admin':

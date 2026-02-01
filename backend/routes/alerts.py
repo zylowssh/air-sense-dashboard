@@ -11,6 +11,11 @@ def get_alerts():
     """Get alerts for the current user"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         if not user:
@@ -20,25 +25,32 @@ def get_alerts():
         status = request.args.get('status')  # 'nouvelle', 'reconnue', 'résolue'
         limit = request.args.get('limit', 50, type=int)
         
-        # Build query
-        if user.role == 'admin':
-            query = Alert.query
-        else:
-            query = Alert.query.filter_by(user_id=current_user_id)
-        
-        # Filter by status if provided
-        if status:
-            query = query.filter_by(status=status)
-        
-        # Get alerts ordered by most recent first
-        alerts = query.order_by(Alert.created_at.desc()).limit(limit).all()
-        
-        return jsonify({
-            'alerts': [alert.to_dict() for alert in alerts]
-        }), 200
+        # Check if alerts table exists
+        try:
+            # Build query
+            if user.role == 'admin':
+                query = Alert.query
+            else:
+                query = Alert.query.filter_by(user_id=current_user_id)
+            
+            # Filter by status if provided
+            if status:
+                query = query.filter_by(status=status)
+            
+            # Get alerts ordered by most recent first
+            alerts = query.order_by(Alert.created_at.desc()).limit(limit).all()
+            
+            return jsonify({'alerts': [alert.to_dict() for alert in alerts]}), 200
+        except Exception as query_error:
+            # If table doesn't exist or query fails, return empty list
+            print(f"Query error (returning empty): {query_error}")
+            return jsonify({'alerts': []}), 200
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error fetching alerts: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e), 'alerts': []}), 200
 
 
 @alerts_bp.route('/<int:alert_id>', methods=['PUT'])
@@ -103,6 +115,7 @@ def delete_alert(alert_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+
 # Alert History Endpoints
 
 @alerts_bp.route('/history/list', methods=['GET'])
@@ -163,6 +176,8 @@ def acknowledge_alert(alert_id):
     """Acknowledge an alert from history"""
     try:
         current_user_id = get_jwt_identity()
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
         alert = AlertHistory.query.get(alert_id)
         
         if not alert:
@@ -192,6 +207,8 @@ def resolve_alert(alert_id):
     """Resolve an alert from history"""
     try:
         current_user_id = get_jwt_identity()
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
         alert = AlertHistory.query.get(alert_id)
         
         if not alert:
@@ -221,6 +238,8 @@ def get_alert_stats():
     """Get alert statistics"""
     try:
         current_user_id = get_jwt_identity()
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
         user = User.query.get(current_user_id)
         days = request.args.get('days', 30, type=int)
         

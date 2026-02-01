@@ -2,21 +2,23 @@ import { useState } from 'react';
 import { Bell, Moon, Sun, User, Download, Plus, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/hooks/useAuth';
 import { ExportDataModal } from '@/components/widgets/ExportDataModal';
 import { AddSensorModal } from '@/components/widgets/AddSensorModal';
 import { ProfileModal } from '@/components/widgets/ProfileModal';
 import { NotificationsPanel } from '@/components/widgets/NotificationsPanel';
 import { AlertThresholdsModal } from '@/components/widgets/AlertThresholdsModal';
 import { MobileNav } from './MobileNav';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface TopBarProps {
   title?: string;
   subtitle?: string;
-  userName?: string;
 }
 
-export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: TopBarProps) {
+export function TopBar({ title = "Dashboard", subtitle }: TopBarProps) {
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   const [exportOpen, setExportOpen] = useState(false);
   const [addSensorOpen, setAddSensorOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -31,6 +33,27 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
     return 'Bonsoir';
   };
 
+  // Get the user's first name or a default
+  const getUserFirstName = () => {
+    if (user?.full_name) {
+      return user.full_name.split(' ')[0];
+    }
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    return 'Utilisateur';
+  };
+
+  const getInitials = () => {
+    if (user?.full_name) {
+      return user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (user?.email) {
+      return user.email[0].toUpperCase();
+    }
+    return 'U';
+  };
+
   return (
     <>
       <header className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-border bg-background/50 backdrop-blur-sm">
@@ -38,7 +61,7 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
           <MobileNav />
           <div>
             <h1 className="text-xl md:text-2xl font-semibold text-foreground">
-              {title === "Dashboard" ? `${getGreeting()}, ${userName}` : title}
+              {title === "Dashboard" ? `${getGreeting()}, ${getUserFirstName()}` : title}
             </h1>
             {subtitle && (
               <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
@@ -90,7 +113,12 @@ export function TopBar({ title = "Dashboard", subtitle, userName = "Alex" }: Top
               className="p-2 rounded-lg hover:bg-muted transition-colors"
               onClick={() => setProfileOpen(true)}
             >
-              <User className="w-5 h-5 text-muted-foreground" />
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={user?.avatar_url} />
+                <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                  {getInitials()}
+                </AvatarFallback>
+              </Avatar>
             </button>
           </div>
         </div>

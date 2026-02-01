@@ -11,6 +11,11 @@ def get_sensors():
     """Get all sensors for the current user"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         if not user:
@@ -37,6 +42,11 @@ def get_sensor(sensor_id):
     """Get a specific sensor by ID"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         sensor = Sensor.query.get(sensor_id)
@@ -60,6 +70,11 @@ def create_sensor():
     """Create a new sensor"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         data = request.get_json()
         
         name = data.get('name')
@@ -98,6 +113,11 @@ def update_sensor(sensor_id):
     """Update a sensor"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         sensor = Sensor.query.get(sensor_id)
@@ -143,6 +163,11 @@ def delete_sensor(sensor_id):
     """Delete a sensor"""
     try:
         current_user_id = get_jwt_identity()
+        
+        # Convert to int if string
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
+            
         user = User.query.get(current_user_id)
         
         sensor = Sensor.query.get(sensor_id)

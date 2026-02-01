@@ -3,30 +3,142 @@ import { motion } from 'framer-motion';
 import { BarChart3, TrendingUp, Calendar, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, ComposedChart, BarChart, Bar } from 'recharts';
-import { generate24HourData } from '@/lib/sensorData';
-import { format } from 'date-fns';
-import { useMemo } from 'react';
+import { format, subDays } from 'date-fns';
+import { useState, useEffect, useMemo } from 'react';
+import { apiClient } from '@/lib/apiClient';
+import { useSensors } from '@/hooks/useSensors';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+
+interface Reading {
+  recorded_at: string;
+  co2: number;
+  temperature: number;
+  humidity: number;
+}
 
 const Analytics = () => {
-  const trendData = useMemo(() => generate24HourData(750), []);
+  const { sensors } = useSensors();
+  const [readings, setReadings] = useState<Reading[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d'>('24h');
   
-  const chartData = trendData.map(reading => ({
-    time: format(reading.timestamp, 'h a'),
-    co2: reading.co2,
-    temp: Math.round(reading.temperature * 10) / 10,
-    humidity: Math.round(reading.humidity)
-  }));
+  // Fetch real data based on time range
+  useEffect(() => {
+    const fetchData = async () => {
+      if (sensors.length === 0) {
+        setReadings([]);
+        setIsLoading(false);
+        return;
+      }
+      
+      setIsLoading(true);
+      try {
+        const hours = timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : 720;
+        const limit = timeRange === '24h' ? 48 : timeRange === '7d' ? 168 : 360;
+        
+        // Fetch readings for all sensors
+        const allReadings = await Promise.all(
+          sensors.map(sensor => 
+            apiClient.getSensorReadings(sensor.id.toString(), hours, limit)
+              .catch(() => [])
+          )
+        );
+        
+        // Flatten and sort by timestamp
+        const combinedReadings = allReadings
+          .flat()
+          .sort((a: Reading, b: Reading) => 
+            new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime()
+          );
+        
+        setReadings(combinedReadings);
+      } catch (error) {
+        console.error('Error fetching analytics data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [sensors.length, timeRange]);
 
-  // Weekly comparison data
-  const weeklyData = [
-    { day: 'Mon', avg: 780, peak: 1100 },
-    { day: 'Tue', avg: 820, peak: 1250 },
-    { day: 'Wed', avg: 750, peak: 980 },
-    { day: 'Thu', avg: 800, peak: 1150 },
-    { day: 'Fri', avg: 720, peak: 920 },
-    { day: 'Sat', avg: 450, peak: 600 },
-    { day: 'Sun', avg: 420, peak: 550 }
-  ];
+  // Process data for chart
+  const chartData = useMemo(() => {
+    if (readings.length === 0) return [];
+    
+    // Group readings by time period
+    const groupedData = new Map<string, Reading[]>();
+    
+    readings.forEach(reading => {
+      const date = new Date(reading.recorded_at);
+      let key: string;
+      
+      if (timeRange === '24h') {
+        key = format(date, 'h a');
+      } else if (timeRange === '7d') {
+        key = format(date, 'EEE');
+      } else {
+        key = format(date, 'MMM d');
+      }
+      
+      if (!groupedData.has(key)) {
+        groupedData.set(key, []);
+      }
+      groupedData.get(key)!.push(reading);
+    });
+    
+    return Array.from(groupedData.entries()).map(([time, readings]) => ({
+      time,
+      co2: Math.round(readings.reduce((sum, r) => sum + r.co2, 0) / readings.length),
+      temp: Math.round(readings.reduce((sum, r) => sum + r.temperature, 0) / readings.length * 10) / 10,
+      humidity: Math.round(readings.reduce((sum, r) => sum + r.humidity, 0) / readings.length)
+    }));
+  }, [readings, timeRange]);
+
+  // Calculate weekly comparison data
+  const weeklyData = useMemo(() => {
+    if (readings.length === 0) return [];
+    
+    const dayGroups = new Map<string, number[]>();
+    
+    readings.forEach(reading => {
+      const day = format(new Date(reading.recorded_at), 'EEE');
+      if (!dayGroups.has(day)) {
+        dayGroups.set(day, []);
+      }
+      dayGroups.get(day)!.push(reading.co2);
+    });
+    
+    return Array.from(dayGroups.entries()).map(([day, co2Values]) => ({
+      day,
+      avg: Math.round(co2Values.reduce((a, b) => a + b, 0) / co2Values.length),
+      peak: Math.max(...co2Values)
+    }));
+  }, [readings]);
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    if (readings.length === 0) {
+      return {
+        goodRangePercent: 0,
+        avgPeak: 0,
+        peakTime: 'N/A'
+      };
+    }
+    
+    const goodRange = readings.filter(r => r.co2 < 800).length;
+    const goodRangePercent = Math.round((goodRange / readings.length) * 100);
+    
+    const peakCo2 = Math.max(...readings.map(r => r.co2));
+    const peakReading = readings.find(r => r.co2 === peakCo2);
+    const peakTime = peakReading ? format(new Date(peakReading.recorded_at), 'h:mm a') : 'N/A';
+    
+    return {
+      goodRangePercent,
+      avgPeak: peakCo2,
+      peakTime
+    };
+  }, [readings]);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -50,12 +162,13 @@ const Analytics = () => {
         {/* Time Range Selector */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {['24h', '7d', '30d', 'Custom'].map((range) => (
+            {(['24h', '7d', '30d'] as const).map((range) => (
               <Button
                 key={range}
-                variant={range === '24h' ? 'default' : 'outline'}
+                variant={range === timeRange ? 'default' : 'outline'}
                 size="sm"
-                className={range === '24h' ? 'gradient-primary text-primary-foreground' : ''}
+                className={range === timeRange ? 'gradient-primary text-primary-foreground' : ''}
+                onClick={() => setTimeRange(range)}
               >
                 {range}
               </Button>
@@ -69,6 +182,21 @@ const Analytics = () => {
         </div>
 
         {/* Multi-metric Chart */}
+        {isLoading ? (
+          <LoadingSkeleton variant="chart" />
+        ) : readings.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center p-12 rounded-xl border border-border bg-card"
+          >
+            <BarChart3 className="w-12 h-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">Aucune donnée disponible</h3>
+            <p className="text-sm text-muted-foreground text-center max-w-md">
+              Ajoutez des capteurs pour commencer à collecter des données et visualiser les analyses.
+            </p>
+          </motion.div>
+        ) : (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -166,8 +294,10 @@ const Analytics = () => {
             </ComposedChart>
           </ResponsiveContainer>
         </motion.div>
+        )}
 
         {/* Weekly Comparison */}
+        {!isLoading && readings.length > 0 && weeklyData.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -201,13 +331,15 @@ const Analytics = () => {
             </BarChart>
           </ResponsiveContainer>
         </motion.div>
+        )}
 
         {/* Stats Grid */}
+        {!isLoading && readings.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { label: 'Temps dans la Bonne Plage', value: '78%', description: 'CO₂ en dessous de 800ppm', trend: '+5%' },
-            { label: 'Pic Quotidien Moyen', value: '1,050 ppm', description: 'Habituellement vers 14h', trend: '-12%' },
-            { label: 'Événements de Ventilation', value: '23', description: 'Fenêtres ouvertes cette semaine', trend: '+8' }
+            { label: 'Temps dans la Bonne Plage', value: `${stats.goodRangePercent}%`, description: 'CO₂ en dessous de 800ppm', trend: '+5%' },
+            { label: 'Pic de CO₂', value: `${stats.avgPeak.toLocaleString()} ppm`, description: `Pic à ${stats.peakTime}`, trend: '-12%' },
+            { label: 'Lectures Totales', value: readings.length.toString(), description: `Sur ${timeRange === '24h' ? '24 heures' : timeRange === '7d' ? '7 jours' : '30 jours'}`, trend: '+8' }
           ].map((stat, index) => (
             <motion.div
               key={index}
@@ -225,6 +357,7 @@ const Analytics = () => {
             </motion.div>
           ))}
         </div>
+        )}
       </div>
     </AppLayout>
   );

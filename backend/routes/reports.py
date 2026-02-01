@@ -18,6 +18,9 @@ def admin_or_owner(f):
     @jwt_required()
     def decorated(*args, **kwargs):
         current_user_id = get_jwt_identity()
+        # Handle string user_id from JWT
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
         user = User.query.get(current_user_id)
         
         if not user:
@@ -35,6 +38,9 @@ def export_alerts_csv():
     try:
         days = request.args.get('days', 30, type=int)
         current_user_id = get_jwt_identity()
+        # Handle string user_id from JWT
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
         user = User.query.get(current_user_id)
         
         # Calculate date range
@@ -113,6 +119,9 @@ def export_alerts_pdf():
         
         days = request.args.get('days', 30, type=int)
         current_user_id = get_jwt_identity()
+        # Handle string user_id from JWT
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
         user = User.query.get(current_user_id)
         
         # Calculate date range
@@ -240,6 +249,9 @@ def get_report_stats():
     try:
         days = request.args.get('days', 30, type=int)
         current_user_id = get_jwt_identity()
+        # Handle string user_id from JWT
+        if isinstance(current_user_id, str):
+            current_user_id = int(current_user_id)
         
         # Calculate date range
         end_date = datetime.utcnow()
