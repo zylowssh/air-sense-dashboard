@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from database import db, Sensor, SensorReading, User
 from datetime import datetime
 from audit_logger import log_action
+from sensor_simulator import generate_current_simulated_reading
 import logging
 
 sensors_bp = Blueprint('sensors', __name__)
@@ -71,8 +72,26 @@ def get_sensors():
         
         sensors = query.limit(limit).all()
         
-        # Include latest readings for each sensor
-        sensors_data = [sensor.to_dict(include_latest_reading=True) for sensor in sensors]
+        # Include latest readings for each sensor (generate on-demand for simulated sensors)
+        sensors_data = []
+        for sensor in sensors:
+            sensor_dict = sensor.to_dict(include_latest_reading=True)
+            
+            # For simulated sensors without recent readings, generate one on-demand
+            if sensor.sensor_type == 'simulation':
+                latest_reading = SensorReading.query.filter_by(sensor_id=sensor.id).order_by(
+                    SensorReading.recorded_at.desc()
+                ).first()
+                
+                # If no reading exists or reading is stale (>1 minute old), generate fresh data
+                if not latest_reading or (datetime.utcnow() - latest_reading.recorded_at).total_seconds() > 60:
+                    simulated_data = generate_current_simulated_reading(sensor.name)
+                    sensor_dict['co2'] = simulated_data['co2']
+                    sensor_dict['temperature'] = simulated_data['temperature']
+                    sensor_dict['humidity'] = simulated_data['humidity']
+                    sensor_dict['lastReading'] = datetime.utcnow().isoformat()
+            
+            sensors_data.append(sensor_dict)
         
         return jsonify({
             'sensors': sensors_data,
@@ -113,7 +132,23 @@ def get_sensor(sensor_id):
         if user.role != 'admin' and sensor.user_id != current_user_id:
             return jsonify({'error': 'Unauthorized access to this sensor'}), 403
         
-        return jsonify({'sensor': sensor.to_dict(include_latest_reading=True)}), 200
+        sensor_dict = sensor.to_dict(include_latest_reading=True)
+        
+        # For simulated sensors, generate fresh data on-demand
+        if sensor.sensor_type == 'simulation':
+            latest_reading = SensorReading.query.filter_by(sensor_id=sensor.id).order_by(
+                SensorReading.recorded_at.desc()
+            ).first()
+            
+            # If no reading exists or reading is stale (>1 minute old), generate fresh data
+            if not latest_reading or (datetime.utcnow() - latest_reading.recorded_at).total_seconds() > 60:
+                simulated_data = generate_current_simulated_reading(sensor.name)
+                sensor_dict['co2'] = simulated_data['co2']
+                sensor_dict['temperature'] = simulated_data['temperature']
+                sensor_dict['humidity'] = simulated_data['humidity']
+                sensor_dict['lastReading'] = datetime.utcnow().isoformat()
+        
+        return jsonify({'sensor': sensor_dict}), 200
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -1,4 +1,4 @@
-import { Sequence } from "remotion";
+import { Sequence, Audio } from "remotion";
 import { IntroductionScene } from "./compositions/IntroductionScene";
 import { ProblemScene } from "./compositions/ProblemScene";
 import { SolutionScene } from "./compositions/SolutionScene";
@@ -28,6 +28,13 @@ export const AeriumVideo: React.FC = () => {
 
   return (
     <>
+      {/* Background audio track: plays throughout the entire video */}
+      <Audio
+        src="/cylinder-two.mp3"
+        startFrom={0}
+        endAt={AERIUM_VIDEO_DURATION}
+      />
+
       {scenes.map(({ Component, frames }, index) => {
         const from = currentFrame;
         currentFrame += frames;

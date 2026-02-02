@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response, stream_with_context
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from flask_jwt_extended import JWTManager
@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import os
 import logging
 from logging.handlers import RotatingFileHandler
+import urllib.request
 
 from database import db, init_db
 from routes.auth import auth_bp
@@ -148,6 +149,42 @@ def create_app():
                 'reports': '/api/reports - Reports generation'
             }
         }), 200
+
+    # Audio proxy to avoid cross-origin issues when loading remote audio files
+    @app.route('/api/proxy-audio')
+    def proxy_audio():
+        """Proxy a remote audio URL and stream it back to the frontend with proper CORS headers.
+
+        Query params:
+            url: full remote URL to fetch
+        """
+        url = request.args.get('url')
+        if not url:
+            return jsonify({'error': 'Missing url parameter'}), 400
+
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Aerium-Audio-Proxy'})
+            remote = urllib.request.urlopen(req, timeout=15)
+
+            content_type = remote.headers.get_content_type() or 'audio/mpeg'
+
+            def generate():
+                try:
+                    while True:
+                        chunk = remote.read(8192)
+                        if not chunk:
+                            break
+                        yield chunk
+                finally:
+                    try:
+                        remote.close()
+                    except Exception:
+                        pass
+
+            return Response(stream_with_context(generate()), content_type=content_type)
+        except Exception as e:
+            app.logger.error(f'Audio proxy error fetching {url}: {e}')
+            return jsonify({'error': 'Failed to fetch remote audio'}), 502
     
     # Error handlers
     @app.errorhandler(404)

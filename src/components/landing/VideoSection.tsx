@@ -2,15 +2,10 @@ import { motion } from 'framer-motion';
 import { Player, PlayerRef } from '@remotion/player';
 import { AeriumVideo, AERIUM_VIDEO_DURATION } from '@/remotion/AeriumVideo';
 import { useState, useEffect, useRef, forwardRef } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
-  const audioRef = useRef<HTMLAudioElement>(null);
   const playerRef = useRef<PlayerRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [videoPlaying, setVideoPlaying] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -19,12 +14,10 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVideoPlaying(true);
           if (playerRef.current) {
             playerRef.current.play();
           }
         } else {
-          setVideoPlaying(false);
           if (playerRef.current) {
             playerRef.current.pause();
           }
@@ -44,31 +37,9 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
     };
   }, []);
 
-  useEffect(() => {
-    const savedMusicState = localStorage.getItem('backgroundMusicPlaying');
-    if (savedMusicState === 'true') {
-      setIsPlaying(true);
-    }
-  }, []);
+  // Note: audio is now embedded in the Remotion video composition (AeriumVideo)
+  // and plays automatically as part of the video without separate controls.
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.play().catch(() => {
-        setIsPlaying(false);
-      });
-    } else {
-      audio.pause();
-    }
-
-    localStorage.setItem('backgroundMusicPlaying', String(isPlaying));
-  }, [isPlaying]);
-
-  const toggleMusic = () => {
-    setIsPlaying(!isPlaying);
-  };
 
   // Handle mouse movement to show/hide controls
   const handleMouseEnter = () => {
@@ -149,6 +120,7 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
               fps={30}
               controls={showControls}
               loop
+              acknowledgeRemotionLicense={true}
               style={{
                 width: '100%',
                 height: 'auto',
@@ -156,34 +128,6 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
               }}
             />
           </div>
-
-          {/* Music Control Button - Always visible */}
-          <motion.div
-            className="absolute top-4 right-4 z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={toggleMusic}
-              className="gap-2 backdrop-blur-sm bg-background/80"
-              title={isPlaying ? "Arrêter la musique" : "Écouter la musique"}
-            >
-              {isPlaying ? (
-                <>
-                  <Volume2 className="w-4 h-4" />
-                  Son
-                </>
-              ) : (
-                <>
-                  <VolumeX className="w-4 h-4" />
-                  Muet
-                </>
-              )}
-            </Button>
-          </motion.div>
 
           {/* Gradient overlays */}
           <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none rounded-2xl" />
@@ -219,14 +163,6 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
           ))}
         </div>
       </div>
-
-      {/* Background Music */}
-      <audio
-        ref={audioRef}
-        loop
-        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
-        crossOrigin="anonymous"
-      />
     </section>
   );
 });

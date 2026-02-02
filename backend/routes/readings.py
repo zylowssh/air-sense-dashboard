@@ -4,6 +4,7 @@ from database import db, SensorReading, Sensor, User, Alert, AlertHistory
 from datetime import datetime, timedelta
 from email_service import send_alert_email
 from audit_logger import log_action
+from sensor_simulator import generate_historical_simulated_readings
 import logging
 
 readings_bp = Blueprint('readings', __name__)
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 @readings_bp.route('/sensor/<int:sensor_id>', methods=['GET'])
 @jwt_required()
 def get_sensor_readings(sensor_id):
-    """Get readings for a specific sensor"""
+    """Get readings for a specific sensor (generates on-demand for simulated sensors)"""
     try:
         current_user_id = get_jwt_identity()
         
@@ -35,6 +36,28 @@ def get_sensor_readings(sensor_id):
         limit = request.args.get('limit', 100, type=int)
         hours = request.args.get('hours', 24, type=int)
         
+        # For simulated sensors, generate historical data on-demand
+        if sensor.sensor_type == 'simulation':
+            simulated_readings = generate_historical_simulated_readings(sensor.name, hours)
+            
+            # Return limited number of readings
+            readings_data = [
+                {
+                    'id': idx,
+                    'sensor_id': sensor_id,
+                    'co2': r['co2'],
+                    'temperature': r['temperature'],
+                    'humidity': r['humidity'],
+                    'recorded_at': r['recorded_at']
+                }
+                for idx, r in enumerate(simulated_readings[-limit:])
+            ]
+            
+            return jsonify({
+                'readings': readings_data
+            }), 200
+        
+        # For real sensors, get actual readings from database
         # Calculate time range
         end_time = datetime.utcnow()
         start_time = end_time - timedelta(hours=hours)

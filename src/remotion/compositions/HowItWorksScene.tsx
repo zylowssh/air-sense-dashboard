@@ -98,9 +98,8 @@ export const HowItWorksScene: React.FC = () => {
             const Icon = step.icon;
 
             return (
-              <>
+              <div key={index}>
                 <div
-                  key={index}
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -149,7 +148,7 @@ export const HowItWorksScene: React.FC = () => {
                     }}
                   />
                 )}
-              </>
+              </div>
             );
           })}
         </div>
