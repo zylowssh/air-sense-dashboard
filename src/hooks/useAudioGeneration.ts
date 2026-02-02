@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { aeriumScript } from "@/remotion/script";
 
 export interface AudioAsset {
