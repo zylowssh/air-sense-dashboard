@@ -1,11 +1,6 @@
-# 📚 Documentation Aerium - Index Complet
+# 📚 Documentation Aerium
 
-Bienvenue dans la documentation complète du Tableau de Bord Aerium pour la surveillance de la qualité de l'air.
-
-## 🌍 Langue
-
-- **Français** (Vous êtes ici)
-- **English** → [English Documentation](en/README.md)
+Documentation du Tableau de Bord Aerium pour la surveillance de la qualité de l'air.
 
 ---
 
@@ -39,11 +34,6 @@ Bienvenue dans la documentation complète du Tableau de Bord Aerium pour la surv
 1. **[Guide de dépannage](guides/TROUBLESHOOTING.md)** - Problèmes courants + solutions
 2. **[Guide rapide](fr/QUICKSTART.md)** - Configuration et setup
 3. **[Architecture système](guides/ARCHITECTURE.md)** - Pour comprendre le système
-
-### 🤝 Je veux Contribuer
-1. **[Guide de contribution](guides/CONTRIBUTING.md)** - Comment contribuer
-2. **[Architecture système](guides/ARCHITECTURE.md)** - Comprendre la structure
-3. **[Référence API](guides/API_REFERENCE.md)** - Documentation API
 
 ---
 
@@ -166,7 +156,6 @@ Voir [en/README.md](en/README.md) pour la documentation anglaise complète.
 | Activer logs | [FEATURES.md](fr/FEATURES.md) | Logging Complet |
 | Résoudre erreur | [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) | Erreur spécifique |
 | Comprendre architecture | [ARCHITECTURE.md](guides/ARCHITECTURE.md) | Vue d'ensemble |
-| Contribuer au projet | [CONTRIBUTING.md](guides/CONTRIBUTING.md) | Processus développement |
 
 ### Par Technologie
 
@@ -190,7 +179,6 @@ Voir [en/README.md](en/README.md) pour la documentation anglaise complète.
 | **Développeur Backend** | [README.md](fr/README.md) + [API_REFERENCE.md](guides/API_REFERENCE.md) + [FEATURES.md](fr/FEATURES.md) + [ARCHITECTURE.md](guides/ARCHITECTURE.md) |
 | **DevOps/Ops** | [DEPLOYMENT.md](guides/DEPLOYMENT.md) + [TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md) + [ARCHITECTURE.md](guides/ARCHITECTURE.md) |
 | **Responsable Sécurité** | [ARCHITECTURE.md](guides/ARCHITECTURE.md#-sécurité) + [FEATURES.md](fr/FEATURES.md#4️⃣-piste-daudit-) |
-| **Contributeur** | [CONTRIBUTING.md](guides/CONTRIBUTING.md) + [ARCHITECTURE.md](guides/ARCHITECTURE.md) |
 
 ---
 
@@ -200,9 +188,6 @@ Voir [en/README.md](en/README.md) pour la documentation anglaise complète.
 docs/
 ├── README.md (ce fichier)         # Index complet
 │
-├── en/                            # 🔵 English Documentation
-│   ├── README.md                 # Introduction (English)
-│   └── (autres en anglais)
 │
 ├── fr/                            # 🇫🇷 French Documentation
 │   ├── README.md                 # Introduction (Français)
