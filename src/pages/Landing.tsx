@@ -101,8 +101,8 @@ const Landing = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="w-9 h-9 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center">
-                <Wind className="w-5 h-5 text-primary" />
+              <div className="w-9 h-9 rounded-lg overflow-hidden">
+                <img src="/logo.png" alt="Aerium" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-bold text-foreground">Aerium</span>
             </motion.div>
@@ -152,7 +152,9 @@ const Landing = () => {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 border border-primary/20"
               whileHover={{ scale: 1.05 }}
             >
-              <Wind className="w-4 h-4" />
+              <div className="w-4 h-4 rounded overflow-hidden flex-shrink-0">
+                <img src="/logo.png" alt="" className="w-full h-full object-contain" />
+              </div>
               Projet de Surveillance de la Qualité de l'Air
             </motion.div>
 
@@ -480,8 +482,8 @@ const Landing = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Wind className="w-5 h-5 text-primary" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden">
+                <img src="/logo.png" alt="Aerium" className="w-full h-full object-contain" />
               </div>
               <span className="font-semibold text-foreground">Aerium</span>
             </div>
