@@ -21,6 +21,7 @@ import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import Recommendations from "./pages/Recommendations";
 import Maintenance from "./pages/Maintenance";
+import Video from "./pages/Video";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/maintenance" element={<ProtectedRoute><Maintenance /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              <Route path="/video" element={<ProtectedRoute><Video /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

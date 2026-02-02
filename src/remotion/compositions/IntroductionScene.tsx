@@ -1,124 +1,141 @@
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from "remotion";
+import { AnimatedBackground, GlowingText, SceneTransition, WaveformVisualization } from "../components";
 
 export const IntroductionScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Question animation
-  const questionOpacity = interpolate(frame, [0, 30], [0, 1], { extrapolateRight: "clamp" });
-  const questionY = interpolate(frame, [0, 30], [40, 0], {
+  // Question animation with more dramatic entrance
+  const questionOpacity = interpolate(frame, [15, 40], [0, 1], { extrapolateRight: "clamp" });
+  const questionY = interpolate(frame, [15, 40], [60, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
+    easing: Easing.out(Easing.exp),
+  });
+  const questionScale = spring({
+    frame: frame - 15,
+    fps,
+    config: { damping: 15, stiffness: 80 },
   });
 
   // Answer animation
-  const answerOpacity = interpolate(frame, [60, 90], [0, 1], { extrapolateRight: "clamp" });
-  const answerY = interpolate(frame, [60, 90], [30, 0], {
+  const answerOpacity = interpolate(frame, [70, 95], [0, 1], { extrapolateRight: "clamp" });
+  const answerY = interpolate(frame, [70, 95], [40, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
 
-  // Floating particles
-  const particles = [...Array(15)].map((_, i) => {
-    const particleDelay = i * 4;
-    const particleY = interpolate(
-      (frame + particleDelay) % 180,
-      [0, 180],
-      [110, -10],
-      { extrapolateRight: "clamp" }
-    );
-    return { x: (i * 73) % 100, y: particleY, size: 3 + (i % 4) * 2 };
-  });
+  // Secondary text animation
+  const secondaryOpacity = interpolate(frame, [110, 130], [0, 1], { extrapolateRight: "clamp" });
 
-  // Glow effect
-  const glowOpacity = interpolate(frame % 90, [0, 45, 90], [0.2, 0.5, 0.2]);
+  // Breathing ring effect
+  const ringScale = interpolate(frame % 90, [0, 45, 90], [1, 1.15, 1]);
+  const ringOpacity = interpolate(frame % 90, [0, 45, 90], [0.3, 0.6, 0.3]);
+
+  // Waveform entrance
+  const waveOpacity = interpolate(frame, [130, 150], [0, 1], { extrapolateRight: "clamp" });
 
   return (
-    <AbsoluteFill
-      style={{
-        background: "linear-gradient(135deg, hsl(220, 30%, 5%) 0%, hsl(180, 25%, 8%) 50%, hsl(220, 25%, 10%) 100%)",
-        justifyContent: "center",
-        alignItems: "center",
-        fontFamily: "'Space Grotesk', sans-serif",
-      }}
-    >
-      {/* Particles */}
-      {particles.map((p, i) => (
+    <AbsoluteFill style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      <AnimatedBackground variant="intro" particleCount={25} />
+
+      {/* Breathing rings */}
+      {[0, 1, 2].map((i) => (
         <div
           key={i}
           style={{
             position: "absolute",
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
+            top: "50%",
+            left: "50%",
+            transform: `translate(-50%, -50%) scale(${ringScale * (1 + i * 0.1)})`,
+            width: 400 + i * 150,
+            height: 400 + i * 150,
             borderRadius: "50%",
-            backgroundColor: `hsla(165, 70%, 55%, 0.4)`,
+            border: `1px solid hsla(165, 70%, 55%, ${0.15 - i * 0.04})`,
+            opacity: ringOpacity * (1 - i * 0.3),
           }}
         />
       ))}
 
-      {/* Central glow */}
-      <div
-        style={{
-          position: "absolute",
-          width: 500,
-          height: 500,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, hsla(165, 70%, 55%, 0.2) 0%, transparent 70%)",
-          opacity: glowOpacity,
-          filter: "blur(80px)",
-        }}
-      />
-
       {/* Content */}
       <div
         style={{
+          position: "absolute",
+          inset: 0,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
           gap: 40,
-          maxWidth: 1200,
-          padding: 60,
+          padding: 80,
           textAlign: "center",
         }}
       >
-        {/* Question */}
+        {/* Main question */}
         <h1
           style={{
-            fontSize: 56,
+            fontSize: 60,
             fontWeight: 700,
             margin: 0,
             opacity: questionOpacity,
-            transform: `translateY(${questionY}px)`,
-            background: "linear-gradient(135deg, hsl(165, 70%, 55%) 0%, hsl(190, 80%, 50%) 100%)",
+            transform: `translateY(${questionY}px) scale(${questionScale})`,
+            background: "linear-gradient(135deg, hsl(165, 70%, 55%) 0%, hsl(190, 80%, 50%) 50%, hsl(165, 60%, 45%) 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
+            lineHeight: 1.2,
+            maxWidth: 1100,
           }}
         >
           Et si nous pouvions voir l'air que nous respirons ?
         </h1>
 
-        {/* Answer */}
-        <p
+        {/* Answer text */}
+        <div
           style={{
-            fontSize: 28,
-            color: "hsl(215, 20%, 70%)",
-            margin: 0,
-            lineHeight: 1.6,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
             opacity: answerOpacity,
             transform: `translateY(${answerY}px)`,
           }}
         >
-          La qualité de l'air influence notre santé, notre environnement, et notre quotidien.
-          <br />
-          <span style={{ color: "hsl(215, 20%, 50%)" }}>
+          <p
+            style={{
+              fontSize: 28,
+              color: "hsl(210, 40%, 90%)",
+              margin: 0,
+              lineHeight: 1.6,
+            }}
+          >
+            La qualité de l'air influence notre santé, notre environnement, et notre quotidien.
+          </p>
+          <p
+            style={{
+              fontSize: 24,
+              color: "hsl(215, 20%, 55%)",
+              margin: 0,
+              lineHeight: 1.5,
+              opacity: secondaryOpacity,
+            }}
+          >
             Pourtant, ces données restent souvent invisibles, complexes, ou inaccessibles.
-          </span>
-        </p>
+          </p>
+        </div>
+
+        {/* Audio waveform visualization */}
+        <div style={{ opacity: waveOpacity, marginTop: 20 }}>
+          <WaveformVisualization
+            barCount={50}
+            width={500}
+            height={60}
+            color="hsl(165, 70%, 55%)"
+          />
+        </div>
       </div>
+
+      {/* Scene transitions */}
+      <SceneTransition durationInFrames={180} type="fade" direction="in" />
     </AbsoluteFill>
   );
 };

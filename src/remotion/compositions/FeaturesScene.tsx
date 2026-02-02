@@ -1,5 +1,6 @@
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from "remotion";
-import { Activity, Clock, MapPin, Smartphone } from "lucide-react";
+import { Activity, Clock, MapPin, Smartphone, Layers } from "lucide-react";
+import { AnimatedBackground, SceneTransition } from "../components";
 
 const features = [
   { icon: Activity, title: "Mesures en temps réel", color: "hsl(165, 70%, 55%)" },
@@ -8,150 +9,177 @@ const features = [
   { icon: Smartphone, title: "Interface intuitive", color: "hsl(260, 60%, 55%)" },
 ];
 
-const FeatureCard: React.FC<{
-  feature: typeof features[0];
-  index: number;
-  frame: number;
-  fps: number;
-}> = ({ feature, index, frame, fps }) => {
-  const delay = index * 15;
-  const Icon = feature.icon;
-
-  const scale = spring({
-    frame: frame - delay,
-    fps,
-    config: { damping: 12, stiffness: 80 },
-  });
-
-  const opacity = interpolate(frame - delay, [0, 15], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  const row = Math.floor(index / 2);
-  const col = index % 2;
-  const x = (col - 0.5) * 320;
-  const y = (row - 0.5) * 180;
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "55%",
-        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`,
-        opacity,
-        width: 280,
-        padding: 24,
-        borderRadius: 20,
-        background: "hsla(220, 20%, 10%, 0.8)",
-        border: `1px solid ${feature.color}30`,
-        backdropFilter: "blur(20px)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 12,
-        textAlign: "center",
-      }}
-    >
-      <div
-        style={{
-          width: 56,
-          height: 56,
-          borderRadius: 14,
-          background: `${feature.color}20`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Icon size={28} color={feature.color} />
-      </div>
-      <span
-        style={{
-          fontSize: 18,
-          fontWeight: 600,
-          color: "hsl(210, 40%, 98%)",
-          fontFamily: "'Space Grotesk', sans-serif",
-        }}
-      >
-        {feature.title}
-      </span>
-    </div>
-  );
-};
-
 export const FeaturesScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const titleOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
-  const titleY = interpolate(frame, [0, 20], [30, 0], {
+  const titleOpacity = interpolate(frame, [10, 30], [0, 1], { extrapolateRight: "clamp" });
+  const titleY = interpolate(frame, [10, 30], [40, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
+    easing: Easing.out(Easing.exp),
   });
 
   return (
-    <AbsoluteFill
-      style={{
-        background: "linear-gradient(135deg, hsl(220, 30%, 5%) 0%, hsl(220, 30%, 10%) 50%, hsl(200, 25%, 8%) 100%)",
-        fontFamily: "'Space Grotesk', sans-serif",
-      }}
-    >
-      {/* Background glow */}
+    <AbsoluteFill style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      <AnimatedBackground variant="default" particleCount={22} />
+
+      {/* Decorative hexagon grid */}
+      <svg
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 800,
+          height: 800,
+          opacity: 0.05,
+        }}
+      >
+        {[...Array(6)].map((_, i) => {
+          const angle = (i * 60 * Math.PI) / 180;
+          const x = 400 + Math.cos(angle) * 250;
+          const y = 400 + Math.sin(angle) * 250;
+          return (
+            <polygon
+              key={i}
+              points={`${x},${y - 50} ${x + 43},${y - 25} ${x + 43},${y + 25} ${x},${y + 50} ${x - 43},${y + 25} ${x - 43},${y - 25}`}
+              fill="none"
+              stroke="hsl(165, 70%, 55%)"
+              strokeWidth="1"
+            />
+          );
+        })}
+      </svg>
+
+      {/* Content */}
       <div
         style={{
           position: "absolute",
-          top: "20%",
-          left: "30%",
-          width: 500,
-          height: 500,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, hsla(165, 70%, 55%, 0.1) 0%, transparent 70%)",
-          filter: "blur(80px)",
-        }}
-      />
-
-      {/* Title */}
-      <h2
-        style={{
-          position: "absolute",
-          top: 80,
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          fontSize: 48,
-          fontWeight: 700,
-          margin: 0,
-          opacity: titleOpacity,
-          transform: `translateY(${titleY}px)`,
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 50,
+          padding: 60,
         }}
       >
-        <span style={{ color: "hsl(210, 40%, 98%)" }}>Fonctionnalités </span>
-        <span
+        {/* Title */}
+        <div
           style={{
-            background: "linear-gradient(135deg, hsl(165, 70%, 55%) 0%, hsl(190, 80%, 50%) 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            opacity: titleOpacity,
+            transform: `translateY(${titleY}px)`,
           }}
         >
-          Principales
-        </span>
-      </h2>
+          <Layers size={32} color="hsl(165, 70%, 55%)" />
+          <h2 style={{ fontSize: 52, fontWeight: 700, margin: 0 }}>
+            <span style={{ color: "hsl(210, 40%, 98%)" }}>Fonctionnalités </span>
+            <span
+              style={{
+                background: "linear-gradient(135deg, hsl(165, 70%, 55%) 0%, hsl(190, 80%, 50%) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Principales
+            </span>
+          </h2>
+        </div>
 
-      {/* Feature cards */}
-      <div style={{ position: "absolute", inset: 0 }}>
-        {features.map((feature, index) => (
-          <FeatureCard
-            key={feature.title}
-            feature={feature}
-            index={index}
-            frame={frame - 30}
-            fps={fps}
-          />
-        ))}
+        {/* Feature cards in grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: 24,
+          }}
+        >
+          {features.map((feature, index) => {
+            const row = Math.floor(index / 2);
+            const col = index % 2;
+            const delay = 35 + index * 12;
+
+            const scale = spring({
+              frame: frame - delay,
+              fps,
+              config: { damping: 14, stiffness: 100 },
+            });
+            const opacity = interpolate(frame - delay, [0, 18], [0, 1], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+            const slideX = interpolate(frame - delay, [0, 20], [col === 0 ? -30 : 30, 0], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+              easing: Easing.out(Easing.cubic),
+            });
+            const slideY = interpolate(frame - delay, [0, 20], [row === 0 ? -20 : 20, 0], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+              easing: Easing.out(Easing.cubic),
+            });
+
+            const Icon = feature.icon;
+            const glowIntensity = interpolate((frame + index * 25) % 80, [0, 40, 80], [0.35, 0.7, 0.35]);
+
+            return (
+              <div
+                key={feature.title}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 16,
+                  padding: "32px 40px",
+                  borderRadius: 24,
+                  background: "hsla(220, 20%, 8%, 0.95)",
+                  border: `1px solid ${feature.color}40`,
+                  backdropFilter: "blur(20px)",
+                  transform: `scale(${scale}) translate(${slideX}px, ${slideY}px)`,
+                  opacity,
+                  width: 300,
+                  textAlign: "center",
+                  boxShadow: `
+                    0 0 ${30 * glowIntensity}px ${feature.color}20,
+                    0 15px 50px -15px hsla(220, 30%, 0%, 0.6),
+                    inset 0 1px 0 hsla(210, 40%, 98%, 0.06)
+                  `,
+                }}
+              >
+                <div
+                  style={{
+                    width: 68,
+                    height: 68,
+                    borderRadius: 17,
+                    background: `${feature.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: `0 0 20px ${feature.color}30`,
+                  }}
+                >
+                  <Icon size={34} color={feature.color} />
+                </div>
+                <span
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 600,
+                    color: "hsl(210, 40%, 98%)",
+                  }}
+                >
+                  {feature.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
+
+      <SceneTransition durationInFrames={150} type="fade" direction="in" />
     </AbsoluteFill>
   );
 };
