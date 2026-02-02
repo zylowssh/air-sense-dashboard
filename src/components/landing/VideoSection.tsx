@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 import { Player, PlayerRef } from '@remotion/player';
 import { AeriumVideo, AERIUM_VIDEO_DURATION } from '@/remotion/AeriumVideo';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const VideoSection = () => {
+const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const playerRef = useRef<PlayerRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -105,7 +105,7 @@ const VideoSection = () => {
   }, []);
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+    <section ref={ref || containerRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <motion.h2
@@ -229,6 +229,8 @@ const VideoSection = () => {
       />
     </section>
   );
-};
+});
+
+VideoSection.displayName = 'VideoSection';
 
 export default VideoSection;

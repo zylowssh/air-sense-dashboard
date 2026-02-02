@@ -45,6 +45,14 @@ def setup_logging(app):
         app.logger.info('Aerium Air Quality Dashboard startup')
 
 
+def rate_limit_key():
+    """Key function for rate limiter that excludes OPTIONS requests"""
+    # Don't rate limit CORS preflight requests
+    if request.method == 'OPTIONS':
+        return None
+    return get_remote_address()
+
+
 def create_app():
     app = Flask(__name__)
     
@@ -92,7 +100,7 @@ def create_app():
     # Initialize rate limiter
     limiter = Limiter(
         app=app,
-        key_func=get_remote_address,
+        key_func=rate_limit_key,
         default_limits=["200 per day", "50 per hour"] if app.config.get('ENABLE_RATE_LIMITING') else []
     )
     

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { WebSocketProvider } from "./contexts/WebSocketContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -35,19 +36,19 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/comparison" element={<Comparison />} />
-              <Route path="/sensors" element={<Sensors />} />
-              <Route path="/sensors/:sensorId" element={<SensorDetail />} />
-              <Route path="/sensor-map" element={<SensorMap />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/alert-history" element={<AlertHistory />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="/maintenance" element={<Maintenance />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+              <Route path="/comparison" element={<ProtectedRoute><Comparison /></ProtectedRoute>} />
+              <Route path="/sensors" element={<ProtectedRoute><Sensors /></ProtectedRoute>} />
+              <Route path="/sensors/:sensorId" element={<ProtectedRoute><SensorDetail /></ProtectedRoute>} />
+              <Route path="/sensor-map" element={<ProtectedRoute><SensorMap /></ProtectedRoute>} />
+              <Route path="/alerts" element={<ProtectedRoute><Alerts /></ProtectedRoute>} />
+              <Route path="/alert-history" element={<ProtectedRoute><AlertHistory /></ProtectedRoute>} />
+              <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+              <Route path="/recommendations" element={<ProtectedRoute><Recommendations /></ProtectedRoute>} />
+              <Route path="/maintenance" element={<ProtectedRoute><Maintenance /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

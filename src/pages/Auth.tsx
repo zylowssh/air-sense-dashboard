@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Leaf, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
@@ -27,6 +28,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupFullName, setSignupFullName] = useState('');
@@ -37,6 +39,13 @@ const Auth = () => {
     const token = localStorage.getItem('access_token');
     if (token) {
       navigate('/dashboard');
+    }
+    
+    // Load remembered email
+    const rememberedEmail = localStorage.getItem('remembered_email');
+    if (rememberedEmail) {
+      setLoginEmail(rememberedEmail);
+      setRememberMe(true);
     }
   }, [navigate]);
 
@@ -59,6 +68,14 @@ const Auth = () => {
     setIsLoading(true);
     try {
       await apiClient.login(loginEmail, loginPassword);
+      
+      // Handle remember me functionality
+      if (rememberMe) {
+        localStorage.setItem('remembered_email', loginEmail);
+      } else {
+        localStorage.removeItem('remembered_email');
+      }
+      
       toast.success('Connexion réussie !');
       window.location.href = '/dashboard';
     } catch (error: any) {
@@ -202,6 +219,21 @@ const Auth = () => {
                     </div>
                     {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                   </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="remember-me"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    />
+                    <Label 
+                      htmlFor="remember-me"
+                      className="text-sm font-medium text-foreground cursor-pointer"
+                    >
+                      Se souvenir de moi
+                    </Label>
+                  </div>
+
                   <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
                     {isLoading ? 'Connexion...' : 'Se connecter'}
                   </Button>
