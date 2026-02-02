@@ -2,162 +2,246 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Activity, 
-  Shield, 
+  TrendingUp, 
   Zap, 
   BarChart3, 
   Bell, 
-  Smartphone,
+  Wind,
   ArrowRight,
-  CheckCircle2,
+  Gauge,
   Leaf,
-  Building2,
-  Users,
-  LogIn
+  Code2,
+  Github,
+  LogIn,
+  Lightbulb,
+  Terminal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import VideoSection from '@/components/landing/VideoSection';
+import { useState, useEffect } from 'react';
 
 const features = [
   {
-    icon: Activity,
-    title: 'Surveillance en Temps Réel',
-    description: 'Suivez la qualité de l\'air de vos espaces avec des mises à jour instantanées.'
+    icon: BarChart3,
+    title: 'Dashboard Avancé',
+    description: 'Visualisez les données en temps réel avec des graphiques interactifs et des analyses détaillées.'
   },
   {
     icon: Bell,
-    title: 'Alertes Intelligentes',
-    description: 'Recevez des notifications personnalisées dès qu\'un seuil est dépassé.'
+    title: 'Système d\'Alertes',
+    description: 'Notifications intelligentes basées sur des seuils personnalisés pour chaque capteur.'
   },
   {
-    icon: BarChart3,
-    title: 'Analyses Avancées',
-    description: 'Visualisez les tendances et comparez les données de multiples capteurs.'
+    icon: TrendingUp,
+    title: 'Analyses Tendances',
+    description: 'Comparez les données historiques et identifiez les patterns de qualité de l\'air.'
   },
   {
-    icon: Shield,
-    title: 'Sécurité des Données',
-    description: 'Vos données sont protégées avec un chiffrement de bout en bout.'
+    icon: Wind,
+    title: 'Support Multi-Capteurs',
+    description: 'Compatible avec une large gamme de capteurs IoT pour une flexibilité maximale.'
   },
   {
-    icon: Zap,
-    title: 'Intégration Facile',
-    description: 'Connectez vos capteurs en quelques minutes sans configuration complexe.'
+    icon: Gauge,
+    title: 'Métriques Détaillées',
+    description: 'Suivi complet de CO2, humidité, température et autres paramètres clés.'
   },
   {
-    icon: Smartphone,
-    title: 'Accès Mobile',
-    description: 'Consultez vos données depuis n\'importe quel appareil, où que vous soyez.'
+    icon: Lightbulb,
+    title: 'Recommandations',
+    description: 'Suggestions intelligentes pour améliorer la qualité de l\'air de vos espaces.'
   }
 ];
 
-const stats = [
-  { value: '99.9%', label: 'Disponibilité' },
-  { value: '< 1s', label: 'Latence' },
-  { value: '500+', label: 'Capteurs Actifs' },
-  { value: '24/7', label: 'Support' }
+const techStack = [
+  { name: 'React + TypeScript', icon: Code2 },
+  { name: 'Python Flask', icon: Terminal },
+  { name: 'Real-time Updates', icon: Zap },
+  { name: 'Database', icon: Activity }
 ];
 
-const useCases = [
-  {
-    icon: Building2,
-    title: 'Bureaux & Entreprises',
-    description: 'Optimisez le confort et la productivité de vos équipes.'
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
   },
-  {
-    icon: Users,
-    title: 'Établissements Scolaires',
-    description: 'Assurez un environnement sain pour les élèves et enseignants.'
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6 },
   },
-  {
-    icon: Leaf,
-    title: 'Espaces de Santé',
-    description: 'Maintenez des standards élevés de qualité de l\'air.'
-  }
-];
+};
 
 const Landing = () => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg overflow-hidden">
-                <img src="/logo.png" alt="Aerium" className="w-full h-full object-fill" />
+            <motion.div 
+              className="flex items-center gap-3"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="w-9 h-9 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center">
+                <Wind className="w-5 h-5 text-primary" />
               </div>
               <span className="text-xl font-bold text-foreground">Aerium</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link to="/auth">
+            </motion.div>
+            <motion.div 
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Link to="/dashboard">
                 <Button variant="ghost" className="gap-2">
-                  <LogIn className="w-4 h-4" />
-                  Connexion
+                  <BarChart3 className="w-4 h-4" />
+                  Démo
                 </Button>
               </Link>
-              <Link to="/auth">
-                <Button className="gradient-primary text-primary-foreground">
-                  Commencer
-                  <ArrowRight className="w-4 h-4 ml-2" />
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" className="gap-2">
+                  <Github className="w-4 h-4" />
                 </Button>
-              </Link>
-            </div>
+              </a>
+            </motion.div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
+      {/* Hero Section with Parallax */}
+      <section className="relative min-h-screen pt-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center overflow-hidden">
+        {/* Animated Background Elements */}
+        <motion.div
+          className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
+          animate={{ y: scrollY * 0.5 }}
+          transition={{ type: 'spring', stiffness: 10 }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
+          animate={{ y: -scrollY * 0.5 }}
+          transition={{ type: 'spring', stiffness: 10 }}
+        />
+
+        <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              <Leaf className="w-4 h-4" />
-              Surveillance Intelligente de la Qualité de l'Air
-            </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Respirez Mieux,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                Vivez Mieux
-              </span>
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 border border-primary/20"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Wind className="w-4 h-4" />
+              Projet de Surveillance de la Qualité de l'Air
+            </motion.div>
+
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-8 leading-tight">
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+                className="block mb-4"
+              >
+                Surveillez l'Air
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+                className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary"
+              >
+                en Temps Réel
+              </motion.span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Aerium vous permet de surveiller, analyser et optimiser la qualité de l'air 
-              de vos espaces en temps réel pour un environnement plus sain.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/auth">
-                <Button size="lg" className="gradient-primary text-primary-foreground px-8">
-                  Créer un Compte
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
+
+            <motion.p 
+              className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+              Un dashboard interactif pour monitorer la qualité de l'air avec des capteurs IoT, 
+              des analyses avancées et des alertes intelligentes.
+            </motion.p>
+
+            <motion.div 
+              className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+            >
+              <Link to="/dashboard">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button size="lg" className="gradient-primary text-primary-foreground px-8 h-12 text-lg">
+                    Explorer le Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </motion.div>
               </Link>
-              <Link to="/auth">
-                <Button size="lg" variant="outline" className="px-8">
-                  Se Connecter
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" variant="outline" className="px-8 h-12 text-lg">
+                  En Savoir Plus
                 </Button>
-              </Link>
-            </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Tech Stack Pills */}
+            <motion.div
+              className="flex flex-wrap items-center justify-center gap-4 mb-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+            >
+              {techStack.map((tech, index) => (
+                <motion.div
+                  key={index}
+                  className="px-4 py-2 rounded-full bg-card border border-border/50 text-sm font-medium text-foreground/80"
+                  whileHover={{ borderColor: 'hsl(var(--primary))' }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {tech.name}
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
 
-          {/* Stats */}
+          {/* Scroll Indicator */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8"
+            className="absolute left-1/2 transform -translate-x-1/2"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-xs text-muted-foreground">Scroll to explore</p>
+              <div className="w-6 h-10 border-2 border-primary/30 rounded-full flex items-start justify-center p-2">
+                <motion.div
+                  className="w-1 h-2 bg-primary rounded-full"
+                  animate={{ y: [0, 4, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
               </div>
-            ))}
+            </div>
           </motion.div>
         </div>
       </section>
@@ -165,68 +249,175 @@ const Landing = () => {
       {/* Video Section */}
       <VideoSection />
 
-      {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+      {/* Features Section with Stagger Animation */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              Fonctionnalités Puissantes
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
+              Fonctionnalités
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Tout ce dont vous avez besoin pour gérer la qualité de l'air de vos espaces.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Un ensemble complet d'outils pour une surveillance efficace de la qualité de l'air.
             </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          </motion.div>
+
+          <motion.div 
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
+                variants={itemVariants}
+                className="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
+                whileHover={{ y: -8 }}
               >
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <motion.div 
+                  className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 group-hover:from-primary/40 group-hover:to-accent/40 transition-all duration-300"
+                  whileHover={{ rotate: 12, scale: 1.1 }}
+                >
+                  <feature.icon className="w-7 h-7 text-primary" />
+                </motion.div>
+                <h3 className="text-lg font-semibold text-foreground mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Use Cases */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+
+      {/* How It Works Section */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-muted/30">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              Pour Tous les Espaces
+          <motion.div
+            className="text-center mb-20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
+              Comment Ça Marche
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Aerium s'adapte à tous types d'environnements professionnels.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Une architecture simple et efficace pour la surveillance en temps réel.
             </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {useCases.map((useCase, index) => (
+          </motion.div>
+
+          <motion.div
+            className="grid md:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            {[
+              { number: '1', title: 'Capteurs IoT', description: 'Des capteurs collectent les données de qualité de l\'air' },
+              { number: '2', title: 'Backend Python', description: 'Les données sont traitées et stockées en temps réel' },
+              { number: '3', title: 'Dashboard React', description: 'Visualisation interactive et alertes intelligentes' }
+            ].map((step, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="p-8 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 border border-border text-center"
+                variants={itemVariants}
+                className="relative p-8 rounded-2xl bg-card border border-border"
               >
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                  <useCase.icon className="w-8 h-8 text-primary" />
+                <div className="absolute top-0 left-8 transform -translate-y-1/2">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg">
+                    {step.number}
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">
-                  {useCase.title}
+                <h3 className="text-xl font-semibold text-foreground mb-3 mt-4">
+                  {step.title}
                 </h3>
-                <p className="text-muted-foreground">{useCase.description}</p>
+                <p className="text-muted-foreground">{step.description}</p>
+                {index < 2 && (
+                  <motion.div
+                    className="hidden md:block absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2"
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <ArrowRight className="w-6 h-6 text-primary/50" />
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Project Highlights */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            className="text-center mb-20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
+              Points Forts du Projet
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Découvrez ce qui rend Aerium unique et performant.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-12">
+            {[
+              {
+                title: 'Interface Moderne',
+                description: 'Built avec React, TypeScript et Tailwind CSS pour une expérience utilisateur fluide et réactive.',
+                icon: Lightbulb
+              },
+              {
+                title: 'Temps Réel',
+                description: 'Mise à jour instantanée des données via WebSockets pour un monitoring continu sans latence.',
+                icon: Zap
+              },
+              {
+                title: 'Architecture Scalable',
+                description: 'Backend Python Flask conçu pour supporter des milliers de capteurs simultanément.',
+                icon: BarChart3
+              },
+              {
+                title: 'Base de Données',
+                description: 'Stockage efficient avec indexation optimisée pour les requêtes historiques rapides.',
+                icon: Activity
+              }
+            ].map((highlight, index) => (
+              <motion.div
+                key={index}
+                className="flex gap-6 p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-colors"
+                initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <highlight.icon className="w-6 h-6 text-primary" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {highlight.title}
+                  </h3>
+                  <p className="text-muted-foreground">{highlight.description}</p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -234,64 +425,81 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
-            Prêt à Améliorer Votre Air ?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Commencez dès maintenant à surveiller la qualité de l'air de vos espaces.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/auth">
-              <Button size="lg" className="gradient-primary text-primary-foreground px-8">
-                Démarrer Maintenant
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </div>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success" />
-              Installation Gratuite
-            </span>
-            <span className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success" />
-              Support 24/7
-            </span>
-            <span className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success" />
-              Sans Engagement
-            </span>
-          </div>
+      <section className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+        />
+        
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
+              Prêt à Découvrir Aerium ?
+            </h2>
+            <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+              Explorez le dashboard complet avec des données en direct et des fonctionnalités interactives.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/dashboard">
+                  <Button size="lg" className="gradient-primary text-primary-foreground px-8 h-12 text-lg">
+                    Accéder au Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" variant="outline" className="px-8 h-12 text-lg gap-2">
+                    <Github className="w-5 h-5" />
+                    Voir le Code Source
+                  </Button>
+                </a>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <motion.div
+            className="flex flex-col md:flex-row items-center justify-between gap-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg overflow-hidden">
-                <img src="/logo.png" alt="Aerium" className="w-full h-full object-fill" />
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Wind className="w-5 h-5 text-primary" />
               </div>
               <span className="font-semibold text-foreground">Aerium</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 Aerium. Tous droits réservés.
+              © 2024 Aerium - Projet de Surveillance de la Qualité de l'Air
             </p>
             <div className="flex items-center gap-6">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                GitHub
+              </a>
               <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Tableau de Bord
+                Dashboard
               </Link>
               <Link to="/sensors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Capteurs
               </Link>
-              <Link to="/settings" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Paramètres
-              </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </footer>
     </div>

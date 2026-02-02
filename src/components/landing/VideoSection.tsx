@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Player } from '@remotion/player';
+import { Player, PlayerRef } from '@remotion/player';
 import { AeriumVideo, AERIUM_VIDEO_DURATION } from '@/remotion/AeriumVideo';
 import { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
@@ -7,7 +7,42 @@ import { Button } from '@/components/ui/button';
 
 const VideoSection = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const playerRef = useRef<PlayerRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const [showControls, setShowControls] = useState(false);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle Intersection Observer for auto-play/stop
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVideoPlaying(true);
+          if (playerRef.current) {
+            playerRef.current.play();
+          }
+        } else {
+          setVideoPlaying(false);
+          if (playerRef.current) {
+            playerRef.current.pause();
+          }
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const savedMusicState = localStorage.getItem('backgroundMusicPlaying');
@@ -35,6 +70,40 @@ const VideoSection = () => {
     setIsPlaying(!isPlaying);
   };
 
+  // Handle mouse movement to show/hide controls
+  const handleMouseEnter = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+  };
+
+  const handleMouseMove = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    // Auto-hide controls after 3 seconds of inactivity
+    controlsTimeoutRef.current = setTimeout(() => {
+      setShowControls(false);
+    }, 3000);
+  };
+
+  const handleMouseLeave = () => {
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    setShowControls(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
       <div className="max-w-7xl mx-auto">
@@ -59,29 +128,42 @@ const VideoSection = () => {
         </div>
 
         <motion.div
+          ref={containerRef}
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="relative rounded-2xl overflow-hidden border border-border shadow-2xl bg-card"
+          className="relative rounded-2xl overflow-hidden border border-border shadow-2xl bg-card group"
+          onMouseEnter={handleMouseEnter}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
           {/* Remotion Video Player */}
-          <Player
-            component={AeriumVideo}
-            durationInFrames={AERIUM_VIDEO_DURATION}
-            compositionWidth={1920}
-            compositionHeight={1080}
-            fps={30}
-            controls
-            style={{
-              width: '100%',
-              height: 'auto',
-              aspectRatio: '16 / 9',
-            }}
-          />
+          <div className="overflow-hidden rounded-2xl">
+            <Player
+              ref={playerRef}
+              component={AeriumVideo}
+              durationInFrames={AERIUM_VIDEO_DURATION}
+              compositionWidth={1920}
+              compositionHeight={1080}
+              fps={30}
+              controls={showControls}
+              loop
+              style={{
+                width: '100%',
+                height: 'auto',
+                aspectRatio: '16 / 9',
+              }}
+            />
+          </div>
 
-          {/* Music Control Button */}
-          <div className="absolute top-4 right-4 z-10">
+          {/* Music Control Button - Always visible */}
+          <motion.div
+            className="absolute top-4 right-4 z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
             <Button
               variant="secondary"
               size="sm"
@@ -101,7 +183,7 @@ const VideoSection = () => {
                 </>
               )}
             </Button>
-          </div>
+          </motion.div>
 
           {/* Gradient overlays */}
           <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none rounded-2xl" />
