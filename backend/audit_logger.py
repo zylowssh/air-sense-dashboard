@@ -13,7 +13,7 @@ class AuditLog(db.Model):
     __tablename__ = 'audit_log'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     action = db.Column(db.String(100), nullable=False)  # e.g., 'CREATE_SENSOR', 'DELETE_ALERT'
     resource_type = db.Column(db.String(50), nullable=False)  # e.g., 'SENSOR', 'ALERT'
     resource_id = db.Column(db.Integer)

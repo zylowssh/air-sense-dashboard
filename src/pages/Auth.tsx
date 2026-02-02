@@ -114,7 +114,8 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      {/* Demo Credentials Banner */}
+      {
+      /* Demo Credentials Banner
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
         <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-2 text-sm">
           <p className="text-center font-medium text-foreground mb-1">🎯 Demo Accounts Available</p>
@@ -128,6 +129,7 @@ const Auth = () => {
           </div>
         </div>
       </div>
+      */}
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -208,8 +210,8 @@ const Auth = () => {
                 <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-border">
                   <p className="text-sm font-medium text-foreground mb-2">Comptes de démonstration :</p>
                   <div className="space-y-2 text-xs text-muted-foreground">
-                    <p><strong>Admin :</strong> admin@aerium.com / admin123</p>
-                    <p><strong>Utilisateur :</strong> user@aerium.com / user123</p>
+                    <p><strong>Admin :</strong> admin@aerium.app / admin123</p>
+                    <p><strong>Utilisateur :</strong> demo@aerium.app / demo123</p>
                   </div>
                 </div>
               </TabsContent>
