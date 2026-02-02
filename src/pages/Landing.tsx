@@ -316,7 +316,7 @@ const Landing = () => {
 
           {/* Enhanced Scroll Indicator */}
           <motion.div
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+            className="absolute left-1/2 -translate-x-1/2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.6 }}
@@ -332,7 +332,7 @@ const Landing = () => {
               >
                 <motion.div
                   className="w-1.5 h-3 bg-primary rounded-full"
-                  animate={{ y: [0, 16, 0] }}
+                  animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 />
               </motion.div>
