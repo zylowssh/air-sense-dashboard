@@ -4,6 +4,7 @@ import { Bell, AlertCircle, CheckCircle2, Clock, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import {
   Select,
   SelectContent,
@@ -207,9 +208,7 @@ const AlertHistory = () => {
         {/* Alerts List */}
         <div className="space-y-4">
           {loading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Chargement des alertes...</p>
-            </div>
+            <LoadingSkeleton variant="alerts" count={5} />
           ) : alerts.length === 0 ? (
             <Card className="p-8 text-center">
               <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />

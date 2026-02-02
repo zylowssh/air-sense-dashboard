@@ -25,6 +25,8 @@ const Dashboard = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [sensorReadings, setSensorReadings] = useState<Record<string, number[]>>({});
+  const [isTrendLoading, setIsTrendLoading] = useState(true);
+  const [isAlertsLoading, setIsAlertsLoading] = useState(true);
   const isFetchingTrend = useRef(false);
   const isFetchingReadings = useRef(false);
   const [aggregateData, setAggregateData] = useState({
@@ -56,11 +58,15 @@ const Dashboard = () => {
   // Fetch alerts
   useEffect(() => {
     const fetchAlerts = async () => {
+      setIsAlertsLoading(true);
       try {
         const alertsData = await apiClient.getAlerts('nouvelle', 5);
         setAlerts(alertsData);
       } catch (error) {
         console.error('Error fetching alerts:', error);
+        setAlerts([]);
+      } finally {
+        setIsAlertsLoading(false);
       }
     };
 
@@ -102,11 +108,15 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTrendData = async () => {
       if (isFetchingTrend.current || sensors.length === 0) {
-        if (sensors.length === 0) setTrendData([]);
+        if (sensors.length === 0) {
+          setTrendData([]);
+          setIsTrendLoading(false);
+        }
         return;
       }
 
       isFetchingTrend.current = true;
+      setIsTrendLoading(true);
 
       try {
         // Fetch readings for all sensors in parallel
@@ -149,6 +159,7 @@ const Dashboard = () => {
         setTrendData([]);
       } finally {
         isFetchingTrend.current = false;
+        setIsTrendLoading(false);
       }
     };
 
@@ -211,10 +222,10 @@ const Dashboard = () => {
         )}
 
         {/* Main Content Grid */}
-        {isLoading ? (
+        {isTrendLoading ? (
           <div className="space-y-6">
-            <LoadingSkeleton variant="chart" />
-            <LoadingSkeleton variant="card" count={2} />
+            <LoadingSkeleton variant="air-quality" />
+            <LoadingSkeleton variant="alerts" count={3} />
           </div>
         ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -229,6 +240,9 @@ const Dashboard = () => {
           {/* Right Column - Alerts and Insights */}
           <div className="space-y-6">
             {/* Recent Alerts */}
+            {isAlertsLoading ? (
+              <LoadingSkeleton variant="alerts" count={3} />
+            ) : (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -237,18 +251,25 @@ const Dashboard = () => {
             >
               <h3 className="text-base font-semibold text-foreground mb-4">Alertes Récentes</h3>
               <div className="space-y-3">
-                {alerts.slice(0, 3).map((alert: Alert) => (
-                  <AlertCard key={alert.id} alert={alert} />
-                ))}
+                {alerts.slice(0, 3).length > 0 ? (
+                  alerts.slice(0, 3).map((alert: Alert) => (
+                    <AlertCard key={alert.id} alert={alert} />
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-sm text-muted-foreground">Aucune alerte</p>
+                  </div>
+                )}
               </div>
             </motion.div>
+            )}
 
             {/* Quick Insights */}
             <QuickInsights
               sensorsOnline={sensorsOnline}
               totalSensors={totalSensors}
               readingsToday={156}
-              peakCO2={Math.max(...trendData.map(d => d.co2))}
+              peakCO2={trendData.length > 0 ? Math.max(...trendData.map(d => d.co2)) : 0}
               bestAirTime="6:00 AM"
             />
           </div>

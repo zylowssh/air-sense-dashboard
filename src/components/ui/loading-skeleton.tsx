@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 interface LoadingSkeletonProps {
-  variant?: 'card' | 'table' | 'chart' | 'list' | 'sensor' | 'kpi';
+  variant?: 'card' | 'table' | 'chart' | 'list' | 'sensor' | 'kpi' | 'trend-chart' | 'air-quality' | 'alerts' | 'stats';
   count?: number;
   className?: string;
 }
@@ -115,6 +115,82 @@ export function LoadingSkeleton({ variant = 'card', count = 1, className }: Load
               <Skeleton className="h-3 w-24" />
             </div>
             <Skeleton className="h-8 w-20 rounded-md" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (variant === 'trend-chart') {
+    return (
+      <div className={cn("p-5 rounded-xl bg-card border border-border", className)}>
+        <div className="mb-4">
+          <Skeleton className="h-5 w-48 mb-2" />
+          <Skeleton className="h-3 w-64" />
+        </div>
+        <Skeleton className="h-72 w-full rounded-lg mb-4" />
+        <div className="flex gap-4">
+          <Skeleton className="h-16 flex-1 rounded-lg" />
+          <Skeleton className="h-16 flex-1 rounded-lg" />
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'air-quality') {
+    return (
+      <div className={cn("lg:col-span-2 rounded-xl border border-border p-6", className)}>
+        <div className="mb-6">
+          <Skeleton className="h-6 w-48 mb-2" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          {/* Gauge section */}
+          <div className="xl:col-span-4 flex flex-col items-center justify-center">
+            <Skeleton className="h-52 w-52 rounded-full mb-6" />
+            <div className="w-full space-y-3">
+              <Skeleton className="h-12 w-full rounded-lg" />
+              <Skeleton className="h-12 w-full rounded-lg" />
+            </div>
+          </div>
+          {/* Chart section */}
+          <div className="xl:col-span-8 rounded-xl border border-border p-4">
+            <Skeleton className="h-72 w-full rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'alerts') {
+    return (
+      <div className={cn("rounded-xl border border-border p-5", className)}>
+        <Skeleton className="h-5 w-32 mb-4" />
+        <div className="space-y-3">
+          {Array.from({ length: count || 3 }).map((_, i) => (
+            <div key={i} className="flex items-start gap-4 p-3 rounded-lg bg-background/50 border border-border/50">
+              <Skeleton className="h-10 w-10 rounded-lg flex-shrink-0" />
+              <div className="flex-1">
+                <Skeleton className="h-4 w-40 mb-2" />
+                <Skeleton className="h-3 w-56 mb-2" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+              <Skeleton className="h-8 w-16 rounded-md flex-shrink-0" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'stats') {
+    return (
+      <div className={cn("grid grid-cols-2 md:grid-cols-4 gap-4", className)}>
+        {items.map((i) => (
+          <div key={i} className="p-4 rounded-lg bg-card border border-border">
+            <Skeleton className="h-4 w-20 mb-3" />
+            <Skeleton className="h-6 w-16 mb-2" />
+            <Skeleton className="h-3 w-24" />
           </div>
         ))}
       </div>

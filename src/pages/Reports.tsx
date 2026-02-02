@@ -4,6 +4,7 @@ import { Download, BarChart3, TrendingUp, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { apiClient } from '@/lib/apiClient';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -82,8 +83,13 @@ const Reports = () => {
   if (loading) {
     return (
       <AppLayout title="Rapports" subtitle="Analyses et rapports sur les alertes">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Chargement des rapports...</p>
+        <div className="space-y-6">
+          <LoadingSkeleton variant="stats" count={4} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <LoadingSkeleton variant="chart" />
+            <LoadingSkeleton variant="chart" />
+          </div>
+          <LoadingSkeleton variant="chart" />
         </div>
       </AppLayout>
     );

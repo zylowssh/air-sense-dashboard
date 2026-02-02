@@ -181,9 +181,56 @@ const Analytics = () => {
           </Button>
         </div>
 
+        {/* Statistics Cards */}
+        {isLoading ? (
+          <LoadingSkeleton variant="stats" count={4} />
+        ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-lg bg-card border border-border"
+          >
+            <p className="text-xs text-muted-foreground mb-1">Bonne Qualité</p>
+            <p className="text-2xl font-bold text-primary">{stats.goodRangePercent}%</p>
+            <p className="text-xs text-muted-foreground mt-1">du temps</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="p-4 rounded-lg bg-card border border-border"
+          >
+            <p className="text-xs text-muted-foreground mb-1">Pic CO₂</p>
+            <p className="text-2xl font-bold text-destructive">{stats.avgPeak}</p>
+            <p className="text-xs text-muted-foreground mt-1">ppm</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-4 rounded-lg bg-card border border-border"
+          >
+            <p className="text-xs text-muted-foreground mb-1">Heure Idéale</p>
+            <p className="text-2xl font-bold text-success">{stats.peakTime}</p>
+            <p className="text-xs text-muted-foreground mt-1">meilleure qualité</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="p-4 rounded-lg bg-card border border-border"
+          >
+            <p className="text-xs text-muted-foreground mb-1">Lectures</p>
+            <p className="text-2xl font-bold text-primary">{readings.length}</p>
+            <p className="text-xs text-muted-foreground mt-1">enregistrées</p>
+          </motion.div>
+        </div>
+        )}
+
         {/* Multi-metric Chart */}
         {isLoading ? (
-          <LoadingSkeleton variant="chart" />
+          <LoadingSkeleton variant="trend-chart" />
         ) : readings.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}

@@ -230,7 +230,7 @@ const Landing = () => {
 
           {/* Scroll Indicator */}
           <motion.div
-            className="absolute left-1/2 transform -translate-x-1/2"
+            className="absolute left-[45%] transform -translate-x-1/2"
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
