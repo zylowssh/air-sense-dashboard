@@ -3,9 +3,9 @@ import { Eye, Users, GitBranch, Target } from "lucide-react";
 import { AnimatedBackground, SceneTransition, FlowingConnector } from "../components";
 
 const objectives = [
-  { icon: Eye, text: "Rendre visibles des données invisibles", color: "hsl(165, 70%, 55%)" },
-  { icon: Users, text: "Permettre à chacun de comprendre l'environnement qui l'entoure", color: "hsl(190, 80%, 50%)" },
-  { icon: GitBranch, text: "Proposer une solution open-source, modulaire et évolutive", color: "hsl(220, 60%, 55%)" },
+  { icon: Eye, text: "Rendre visibles des données invisibles", color: "hsl(165, 70%, 55%)", emoji: "👁️" },
+  { icon: Users, text: "Permettre à chacun de comprendre l'environnement qui l'entoure", color: "hsl(190, 80%, 50%)", emoji: "👥" },
+  { icon: GitBranch, text: "Proposer une solution open-source, modulaire et évolutive", color: "hsl(220, 60%, 55%)", emoji: "🔗" },
 ];
 
 export const ObjectiveScene: React.FC = () => {

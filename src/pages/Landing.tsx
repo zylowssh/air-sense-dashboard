@@ -517,7 +517,7 @@ const Landing = () => {
                   
                   {/* Number badge with enhanced styling */}
                   <motion.div 
-                    className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary-foreground font-bold text-3xl shadow-2xl shadow-primary/50 group-hover:shadow-primary/70 group-hover:from-primary/50 group-hover:to-accent/50 transition-all duration-300"
+                    className="absolute -top-4 -right-6 w-20 h-20 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-primary-foreground font-bold text-3xl shadow-2xl shadow-primary/50 group-hover:shadow-primary/70 group-hover:from-primary/50 group-hover:to-accent/50 transition-all duration-300"
                     whileHover={{ scale: 1.2, rotate: 15 }}
                     transition={{ duration: 0.3 }}
                   >
@@ -547,22 +547,6 @@ const Landing = () => {
                       {step.details}
                     </motion.div>
                   </div>
-                  
-                  {/* Connection line */}
-                  {index < 2 && (
-                    <motion.div
-                      className="hidden md:flex absolute right-0 top-1/2 transform translate-x-full -translate-y-1/2 items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30"
-                      animate={{ x: [0, 6, 0] }}
-                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      <motion.div
-                        animate={{ x: [0, 3, 0] }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                      >
-                        <ArrowRight className="w-6 h-6 text-primary" />
-                      </motion.div>
-                    </motion.div>
-                  )}
                 </motion.div>
               </motion.div>
             ))}
@@ -676,8 +660,6 @@ const Landing = () => {
                       initial={{ x: -10 }}
                       whileHover={{ x: 0 }}
                     >
-                      <span>En savoir plus</span>
-                      <ArrowRight className="w-4 h-4" />
                     </motion.div>
                   </div>
                 </div>
@@ -848,7 +830,7 @@ const Landing = () => {
             <motion.div>
               <h4 className="font-semibold text-foreground mb-4">Information</h4>
               <p className="text-sm text-muted-foreground mb-3">
-                © 2024 Aerium - Projet de Surveillance de la Qualité de l'Air | Trophée NSI
+                © 2026 Aerium - Projet de Surveillance de la Qualité de l'Air
               </p>
               <div className="flex gap-4">
                 <motion.a

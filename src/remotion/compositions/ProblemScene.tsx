@@ -1,11 +1,11 @@
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from "remotion";
-import { AlertTriangle, MapPin, Clock, XCircle } from "lucide-react";
+import { AlertTriangle, MapPin, Clock, XCircle, Activity } from "lucide-react";
 import { AnimatedBackground, AnimatedCard, GlowingText, SceneTransition } from "../components";
 
 const problems = [
-  { icon: MapPin, text: "Les stations de mesure officielles sont peu nombreuses", color: "hsl(0, 70%, 55%)" },
-  { icon: Clock, text: "Les données sont difficiles à consulter et rarement en temps réel", color: "hsl(35, 80%, 55%)" },
-  { icon: XCircle, text: "Il manque un outil simple, local, et compréhensible par tous", color: "hsl(45, 90%, 55%)" },
+  { icon: MapPin, text: "Les stations de mesure officielles sont peu nombreuses", color: "hsl(0, 70%, 55%)", emoji: "🗺️" },
+  { icon: Clock, text: "Les données sont difficiles à consulter et rarement en temps réel", color: "hsl(35, 80%, 55%)", emoji: "⏱️" },
+  { icon: XCircle, text: "Il manque un outil simple, local, et compréhensible par tous", color: "hsl(45, 90%, 55%)", emoji: "❌" },
 ];
 
 export const ProblemScene: React.FC = () => {

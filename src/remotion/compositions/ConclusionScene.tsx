@@ -186,7 +186,7 @@ export const ConclusionScene: React.FC = () => {
           />
         </div>
 
-        {/* NSI Badge */}
+        {/* NSI Badge 
         <div
           style={{
             display: "flex",
@@ -244,6 +244,7 @@ export const ConclusionScene: React.FC = () => {
             </span>
           </div>
         </div>
+        */}
       </div>
 
       <SceneTransition durationInFrames={180} type="fade" direction="in" />
