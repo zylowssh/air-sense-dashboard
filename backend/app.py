@@ -27,7 +27,7 @@ load_dotenv()
 
 # Configure logging
 def setup_logging(app):
-    """Setup application logging"""
+    """Setup application logging with enhanced CLI output"""
     if not app.config.get('DEBUG'):
         if not os.path.exists('logs'):
             os.mkdir('logs')
@@ -43,7 +43,13 @@ def setup_logging(app):
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
-        app.logger.info('Aerium Air Quality Dashboard startup')
+        app.logger.info('[INIT] Aerium Air Quality Dashboard startup')
+    else:
+        # Enhanced console output for debug mode
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
+        app.logger.addHandler(console_handler)
+        app.logger.setLevel(logging.INFO)
 
 
 def rate_limit_key():
@@ -106,7 +112,7 @@ def create_app():
             default_limits=["10000 per day", "1000 per hour", "100 per minute"],
             storage_uri="memory://"
         )
-        app.logger.info('Rate limiting enabled: 10000/day, 1000/hour, 100/minute')
+        app.logger.info('[OK] Rate limiting enabled: 10000/day, 1000/hour, 100/minute')
     else:
         # Create a dummy limiter that doesn't limit anything
         limiter = Limiter(
@@ -115,7 +121,7 @@ def create_app():
             default_limits=[],
             enabled=False
         )
-        app.logger.info('Rate limiting disabled')
+        app.logger.info('[WARN] Rate limiting disabled')
     
     
     # Initialize caching
@@ -123,16 +129,20 @@ def create_app():
         'CACHE_TYPE': 'simple',
         'CACHE_DEFAULT_TIMEOUT': 300
     })
+    app.logger.info('[OK] Caching initialized')
     
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', logger=False, engineio_logger=False)
-    
+    app.logger.info('[OK] WebSocket (Socket.IO) initialized')
+
     # Register blueprints
+    app.logger.info('[INFO] Registering API blueprints...')
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(sensors_bp, url_prefix='/api/sensors')
     app.register_blueprint(readings_bp, url_prefix='/api/readings')
     app.register_blueprint(users_bp, url_prefix='/api/users')
     app.register_blueprint(alerts_bp, url_prefix='/api/alerts')
     app.register_blueprint(reports_bp, url_prefix='/api/reports')
+    app.logger.info('[OK] All API blueprints registered')
     
     # Health check endpoint
     @app.route('/api/health')
@@ -229,14 +239,27 @@ def create_app():
     # Initialize database
     with app.app_context():
         init_db()
+    app.logger.info('[OK] Database initialized')
     
     # Initialize scheduler for sensor simulation
     init_scheduler(app, socketio)
+    app.logger.info('[OK] Scheduler initialized for sensor simulation')
     
-    app.logger.info('Aerium app initialized successfully')
+    app.logger.info('[SUCCESS] Aerium app initialized successfully')
     return app, socketio
 
 app, socketio = create_app()
 
 if __name__ == '__main__':
+    print("\n" + "="*80)
+    print("                   AERIUM - Air Quality Monitoring Platform")
+    print("="*80)
+    print("\n[START] Flask backend server starting...\n")
+    print("[SERVICES]")
+    print("  API:      http://0.0.0.0:5000")
+    print("  WebSocket: ws://0.0.0.0:5000")
+    print("\n[DEBUG] Debug mode: ON")
+    print("[INFO] Press Ctrl+C to stop the server\n")
+    print("="*80 + "\n")
+    
     socketio.run(app, host='0.0.0.0', port=5000, debug=True, allow_unsafe_werkzeug=True)
