@@ -12,6 +12,7 @@ import { ConclusionScene } from "@/remotion/compositions/ConclusionScene";
 import { DatabaseSchemaScene } from "@/remotion/compositions/DatabaseSchemaScene";
 import { BackendArchitectureScene } from "@/remotion/compositions/BackendArchitectureScene";
 import { useState, forwardRef, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { Download, Copy, Check } from "lucide-react";
 
 const compositions = [
@@ -33,9 +34,32 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
   const [activeScene, setActiveScene] = useState("full");
   const [showExportModal, setShowExportModal] = useState(false);
   const [copiedCommand, setCopiedCommand] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const scrollTargetRef = useRef<HTMLDivElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const currentComposition = compositions.find((c) => c.id === activeScene) || compositions[0];
+
+  // Intersection Observer to detect when section is in view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
 
   const copyExportCommand = async (command: string) => {
     await navigator.clipboard.writeText(command);
@@ -56,7 +80,7 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
   }, [ref]);
 
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 bg-muted/30">
+    <section ref={sectionRef} className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 bg-muted/30">
       <div ref={scrollTargetRef} className="w-full max-w-7xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
@@ -86,25 +110,70 @@ const VideoSection = forwardRef<HTMLDivElement>((props, ref) => {
           ))}
         </div>
 
-        {/* Video player */}
-        <div className="rounded-2xl overflow-hidden border border-border shadow-2xl bg-card">
-          <div className="aspect-video">
-            <Player
-              key={activeScene}
-              component={currentComposition.component}
-              durationInFrames={currentComposition.frames}
-              fps={30}
-              compositionWidth={1920}
-              compositionHeight={1080}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-              controls
-              loop
-              autoPlay
-            />
-          </div>
+        {/* Video player with pronounced depth effect */}
+        <div ref={videoContainerRef} className="relative mb-8">
+          {/* Far background depth layer - cyan/blue glow */}
+          <motion.div 
+            className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/20 via-accent/15 to-primary/20 blur-3xl -z-30 scale-125"
+            initial={{ opacity: 0, scale: 1.1 }}
+            whileInView={{ opacity: 0.8, scale: 1.25 }}
+            viewport={{ once: false, amount: 0.5 }}
+            transition={{ duration: 0.8 }}
+          />
+          
+          {/* Mid background depth layer - accent/purple glow */}
+          <motion.div 
+            className="absolute inset-0 rounded-2xl bg-gradient-to-tl from-accent/15 via-primary/10 to-accent/15 blur-2xl -z-20 scale-110"
+            initial={{ opacity: 0, scale: 1.05 }}
+            whileInView={{ opacity: 0.6, scale: 1.15 }}
+            viewport={{ once: false, amount: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+          />
+          
+          {/* Foreground depth layer - primary/accent */}
+          <motion.div 
+            className="absolute inset-0 rounded-2xl bg-gradient-to-t from-primary/10 to-transparent blur-xl -z-10 scale-105"
+            initial={{ opacity: 0, scale: 1.02 }}
+            whileInView={{ opacity: 0.5, scale: 1.08 }}
+            viewport={{ once: false, amount: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          />
+
+          {/* Main video player container */}
+          <motion.div 
+            className="rounded-2xl overflow-hidden border border-border/80 shadow-2xl bg-card relative z-10"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+          >
+            <div className="aspect-video">
+              {isInView && (
+                <Player
+                  key={activeScene}
+                  component={currentComposition.component}
+                  durationInFrames={currentComposition.frames}
+                  fps={30}
+                  compositionWidth={1920}
+                  compositionHeight={1080}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                  controls
+                  loop
+                  autoPlay
+                />
+              )}
+              {!isInView && (
+                <div className="w-full h-full bg-card/50 flex items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-muted-foreground">Vidéo en attente...</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
         </div>
 
         {/* Info */}

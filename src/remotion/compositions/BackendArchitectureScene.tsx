@@ -10,29 +10,29 @@ const backendLayers = [
     color: "hsl(200, 80%, 55%)",
   },
   {
-    name: "Edge Functions",
-    description: "Logique métier Deno",
+    name: "Backend Flask",
+    description: "API REST + WebSockets",
     icon: Zap,
     color: "hsl(165, 70%, 55%)",
   },
   {
-    name: "Auth Supabase",
+    name: "Authentification",
     description: "JWT & Sessions",
     icon: Lock,
     color: "hsl(45, 90%, 55%)",
   },
   {
-    name: "PostgreSQL",
-    description: "Données + RLS",
+    name: "SQLite",
+    description: "Base de données",
     icon: Database,
     color: "hsl(260, 60%, 55%)",
   },
 ];
 
 const features = [
-  { label: "Temps réel", desc: "WebSockets Supabase" },
-  { label: "Serverless", desc: "Déploiement automatique" },
-  { label: "TypeScript", desc: "Types générés" },
+  { label: "Temps réel", desc: "WebSockets Python" },
+  { label: "Python", desc: "Backend performant" },
+  { label: "TypeScript", desc: "Frontend type-safe" },
 ];
 
 export const BackendArchitectureScene: React.FC = () => {
@@ -124,7 +124,7 @@ export const BackendArchitectureScene: React.FC = () => {
               opacity: subtitleOpacity,
             }}
           >
-            Lovable Cloud — Supabase Edge Functions + PostgreSQL
+            React + Flask — API REST avec WebSockets en temps réel
           </p>
         </div>
 

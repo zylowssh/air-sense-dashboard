@@ -214,3 +214,53 @@
   transition-duration: 0ms !important;
   transition-delay: 0ms !important;
 }
+
+/* Override Remotion Player styling */
+.remotion-player {
+  border: none !important;
+  outline: none !important;
+  overflow: hidden !important;
+}
+
+.remotion-player * {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.remotion-container {
+  border: none !important;
+  outline: none !important;
+  overflow: hidden !important;
+}
+
+/* Hide any internal Remotion borders */
+[class*="remotion"] {
+  border: none !important;
+  outline: none !important;
+}
+
+[class*="remotion"] * {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Canvas and SVG within Remotion */
+.remotion-player canvas,
+.remotion-player svg,
+.remotion-container canvas,
+.remotion-container svg {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Target the wrapper more aggressively */
+[role="region"] {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Mask any visible borders with overflow clipping */
+div[style*="position"] div[style*="absolute"] {
+  overflow: hidden !important;
+}

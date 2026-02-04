@@ -124,7 +124,7 @@ export const DatabaseSchemaScene: React.FC = () => {
               opacity: subtitleOpacity,
             }}
           >
-            PostgreSQL avec Supabase — Relations et sécurité RLS
+            SQLite — Stockage local efficace et relationnel
           </p>
         </div>
 
@@ -221,7 +221,7 @@ export const DatabaseSchemaScene: React.FC = () => {
           })}
         </div>
 
-        {/* RLS info */}
+        {/* Database info */}
         <div
           style={{
             display: "flex",
@@ -237,10 +237,10 @@ export const DatabaseSchemaScene: React.FC = () => {
           <Shield size={24} color="hsl(165, 70%, 55%)" />
           <div>
             <p style={{ fontSize: 16, fontWeight: 600, color: "hsl(165, 70%, 55%)", margin: 0 }}>
-              Row Level Security (RLS)
+              Données Persistantes
             </p>
             <p style={{ fontSize: 13, color: "hsl(215, 20%, 65%)", margin: "4px 0 0 0" }}>
-              Chaque utilisateur accède uniquement à ses propres données — Sécurité niveau PostgreSQL
+              Stockage SQLite avec relations entre tables — Requêtes optimisées avec SQLAlchemy ORM
             </p>
           </div>
         </div>
