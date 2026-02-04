@@ -29,7 +29,7 @@ export function AirQualityOverviewCard({
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        'relative lg:col-span-2 rounded-2xl border border-border p-6 overflow-hidden',
+        'relative lg:col-span-2 rounded-2xl border border-border p-4 overflow-hidden',
         'bg-card/50 backdrop-blur-sm'
       )}
       aria-labelledby="air-quality-overview"
@@ -48,58 +48,52 @@ export function AirQualityOverviewCard({
         )}
       />
 
-      <header className="relative flex items-start justify-between gap-4 mb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <h2 id="air-quality-overview" className="text-lg font-semibold text-foreground">
-              Aperçu de la Qualité de l'Air
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Surveillance en temps réel de tous les capteurs
-          </p>
+      <header className="relative flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <h2 id="air-quality-overview" className="text-base font-semibold text-foreground">
+            Aperçu Qualité de l'Air
+          </h2>
         </div>
-
         <LiveIndicator isRefreshing={isRefreshing} />
       </header>
 
-      <div className="relative grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+      <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
         {/* Gauge + quick stats */}
-        <div className="xl:col-span-4 flex flex-col items-center justify-center">
-          <Co2DonutGauge co2={avgCo2} size={210} />
+        <div className="lg:col-span-4 flex flex-col items-center gap-4">
+          <Co2DonutGauge co2={avgCo2} size={180} />
 
-          <div className="mt-6 w-full max-w-sm grid grid-cols-2 gap-3">
+          <div className="w-full grid grid-cols-2 gap-2">
             <motion.div 
-              className="rounded-xl border border-border bg-background/50 backdrop-blur-sm p-4 hover:border-primary/30 transition-colors"
+              className="rounded-lg border border-border bg-background/50 backdrop-blur-sm p-3 hover:border-primary/30 transition-colors"
               whileHover={{ y: -2 }}
             >
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                <Activity className="h-4 w-4 text-destructive" />
-                <span>Pic (max)</span>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                <Activity className="h-3.5 w-3.5 text-destructive" />
+                <span>Pic</span>
               </div>
-              <div className="text-lg font-bold text-foreground tabular-nums">
-                {peak} <span className="text-sm font-normal text-muted-foreground">ppm</span>
+              <div className="text-base font-bold text-foreground tabular-nums">
+                {peak} <span className="text-xs font-normal text-muted-foreground">ppm</span>
               </div>
             </motion.div>
             <motion.div 
-              className="rounded-xl border border-border bg-background/50 backdrop-blur-sm p-4 hover:border-primary/30 transition-colors"
+              className="rounded-lg border border-border bg-background/50 backdrop-blur-sm p-3 hover:border-primary/30 transition-colors"
               whileHover={{ y: -2 }}
             >
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                <Radio className="h-4 w-4 text-primary" />
-                <span>Capteurs actifs</span>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                <Radio className="h-3.5 w-3.5 text-primary" />
+                <span>Actifs</span>
               </div>
-              <div className="text-lg font-bold text-foreground tabular-nums">
-                {sensorsOnline}<span className="text-sm font-normal text-muted-foreground">/{totalSensors}</span>
+              <div className="text-base font-bold text-foreground tabular-nums">
+                {sensorsOnline}<span className="text-xs font-normal text-muted-foreground">/{totalSensors}</span>
               </div>
             </motion.div>
           </div>
         </div>
 
         {/* Trend */}
-        <div className="xl:col-span-8 rounded-xl border border-border bg-background/30 backdrop-blur-sm p-4">
-          <TrendChart title={null} data={trendData} height={260} />
+        <div className="lg:col-span-8 rounded-xl border border-border bg-background/30 backdrop-blur-sm p-3">
+          <TrendChart title={null} data={trendData} height={220} />
         </div>
       </div>
     </motion.section>
