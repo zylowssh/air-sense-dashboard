@@ -150,7 +150,12 @@ const Landing = () => {
 
   const scrollToSection = () => {
     if (videoSectionRef.current) {
-      videoSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+      const navbarHeight = 130; // Navbar height + padding to account for proper spacing
+      const elementPosition = videoSectionRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementPosition - navbarHeight,
+        behavior: 'smooth',
+      });
     }
   };
 

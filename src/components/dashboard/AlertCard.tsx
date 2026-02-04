@@ -3,12 +3,13 @@ import { Alert } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
+import { memo } from 'react';
 
 export interface AlertCardProps {
   alert: Alert;
 }
 
-export function AlertCard({ alert }: AlertCardProps) {
+export const AlertCard = memo(function AlertCard({ alert }: AlertCardProps) {
   const typeStyles = {
     avertissement: {
       bg: 'bg-warning/10',
@@ -85,4 +86,4 @@ export function AlertCard({ alert }: AlertCardProps) {
       </div>
     </motion.div>
   );
-}
+});

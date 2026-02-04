@@ -2,6 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, BarChart3, Radio, Bell, FileText, Settings, ChevronLeft, ChevronRight, ShieldCheck, MapPin, Lightbulb, Wrench, GitCompare, Home } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 const navItems = [
   { to: '/', icon: Home, label: 'Accueil' },
@@ -22,6 +23,7 @@ const navItems = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { isAdmin } = useAuth();
 
   return (
     <aside
@@ -42,7 +44,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-4 space-y-1">
-        {navItems.map(({ to, icon: Icon, label }) => {
+        {navItems.filter(item => item.to !== '/admin' || isAdmin).map(({ to, icon: Icon, label }) => {
           const isActive = location.pathname === to;
           
           return (

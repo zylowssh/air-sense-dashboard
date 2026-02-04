@@ -1,6 +1,7 @@
 import { Radio, Activity, TrendingUp, Clock, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { memo } from 'react';
 
 interface QuickInsightsProps {
   sensorsOnline: number;
@@ -10,7 +11,7 @@ interface QuickInsightsProps {
   bestAirTime: string;
 }
 
-export function QuickInsights({
+export const QuickInsights = memo(function QuickInsights({
   sensorsOnline,
   totalSensors,
   readingsToday,
@@ -81,4 +82,4 @@ export function QuickInsights({
       </div>
     </motion.div>
   );
-}
+});

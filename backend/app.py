@@ -98,12 +98,25 @@ def create_app():
         }
     })
     
-    # Initialize rate limiter
-    limiter = Limiter(
-        app=app,
-        key_func=rate_limit_key,
-        default_limits=["200 per day", "50 per hour"] if app.config.get('ENABLE_RATE_LIMITING') else []
-    )
+    # Initialize rate limiter only if enabled
+    if app.config.get('ENABLE_RATE_LIMITING'):
+        limiter = Limiter(
+            app=app,
+            key_func=rate_limit_key,
+            default_limits=["10000 per day", "1000 per hour", "100 per minute"],
+            storage_uri="memory://"
+        )
+        app.logger.info('Rate limiting enabled: 10000/day, 1000/hour, 100/minute')
+    else:
+        # Create a dummy limiter that doesn't limit anything
+        limiter = Limiter(
+            app=app,
+            key_func=lambda: None,  # Return None to disable
+            default_limits=[],
+            enabled=False
+        )
+        app.logger.info('Rate limiting disabled')
+    
     
     # Initialize caching
     cache = Cache(app, config={

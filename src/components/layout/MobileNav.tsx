@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 
 const navItems = [
   { to: '/', icon: Home, label: 'Accueil' },
@@ -38,6 +39,7 @@ const navItems = [
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { isAdmin } = useAuth();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -58,7 +60,7 @@ export function MobileNav() {
         </SheetHeader>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map(({ to, icon: Icon, label }) => {
+          {navItems.filter(item => item.to !== '/admin' || isAdmin).map(({ to, icon: Icon, label }) => {
             const isActive = location.pathname === to;
             
             return (

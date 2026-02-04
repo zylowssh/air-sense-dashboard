@@ -5,6 +5,7 @@ import { LiveIndicator } from '@/components/dashboard/LiveIndicator';
 import { Co2DonutGauge } from '@/components/dashboard/Co2DonutGauge';
 import type { Reading } from '@/lib/sensorData';
 import { cn } from '@/lib/utils';
+import { memo } from 'react';
 
 interface AirQualityOverviewCardProps {
   avgCo2: number;
@@ -14,7 +15,7 @@ interface AirQualityOverviewCardProps {
   totalSensors: number;
 }
 
-export function AirQualityOverviewCard({
+export const AirQualityOverviewCard = memo(function AirQualityOverviewCard({
   avgCo2,
   trendData,
   isRefreshing,
@@ -98,4 +99,4 @@ export function AirQualityOverviewCard({
       </div>
     </motion.section>
   );
-}
+});

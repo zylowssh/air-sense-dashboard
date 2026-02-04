@@ -33,13 +33,23 @@ const Dashboard = () => {
   const [isAlertsLoading, setIsAlertsLoading] = useState(true);
   const isFetchingTrend = useRef(false);
   const isFetchingReadings = useRef(false);
+  const prevSensorsLength = useRef(0);
+  const isInitialized = useRef(false);
   const [aggregateData, setAggregateData] = useState({
     avgCo2: 0,
     avgTemp: 0,
     avgHumidity: 0
   });
 
-  // Fetch aggregate data
+  // Initialize prevSensorsLength on first render
+  useEffect(() => {
+    if (!isInitialized.current && sensors.length > 0) {
+      prevSensorsLength.current = sensors.length;
+      isInitialized.current = true;
+    }
+  }, [sensors.length]);
+
+  // Fetch aggregate data - only when sensors length actually changes
   useEffect(() => {
     const fetchAggregate = async () => {
       try {
@@ -54,12 +64,17 @@ const Dashboard = () => {
       }
     };
 
-    if (sensors.length > 0) {
+    // Only fetch if sensors length changed or initial load
+    const lengthChanged = sensors.length !== prevSensorsLength.current;
+    if (sensors.length > 0 && (lengthChanged || !isInitialized.current)) {
+      if (lengthChanged) {
+        prevSensorsLength.current = sensors.length;
+      }
       fetchAggregate();
     }
-  }, [sensors]);
+  }, [sensors.length]);
 
-  // Fetch alerts
+  // Fetch alerts - only on mount, then poll
   useEffect(() => {
     const fetchAlerts = async () => {
       setIsAlertsLoading(true);
@@ -75,15 +90,20 @@ const Dashboard = () => {
     };
 
     fetchAlerts();
-    // Poll for new alerts every 10 seconds
-    const interval = setInterval(fetchAlerts, 10000);
+    // Poll for new alerts every 30 seconds (increased from 10)
+    const interval = setInterval(fetchAlerts, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty dependency array - only runs once on mount
 
-  // Fetch historical readings for mini charts
+  // Fetch historical readings for mini charts - only when sensors count changes
   useEffect(() => {
     const fetchSensorReadings = async () => {
       if (isFetchingReadings.current || sensors.length === 0) return;
+      
+      // Check if sensors length actually changed
+      if (sensors.length === prevSensorsLength.current && Object.keys(sensorReadings).length > 0) {
+        return;
+      }
       
       isFetchingReadings.current = true;
       const readings: Record<string, number[]> = {};
@@ -108,7 +128,7 @@ const Dashboard = () => {
     fetchSensorReadings();
   }, [sensors.length]); // Only depend on sensors length, not the array itself
 
-  // Fetch aggregate trend data for overview chart
+  // Fetch aggregate trend data for overview chart - only when sensors count changes
   useEffect(() => {
     const fetchTrendData = async () => {
       if (isFetchingTrend.current || sensors.length === 0) {
@@ -116,6 +136,12 @@ const Dashboard = () => {
           setTrendData([]);
           setIsTrendLoading(false);
         }
+        return;
+      }
+
+      // Check if sensors length actually changed or if it's initial load
+      const isInitialLoad = trendData.length === 0 && !isFetchingTrend.current;
+      if (!isInitialLoad && sensors.length === prevSensorsLength.current) {
         return;
       }
 
@@ -169,8 +195,8 @@ const Dashboard = () => {
 
     fetchTrendData();
     
-    // Update every 30 seconds
-    const interval = setInterval(fetchTrendData, 30000);
+    // Update every 60 seconds (increased from 30)
+    const interval = setInterval(fetchTrendData, 60000);
     return () => clearInterval(interval);
   }, [sensors.length]); // Only depend on sensors length, not the array itself
 
@@ -234,6 +260,7 @@ const Dashboard = () => {
         ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <AirQualityOverviewCard
+            key="air-quality-overview"
             avgCo2={avgCo2}
             trendData={trendData}
             isRefreshing={isRefreshing}
@@ -248,6 +275,7 @@ const Dashboard = () => {
               <LoadingSkeleton variant="alerts" count={3} />
             ) : (
             <motion.div
+              key="recent-alerts-container"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
