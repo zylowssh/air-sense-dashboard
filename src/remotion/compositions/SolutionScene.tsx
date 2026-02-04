@@ -181,7 +181,7 @@ export const SolutionScene: React.FC = () => {
         </p>
       </div>
 
-      <SceneTransition durationInFrames={180} type="fade" direction="in" />
+      <SceneTransition durationInFrames={180} type="fade" direction="both" />
     </AbsoluteFill>
   );
 };

@@ -7,6 +7,10 @@ import { AirQualityOverviewCard } from '@/components/dashboard/AirQualityOvervie
 import { SensorCard } from '@/components/dashboard/SensorCard';
 import { AlertCard } from '@/components/dashboard/AlertCard';
 import { QuickInsights } from '@/components/dashboard/QuickInsights';
+import { MaintenanceWidget } from '@/components/dashboard/MaintenanceWidget';
+import { PredictiveAlertsWidget } from '@/components/dashboard/PredictiveAlertsWidget';
+import { EnergyMonitorWidget } from '@/components/dashboard/EnergyMonitorWidget';
+import { OccupancyWidget } from '@/components/dashboard/OccupancyWidget';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { useSensors } from '@/hooks/useSensors';
 import { apiClient } from '@/lib/apiClient';
@@ -238,7 +242,7 @@ const Dashboard = () => {
           />
 
           {/* Right Column - Alerts and Insights */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Recent Alerts */}
             {isAlertsLoading ? (
               <LoadingSkeleton variant="alerts" count={3} />
@@ -247,16 +251,16 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="p-5 rounded-xl bg-card border border-border"
+              className="p-4 rounded-xl bg-card border border-border"
             >
-              <h3 className="text-base font-semibold text-foreground mb-4">Alertes Récentes</h3>
-              <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground mb-3">Alertes Récentes</h3>
+              <div className="space-y-2">
                 {alerts.slice(0, 3).length > 0 ? (
                   alerts.slice(0, 3).map((alert: Alert) => (
                     <AlertCard key={alert.id} alert={alert} />
                   ))
                 ) : (
-                  <div className="text-center py-8">
+                  <div className="text-center py-4">
                     <p className="text-sm text-muted-foreground">Aucune alerte</p>
                   </div>
                 )}
@@ -275,6 +279,14 @@ const Dashboard = () => {
           </div>
         </div>
         )}
+
+        {/* Secondary Widgets Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MaintenanceWidget />
+          <PredictiveAlertsWidget />
+          <EnergyMonitorWidget />
+          <OccupancyWidget />
+        </div>
 
         {/* Active Sensors */}
         <div>

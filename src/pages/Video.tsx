@@ -9,9 +9,10 @@ import { FeaturesScene } from "@/remotion/compositions/FeaturesScene";
 import { TechStackScene } from "@/remotion/compositions/TechStackScene";
 import { UseCasesScene } from "@/remotion/compositions/UseCasesScene";
 import { ConclusionScene } from "@/remotion/compositions/ConclusionScene";
+import { DatabaseSchemaScene } from "@/remotion/compositions/DatabaseSchemaScene";
+import { BackendArchitectureScene } from "@/remotion/compositions/BackendArchitectureScene";
 import { useState } from "react";
-import { useAudioGeneration } from "@/hooks/useAudioGeneration";
-import { Volume2, Music, Loader2, Download, Copy, Check } from "lucide-react";
+import { Download, Copy, Check } from "lucide-react";
 import aeriumLogo from "@/assets/aerium-logo.png";
 
 const compositions = [
@@ -22,6 +23,8 @@ const compositions = [
   { id: "objective", label: "Objectif", frames: 150, component: ObjectiveScene },
   { id: "how-it-works", label: "Fonctionnement", frames: 180, component: HowItWorksScene },
   { id: "features", label: "Fonctionnalités", frames: 150, component: FeaturesScene },
+  { id: "database", label: "Base de Données", frames: 180, component: DatabaseSchemaScene },
+  { id: "backend", label: "Backend", frames: 180, component: BackendArchitectureScene },
   { id: "tech-stack", label: "Technique", frames: 180, component: TechStackScene },
   { id: "use-cases", label: "Cas d'Usage", frames: 150, component: UseCasesScene },
   { id: "conclusion", label: "Conclusion", frames: 180, component: ConclusionScene },
@@ -29,51 +32,10 @@ const compositions = [
 
 const Video = () => {
   const [activeScene, setActiveScene] = useState("full");
-  const { 
-    isGenerating, 
-    progress, 
-    audioAssets, 
-    error, 
-    generateAllNarration, 
-    generateMusic,
-    playAudio 
-  } = useAudioGeneration();
-  const [musicUrl, setMusicUrl] = useState<string | null>(null);
-  const [isGeneratingMusic, setIsGeneratingMusic] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [copiedCommand, setCopiedCommand] = useState(false);
 
   const currentComposition = compositions.find((c) => c.id === activeScene) || compositions[0];
-
-  const handleGenerateVoice = async () => {
-    try {
-      await generateAllNarration();
-    } catch (err) {
-      console.error("Failed to generate narration:", err);
-    }
-  };
-
-  const handleGenerateMusic = async () => {
-    setIsGeneratingMusic(true);
-    try {
-      const url = await generateMusic(
-        "Ambient electronic background music, inspirational technology documentary style, subtle synth pads, modern and clean, gentle build-up, 50 seconds",
-        50
-      );
-      setMusicUrl(url);
-    } catch (err) {
-      console.error("Failed to generate music:", err);
-    } finally {
-      setIsGeneratingMusic(false);
-    }
-  };
-
-  const handlePlaySceneAudio = (sceneId: string) => {
-    const asset = audioAssets.find(a => a.sceneId === sceneId);
-    if (asset) {
-      playAudio(asset.audioUrl);
-    }
-  };
 
   const copyExportCommand = async (command: string) => {
     await navigator.clipboard.writeText(command);
@@ -99,40 +61,6 @@ const Video = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleGenerateVoice}
-              disabled={isGenerating}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Génération... {Math.round(progress)}%</span>
-                </>
-              ) : (
-                <>
-                  <Volume2 className="w-4 h-4" />
-                  <span>Générer Voix</span>
-                </>
-              )}
-            </button>
-            <button
-              onClick={handleGenerateMusic}
-              disabled={isGeneratingMusic}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg glass text-sm font-medium text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
-            >
-              {isGeneratingMusic ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Génération...</span>
-                </>
-              ) : (
-                <>
-                  <Music className="w-4 h-4" />
-                  <span>Générer Musique</span>
-                </>
-              )}
-            </button>
             <button
               onClick={() => setShowExportModal(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
@@ -210,32 +138,6 @@ const Video = () => {
 
       {/* Main content */}
       <main className="flex-1 container mx-auto p-6 flex flex-col gap-6">
-        {/* Error message */}
-        {error && (
-          <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4 text-destructive text-sm">
-            {error}
-          </div>
-        )}
-
-        {/* Audio status */}
-        {(audioAssets.length > 0 || musicUrl) && (
-          <div className="flex flex-wrap items-center gap-2">
-            {audioAssets.length > 0 && (
-              <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                ✓ {audioAssets.length} narrations générées
-              </span>
-            )}
-            {musicUrl && (
-              <button
-                onClick={() => playAudio(musicUrl)}
-                className="px-3 py-1 rounded-full bg-secondary text-foreground text-xs font-medium hover:bg-secondary/80 transition-colors"
-              >
-                ▶ Jouer la musique
-              </button>
-            )}
-          </div>
-        )}
-
         {/* Scene selector */}
         <div className="flex flex-wrap gap-2 justify-center">
           {compositions.map((comp) => (
@@ -249,18 +151,6 @@ const Video = () => {
               }`}
             >
               {comp.label}
-              {audioAssets.find(a => a.sceneId === comp.id) && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlaySceneAudio(comp.id);
-                  }}
-                  className="ml-2 text-xs opacity-70 hover:opacity-100"
-                  title="Jouer la narration"
-                >
-                  🔊
-                </button>
-              )}
             </button>
           ))}
         </div>
@@ -269,9 +159,8 @@ const Video = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-5xl aspect-video rounded-2xl overflow-hidden glow-primary">
             <Player
-              key={`${activeScene}-${musicUrl || 'no-music'}`}
+              key={activeScene}
               component={currentComposition.component}
-              inputProps={activeScene === "full" ? { musicUrl } : {}}
               durationInFrames={currentComposition.frames}
               fps={30}
               compositionWidth={1920}
