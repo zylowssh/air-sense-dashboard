@@ -221,7 +221,7 @@ export const HowItWorksScene: React.FC = () => {
         </div>
       </div>
 
-      <SceneTransition durationInFrames={180} type="fade" direction="in" />
+      <SceneTransition durationInFrames={180} type="fade" direction="both" />
     </AbsoluteFill>
   );
 };

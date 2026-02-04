@@ -1,15 +1,41 @@
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from "remotion";
-import { Database, Cpu, BarChart3, Radio, Settings, ArrowRight } from "lucide-react";
+import { Server, Cloud, Zap, Lock, Globe, Database, ArrowRight } from "lucide-react";
 import { AnimatedBackground, SceneTransition, FlowingConnector } from "../components";
 
-const architectureElements = [
-  { name: "Capteurs", description: "Réception des données", icon: Radio, color: "hsl(165, 70%, 55%)" },
-  { name: "Traitement", description: "Analyse en temps réel", icon: Cpu, color: "hsl(200, 80%, 55%)" },
-  { name: "Stockage", description: "Conservation historique", icon: Database, color: "hsl(260, 60%, 60%)" },
-  { name: "Interface", description: "Lecture instantanée", icon: BarChart3, color: "hsl(45, 90%, 55%)" },
+const backendLayers = [
+  {
+    name: "Client React",
+    description: "Interface utilisateur",
+    icon: Globe,
+    color: "hsl(200, 80%, 55%)",
+  },
+  {
+    name: "Edge Functions",
+    description: "Logique métier Deno",
+    icon: Zap,
+    color: "hsl(165, 70%, 55%)",
+  },
+  {
+    name: "Auth Supabase",
+    description: "JWT & Sessions",
+    icon: Lock,
+    color: "hsl(45, 90%, 55%)",
+  },
+  {
+    name: "PostgreSQL",
+    description: "Données + RLS",
+    icon: Database,
+    color: "hsl(260, 60%, 55%)",
+  },
 ];
 
-export const TechStackScene: React.FC = () => {
+const features = [
+  { label: "Temps réel", desc: "WebSockets Supabase" },
+  { label: "Serverless", desc: "Déploiement automatique" },
+  { label: "TypeScript", desc: "Types générés" },
+];
+
+export const BackendArchitectureScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -21,45 +47,34 @@ export const TechStackScene: React.FC = () => {
   });
 
   const subtitleOpacity = interpolate(frame, [30, 50], [0, 1], { extrapolateRight: "clamp" });
-  const conclusionOpacity = interpolate(frame, [130, 150], [0, 1], { extrapolateRight: "clamp" });
+  const featuresOpacity = interpolate(frame, [130, 150], [0, 1], { extrapolateRight: "clamp" });
 
   return (
     <AbsoluteFill style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-      <AnimatedBackground variant="default" particleCount={20} />
+      <AnimatedBackground variant="default" particleCount={18} />
 
-      {/* Circuit-like pattern in background */}
+      {/* Flowing lines background */}
       <svg
         style={{
           position: "absolute",
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: 0.04,
+          opacity: 0.1,
         }}
       >
-        {[...Array(8)].map((_, i) => {
-          const y = 100 + i * 130;
+        {[...Array(5)].map((_, i) => {
+          const dashOffset = (frame * 1.5 + i * 100) % 500;
           return (
-            <g key={i}>
-              <line
-                x1="0"
-                y1={y}
-                x2="1920"
-                y2={y}
-                stroke="hsl(165, 70%, 55%)"
-                strokeWidth="1"
-                strokeDasharray="5 10"
-              />
-              {[...Array(15)].map((_, j) => (
-                <circle
-                  key={j}
-                  cx={100 + j * 130}
-                  cy={y}
-                  r="3"
-                  fill="hsl(165, 70%, 55%)"
-                />
-              ))}
-            </g>
+            <path
+              key={i}
+              d={`M 0 ${400 + i * 80} Q 480 ${350 + i * 80} 960 ${400 + i * 80} Q 1440 ${450 + i * 80} 1920 ${400 + i * 80}`}
+              fill="none"
+              stroke="hsl(165, 70%, 55%)"
+              strokeWidth="1"
+              strokeDasharray="8 16"
+              strokeDashoffset={-dashOffset}
+            />
           );
         })}
       </svg>
@@ -73,8 +88,8 @@ export const TechStackScene: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 40,
-          padding: 60,
+          gap: 35,
+          padding: 50,
         }}
       >
         {/* Title */}
@@ -86,8 +101,8 @@ export const TechStackScene: React.FC = () => {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
-            <Settings size={32} color="hsl(165, 70%, 55%)" />
-            <h2 style={{ fontSize: 52, fontWeight: 700, margin: 0 }}>
+            <Server size={36} color="hsl(165, 70%, 55%)" />
+            <h2 style={{ fontSize: 48, fontWeight: 700, margin: 0 }}>
               <span style={{ color: "hsl(210, 40%, 98%)" }}>Architecture </span>
               <span
                 style={{
@@ -96,33 +111,32 @@ export const TechStackScene: React.FC = () => {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                Technique
+                Backend
               </span>
             </h2>
           </div>
           <p
             style={{
-              fontSize: 22,
+              fontSize: 20,
               color: "hsl(215, 20%, 60%)",
               margin: 0,
-              marginTop: 12,
+              marginTop: 10,
               opacity: subtitleOpacity,
             }}
           >
-            Une architecture complète pour faire fonctionner Aerium
+            Lovable Cloud — Supabase Edge Functions + PostgreSQL
           </p>
         </div>
 
-        {/* Architecture diagram */}
+        {/* Architecture flow */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             gap: 0,
-            position: "relative",
           }}
         >
-          {architectureElements.map((element, index) => {
+          {backendLayers.map((layer, index) => {
             const delay = 50 + index * 15;
             const scale = spring({
               frame: frame - delay,
@@ -139,75 +153,75 @@ export const TechStackScene: React.FC = () => {
               config: { damping: 12, stiffness: 80 },
             });
 
-            const IconComponent = element.icon;
+            const IconComponent = layer.icon;
             const glowIntensity = interpolate((frame + index * 25) % 80, [0, 40, 80], [0.4, 0.8, 0.4]);
 
             return (
-              <div key={element.name} style={{ display: "flex", alignItems: "center" }}>
+              <div key={layer.name} style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    gap: 14,
-                    padding: "26px 22px",
-                    borderRadius: 20,
+                    gap: 12,
+                    padding: "24px 20px",
+                    borderRadius: 18,
                     background: "hsla(220, 20%, 8%, 0.95)",
-                    border: `1px solid ${element.color}50`,
+                    border: `1px solid ${layer.color}40`,
                     backdropFilter: "blur(20px)",
                     transform: `scale(${scale}) translateY(${(1 - yOffset) * 20}px)`,
                     opacity,
-                    width: 175,
+                    width: 160,
                     textAlign: "center",
                     boxShadow: `
-                      0 0 ${30 * glowIntensity}px ${element.color}25,
+                      0 0 ${30 * glowIntensity}px ${layer.color}20,
                       0 15px 45px -15px hsla(220, 30%, 0%, 0.6),
-                      inset 0 1px 0 hsla(210, 40%, 98%, 0.08)
+                      inset 0 1px 0 hsla(210, 40%, 98%, 0.06)
                     `,
                   }}
                 >
                   <div
                     style={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: 15,
-                      background: `${element.color}20`,
+                      width: 56,
+                      height: 56,
+                      borderRadius: 14,
+                      background: `${layer.color}20`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      boxShadow: `0 0 20px ${element.color}35`,
+                      boxShadow: `0 0 20px ${layer.color}30`,
                     }}
                   >
-                    <IconComponent size={30} color={element.color} />
+                    <IconComponent size={28} color={layer.color} />
                   </div>
                   <span
                     style={{
-                      fontSize: 20,
+                      fontSize: 15,
                       fontWeight: 600,
-                      color: element.color,
+                      color: layer.color,
                     }}
                   >
-                    {element.name}
+                    {layer.name}
                   </span>
                   <span
                     style={{
-                      fontSize: 13,
-                      color: "hsl(215, 20%, 60%)",
+                      fontSize: 11,
+                      color: "hsl(215, 20%, 58%)",
                       lineHeight: 1.3,
                     }}
                   >
-                    {element.description}
+                    {layer.description}
                   </span>
                 </div>
                 {/* Connector */}
-                {index < architectureElements.length - 1 && (
-                  <div style={{ margin: "0 6px" }}>
+                {index < backendLayers.length - 1 && (
+                  <div style={{ margin: "0 8px" }}>
                     <FlowingConnector
                       startDelay={delay + 12}
                       duration={25}
-                      color={element.color}
+                      color={layer.color}
                       direction="horizontal"
-                      length={50}
+                      length={45}
                     />
                   </div>
                 )}
@@ -216,35 +230,51 @@ export const TechStackScene: React.FC = () => {
           })}
         </div>
 
-        {/* Conclusion text */}
-        <p
+        {/* Features badges */}
+        <div
           style={{
-            fontSize: 20,
-            color: "hsl(215, 20%, 68%)",
-            textAlign: "center",
-            maxWidth: 800,
-            margin: 0,
-            marginTop: 10,
-            opacity: conclusionOpacity,
-            lineHeight: 1.6,
+            display: "flex",
+            gap: 20,
+            opacity: featuresOpacity,
           }}
         >
-          Chaque élément communique pour transformer
-          <br />
-          <span
-            style={{
-              background: "linear-gradient(90deg, hsl(165, 70%, 55%), hsl(190, 80%, 50%))",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontWeight: 600,
-            }}
-          >
-            des mesures brutes en informations compréhensibles
-          </span>
-        </p>
+          {features.map((feat, i) => (
+            <div
+              key={feat.label}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 6,
+                padding: "14px 24px",
+                borderRadius: 12,
+                background: "hsla(165, 70%, 55%, 0.08)",
+                border: "1px solid hsla(165, 70%, 55%, 0.25)",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "hsl(165, 70%, 55%)",
+                }}
+              >
+                {feat.label}
+              </span>
+              <span
+                style={{
+                  fontSize: 11,
+                  color: "hsl(215, 20%, 60%)",
+                }}
+              >
+                {feat.desc}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <SceneTransition durationInFrames={180} type="fade" direction="both" />
+      <SceneTransition durationInFrames={180} type="fade" direction="in" />
     </AbsoluteFill>
   );
 };

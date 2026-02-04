@@ -135,7 +135,7 @@ export const IntroductionScene: React.FC = () => {
       </div>
 
       {/* Scene transitions */}
-      <SceneTransition durationInFrames={180} type="fade" direction="in" />
+      <SceneTransition durationInFrames={180} type="fade" direction="both" />
     </AbsoluteFill>
   );
 };

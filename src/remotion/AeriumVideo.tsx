@@ -1,4 +1,4 @@
-import { Sequence, AbsoluteFill, Audio, staticFile, useCurrentFrame, interpolate } from "remotion";
+import { Sequence, AbsoluteFill } from "remotion";
 import { IntroductionScene } from "./compositions/IntroductionScene";
 import { ProblemScene } from "./compositions/ProblemScene";
 import { SolutionScene } from "./compositions/SolutionScene";
@@ -8,44 +8,14 @@ import { FeaturesScene } from "./compositions/FeaturesScene";
 import { TechStackScene } from "./compositions/TechStackScene";
 import { UseCasesScene } from "./compositions/UseCasesScene";
 import { ConclusionScene } from "./compositions/ConclusionScene";
-import { aeriumScript } from "./script";
+import { DatabaseSchemaScene } from "./compositions/DatabaseSchemaScene";
+import { BackendArchitectureScene } from "./compositions/BackendArchitectureScene";
 
-// Total duration: 1500 frames = 50 seconds at 30fps
-export const AERIUM_VIDEO_DURATION = 1500;
-
-// Background music component with fade in/out
-const BackgroundMusicLayer: React.FC<{ musicUrl?: string }> = ({ musicUrl }) => {
-  const frame = useCurrentFrame();
-  
-  // Fade in over first 2 seconds (60 frames)
-  const fadeIn = interpolate(frame, [0, 60], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  
-  // Fade out over last 3 seconds (90 frames)
-  const fadeOut = interpolate(frame, [AERIUM_VIDEO_DURATION - 90, AERIUM_VIDEO_DURATION], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  
-  const volume = 0.25 * fadeIn * fadeOut;
-  
-  // If a music URL is provided (from generated music), use it
-  if (musicUrl) {
-    return <Audio src={musicUrl} volume={volume} />;
-  }
-  
-  // Otherwise, try to use a static file if available
-  // To add your own music: place an MP3 in public/music/background.mp3
-  // and uncomment the line below:
-  // return <Audio src={staticFile("music/background.mp3")} volume={volume} />;
-  
-  return null;
-};
+// Total duration: 1860 frames = 62 seconds at 30fps (added 2 new scenes)
+export const AERIUM_VIDEO_DURATION = 1860;
 
 // Main video composition that combines all scenes following the Aerium script
-export const AeriumVideo: React.FC<{ musicUrl?: string }> = ({ musicUrl }) => {
+export const AeriumVideo: React.FC = () => {
   let currentFrame = 0;
 
   const scenes = [
@@ -55,6 +25,8 @@ export const AeriumVideo: React.FC<{ musicUrl?: string }> = ({ musicUrl }) => {
     { Component: ObjectiveScene, frames: 150 },
     { Component: HowItWorksScene, frames: 180 },
     { Component: FeaturesScene, frames: 150 },
+    { Component: DatabaseSchemaScene, frames: 180 },
+    { Component: BackendArchitectureScene, frames: 180 },
     { Component: TechStackScene, frames: 180 },
     { Component: UseCasesScene, frames: 150 },
     { Component: ConclusionScene, frames: 180 },
@@ -62,9 +34,6 @@ export const AeriumVideo: React.FC<{ musicUrl?: string }> = ({ musicUrl }) => {
 
   return (
     <AbsoluteFill>
-      {/* Background music layer */}
-      <BackgroundMusicLayer musicUrl={musicUrl} />
-      
       {/* Video scenes */}
       {scenes.map(({ Component, frames }, index) => {
         const from = currentFrame;
