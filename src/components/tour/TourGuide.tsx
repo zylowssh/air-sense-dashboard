@@ -1,4 +1,5 @@
  import { useEffect, useState, useCallback } from 'react';
+ import { useNavigate, useLocation } from 'react-router-dom';
  import { motion, AnimatePresence } from 'framer-motion';
  import { X, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-react';
  import { Button } from '@/components/ui/button';
@@ -35,6 +36,9 @@
  }: TourGuideProps) {
    const [targetPosition, setTargetPosition] = useState<Position | null>(null);
    const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
+   const [isNavigating, setIsNavigating] = useState(false);
+   const navigate = useNavigate();
+   const location = useLocation();
  
    const updatePosition = useCallback(() => {
      const target = document.querySelector(stepData.target);
@@ -109,6 +113,18 @@
  
    useEffect(() => {
      if (isOpen) {
+       // Check if we need to navigate to a different page
+       if (stepData.page && stepData.page !== location.pathname) {
+         setIsNavigating(true);
+         navigate(stepData.page);
+         // Wait for navigation and then update position
+         const timer = setTimeout(() => {
+           setIsNavigating(false);
+           updatePosition();
+         }, 500);
+         return () => clearTimeout(timer);
+       }
+ 
        updatePosition();
        window.addEventListener('resize', updatePosition);
        window.addEventListener('scroll', updatePosition, true);
@@ -118,10 +134,33 @@
          window.removeEventListener('scroll', updatePosition, true);
        };
      }
-   }, [isOpen, stepData, updatePosition]);
+   }, [isOpen, stepData, updatePosition, location.pathname, navigate]);
  
    const isLastStep = currentStep === totalSteps - 1;
    const isFirstStep = currentStep === 0;
+ 
+   // Show loading state while navigating
+   if (isNavigating) {
+     return (
+       <AnimatePresence>
+         {isOpen && (
+           <motion.div
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+             className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center"
+           >
+             <div className="bg-card p-6 rounded-xl border border-border">
+               <div className="flex items-center gap-3">
+                 <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                 <p className="text-foreground">Navigation en cours...</p>
+               </div>
+             </div>
+           </motion.div>
+         )}
+       </AnimatePresence>
+     );
+   }
  
    return (
      <AnimatePresence>

@@ -1,6 +1,6 @@
 import { AppLayout } from '@/components/layout/AppLayout';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Download } from 'lucide-react';
+ import { BarChart3, TrendingUp, Calendar, Download, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, ComposedChart, BarChart, Bar } from 'recharts';
 import { format, subDays } from 'date-fns';
@@ -157,8 +157,8 @@ const Analytics = () => {
   };
 
   return (
-    <AppLayout title="Analyses" subtitle="Analyse approfondie de vos données de qualité de l'air">
-      <div className="space-y-6">
+     <AppLayout title="Analyses" subtitle="Analyse approfondie de vos données de qualité de l'air">
+       <div className="space-y-6" data-tour="analytics-page">
         {/* Time Range Selector */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ const Analytics = () => {
         {isLoading ? (
           <LoadingSkeleton variant="stats" count={4} />
         ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-4" data-tour="analytics-stats">
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -247,7 +247,8 @@ const Analytics = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-6 rounded-xl bg-card border border-border"
+           className="p-6 rounded-xl bg-card border border-border"
+           data-tour="analytics-charts"
         >
           <div className="flex items-center justify-between mb-6">
             <div>

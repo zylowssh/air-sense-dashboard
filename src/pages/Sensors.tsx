@@ -59,10 +59,10 @@ const Sensors = () => {
   };
 
   return (
-    <AppLayout title="Capteurs" subtitle="Gérer vos appareils de surveillance">
-      <div className="space-y-6">
+     <AppLayout title="Capteurs" subtitle="Gérer vos appareils de surveillance">
+       <div className="space-y-6" data-tour="sensors-page">
         {/* Controls */}
-        <div className="flex items-center justify-between">
+         <div className="flex items-center justify-between" data-tour="sensors-filters">
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="gap-2">
               <Filter className="w-4 h-4" />
@@ -97,6 +97,7 @@ const Sensors = () => {
               size="sm" 
               className="gap-2 gradient-primary text-primary-foreground"
               onClick={() => setIsAddDialogOpen(true)}
+               data-tour="sensors-add"
             >
               <Plus className="w-4 h-4" />
               Ajouter un Capteur
@@ -111,7 +112,8 @@ const Sensors = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-border bg-card overflow-hidden"
+           className="rounded-xl border border-border bg-card overflow-hidden"
+           data-tour="sensors-table"
         >
           {isLoading ? (
             <LoadingSkeleton variant="table" count={5} />

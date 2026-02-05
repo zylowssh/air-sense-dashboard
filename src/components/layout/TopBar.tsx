@@ -12,6 +12,7 @@ import { MobileNav } from './MobileNav';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
  import { useTourContext } from '@/contexts/TourContext';
  import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+ import { cn } from '@/lib/utils';
 
 interface TopBarProps {
   title?: string;
@@ -111,11 +112,20 @@ export function TopBar({ title = "Dashboard", subtitle }: TopBarProps) {
                <TooltipTrigger asChild>
                  <button
                    onClick={startTour}
-                   className="p-2 rounded-lg hover:bg-muted transition-colors"
+                   className={cn(
+                     "relative p-2 rounded-lg hover:bg-muted transition-colors",
+                     !hasCompletedTour && "animate-pulse-ring"
+                   )}
                    aria-label="Guide de visite"
                    data-tour="tour-button"
                  >
-                   <HelpCircle className="w-5 h-5 text-muted-foreground" />
+                   <HelpCircle className={cn(
+                     "w-5 h-5",
+                     !hasCompletedTour ? "text-primary" : "text-muted-foreground"
+                   )} />
+                   {!hasCompletedTour && (
+                     <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary rounded-full animate-pulse" />
+                   )}
                  </button>
                </TooltipTrigger>
                <TooltipContent>
