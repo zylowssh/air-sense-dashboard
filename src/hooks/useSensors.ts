@@ -3,10 +3,12 @@ import { apiClient } from '@/lib/apiClient';
 import { useAuth } from './useAuth';
 import { Sensor } from '@/lib/sensorData';
 import { useWebSocket } from '@/contexts/WebSocketContext';
+import { useSettings } from '@/contexts/SettingsContext';
 
 export const useSensors = () => {
   const { user } = useAuth();
   const { socket } = useWebSocket();
+  const { lowPowerMode } = useSettings();
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export const useSensors = () => {
 
   // Setup WebSocket listener for sensor updates
   useEffect(() => {
-    if (!socket || !user) return;
+    if (!socket || !user || lowPowerMode) return;
 
     socket.on('sensor_update', (data: any) => {
       const { sensor_id, reading } = data;
@@ -73,7 +75,7 @@ export const useSensors = () => {
     return () => {
       socket.off('sensor_update');
     };
-  }, [socket, user]);
+  }, [socket, user, lowPowerMode]);
 
   const createSensor = async (
     name: string,

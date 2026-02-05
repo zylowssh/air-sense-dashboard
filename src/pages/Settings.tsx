@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 const Settings = () => {
   const { theme, toggleTheme } = useTheme();
-  const { compactMode, setCompactMode, animationsEnabled, setAnimationsEnabled } = useSettings();
+  const { compactMode, setCompactMode, animationsEnabled, setAnimationsEnabled, lowPowerMode, setLowPowerMode } = useSettings();
 
   return (
     <AppLayout title="Paramètres" subtitle="Gérer votre organisation et vos préférences">
@@ -214,6 +214,14 @@ const Settings = () => {
                       <p className="text-sm text-muted-foreground">Activer les transitions et effets fluides</p>
                     </div>
                     <Switch checked={animationsEnabled} onCheckedChange={setAnimationsEnabled} />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">Mode Faible Puissance</p>
+                      <p className="text-sm text-muted-foreground">Réduit l'actualisation et les effets pour les petits ordinateurs</p>
+                    </div>
+                    <Switch checked={lowPowerMode} onCheckedChange={setLowPowerMode} />
                   </div>
                 </div>
               </div>

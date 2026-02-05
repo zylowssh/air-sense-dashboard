@@ -5,6 +5,8 @@ interface SettingsContextType {
   setCompactMode: (value: boolean) => void;
   animationsEnabled: boolean;
   setAnimationsEnabled: (value: boolean) => void;
+  lowPowerMode: boolean;
+  setLowPowerMode: (value: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -20,6 +22,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return stored !== 'false'; // Default to true
   });
 
+  const [lowPowerMode, setLowPowerMode] = useState(() => {
+    const stored = localStorage.getItem('aerium-low-power');
+    return stored === 'true';
+  });
+
   useEffect(() => {
     localStorage.setItem('aerium-compact-mode', String(compactMode));
     document.documentElement.classList.toggle('compact-mode', compactMode);
@@ -30,8 +37,20 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle('no-animations', !animationsEnabled);
   }, [animationsEnabled]);
 
+  useEffect(() => {
+    localStorage.setItem('aerium-low-power', String(lowPowerMode));
+    document.documentElement.classList.toggle('low-power-mode', lowPowerMode);
+  }, [lowPowerMode]);
+
   return (
-    <SettingsContext.Provider value={{ compactMode, setCompactMode, animationsEnabled, setAnimationsEnabled }}>
+    <SettingsContext.Provider value={{
+      compactMode,
+      setCompactMode,
+      animationsEnabled,
+      setAnimationsEnabled,
+      lowPowerMode,
+      setLowPowerMode,
+    }}>
       {children}
     </SettingsContext.Provider>
   );

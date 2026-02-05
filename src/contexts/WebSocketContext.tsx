@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface WebSocketContextType {
   socket: Socket | null;
@@ -11,16 +12,17 @@ const WebSocketContext = createContext<WebSocketContextType | undefined>(undefin
 export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const { lowPowerMode } = useSettings();
 
   useEffect(() => {
     const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
 
     const newSocket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
+      transports: lowPowerMode ? ['polling'] : ['websocket', 'polling'],
       reconnection: true,
-      reconnectionDelay: 500,
-      reconnectionDelayMax: 3000,
-      reconnectionAttempts: 10,
+      reconnectionDelay: lowPowerMode ? 3000 : 500,
+      reconnectionDelayMax: lowPowerMode ? 10000 : 3000,
+      reconnectionAttempts: lowPowerMode ? 3 : 10,
       autoConnect: true,
       forceNew: false,
       multiplex: true,
@@ -49,7 +51,7 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       newSocket.close();
     };
-  }, []);
+  }, [lowPowerMode]);
 
   return (
     <WebSocketContext.Provider value={{ socket, isConnected }}>

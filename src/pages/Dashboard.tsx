@@ -16,8 +16,7 @@ import { useSensors } from '@/hooks/useSensors';
 import { apiClient } from '@/lib/apiClient';
 import AddSensorDialog from '@/components/sensors/AddSensorDialog';
 import { Button } from '@/components/ui/button';
- import { TourGuide } from '@/components/tour/TourGuide';
- import { useTourContext } from '@/contexts/TourContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { 
   getHealthScore,
   Alert,
@@ -26,16 +25,7 @@ import {
 
 const Dashboard = () => {
   const { sensors, isLoading } = useSensors();
-   const { 
-     isOpen: isTourOpen, 
-     currentStep, 
-     totalSteps, 
-     currentStepData, 
-     nextStep, 
-     prevStep, 
-     skipTour, 
-     completeTour 
-   } = useTourContext();
+  const { lowPowerMode } = useSettings();
   const [trendData, setTrendData] = useState<Reading[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -91,7 +81,7 @@ const Dashboard = () => {
     const fetchAlerts = async () => {
       setIsAlertsLoading(true);
       try {
-        const alertsData = await apiClient.getAlerts('nouvelle', 5);
+        const alertsData = await apiClient.getAlerts('nouvelle', lowPowerMode ? 3 : 5);
         setAlerts(alertsData);
       } catch (error) {
         console.error('Error fetching alerts:', error);
@@ -102,10 +92,10 @@ const Dashboard = () => {
     };
 
     fetchAlerts();
-    // Poll for new alerts every 30 seconds (increased from 10)
-    const interval = setInterval(fetchAlerts, 30000);
+    // Poll for new alerts every 30s (low power: 60s)
+    const interval = setInterval(fetchAlerts, lowPowerMode ? 60000 : 30000);
     return () => clearInterval(interval);
-  }, []); // Empty dependency array - only runs once on mount
+  }, [lowPowerMode]);
 
   // Fetch historical readings for mini charts - only when sensors count changes
   useEffect(() => {
@@ -123,7 +113,11 @@ const Dashboard = () => {
       try {
         await Promise.all(sensors.map(async (sensor) => {
           try {
-            const data = await apiClient.getSensorReadings(sensor.id.toString(), 1, 20);
+            const data = await apiClient.getSensorReadings(
+              sensor.id.toString(),
+              lowPowerMode ? 1 : 1,
+              lowPowerMode ? 10 : 20
+            );
             readings[sensor.id] = data.map((r: any) => r.co2).reverse();
           } catch (error) {
             console.error(`Error fetching readings for sensor ${sensor.id}:`, error);
@@ -138,7 +132,7 @@ const Dashboard = () => {
     };
 
     fetchSensorReadings();
-  }, [sensors.length]); // Only depend on sensors length, not the array itself
+  }, [sensors.length, lowPowerMode]); // Only depend on sensors length, not the array itself
 
   // Fetch aggregate trend data for overview chart - only when sensors count changes
   useEffect(() => {
@@ -164,8 +158,11 @@ const Dashboard = () => {
         // Fetch readings for all sensors in parallel
         const allSensorReadings = await Promise.all(
           sensors.map(sensor => 
-            apiClient.getSensorReadings(sensor.id.toString(), 24, 48)
-              .catch(() => []) // Return empty array if error
+            apiClient.getSensorReadings(
+              sensor.id.toString(),
+              lowPowerMode ? 12 : 24,
+              lowPowerMode ? 24 : 48
+            ).catch(() => []) // Return empty array if error
           )
         );
         
@@ -207,10 +204,10 @@ const Dashboard = () => {
 
     fetchTrendData();
     
-    // Update every 60 seconds (increased from 30)
-    const interval = setInterval(fetchTrendData, 60000);
+    // Update every 60 seconds (low power: 120s)
+    const interval = setInterval(fetchTrendData, lowPowerMode ? 120000 : 60000);
     return () => clearInterval(interval);
-  }, [sensors.length]); // Only depend on sensors length, not the array itself
+  }, [sensors.length, lowPowerMode]); // Only depend on sensors length, not the array itself
 
   // Calculate aggregate metrics from sensors if no backend data
   const avgCo2 = aggregateData.avgCo2 || (sensors.length > 0 ? Math.round(sensors.reduce((acc, s) => acc + s.co2, 0) / sensors.length) : 0);
@@ -383,18 +380,6 @@ const Dashboard = () => {
 
         {/* Add Sensor Dialog */}
         <AddSensorDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} />
-         
-         {/* Tour Guide */}
-         <TourGuide
-           isOpen={isTourOpen}
-           currentStep={currentStep}
-           totalSteps={totalSteps}
-           stepData={currentStepData}
-           onNext={nextStep}
-           onPrev={prevStep}
-           onSkip={skipTour}
-           onComplete={completeTour}
-         />
       </div>
     </AppLayout>
   );
