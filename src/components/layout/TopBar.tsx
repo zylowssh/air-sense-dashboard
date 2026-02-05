@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Bell, Moon, Sun, User, Download, Plus, SlidersHorizontal } from 'lucide-react';
+ import { useState, useEffect } from 'react';
+ import { Bell, Moon, Sun, User, Download, Plus, SlidersHorizontal, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,6 +10,8 @@ import { NotificationsPanel } from '@/components/widgets/NotificationsPanel';
 import { AlertThresholdsModal } from '@/components/widgets/AlertThresholdsModal';
 import { MobileNav } from './MobileNav';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ import { useTourContext } from '@/contexts/TourContext';
+ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface TopBarProps {
   title?: string;
@@ -24,6 +26,17 @@ export function TopBar({ title = "Dashboard", subtitle }: TopBarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [thresholdsOpen, setThresholdsOpen] = useState(false);
+   const { startTour, hasCompletedTour } = useTourContext();
+ 
+   // Auto-start tour for first-time users (with a small delay to let page load)
+   useEffect(() => {
+     if (!hasCompletedTour) {
+       const timer = setTimeout(() => {
+         startTour();
+       }, 1000);
+       return () => clearTimeout(timer);
+     }
+   }, [hasCompletedTour, startTour]);
   
   // Get greeting based on time of day
   const getGreeting = () => {
@@ -83,16 +96,38 @@ export function TopBar({ title = "Dashboard", subtitle }: TopBarProps) {
             <span className="hidden lg:inline">Seuils</span>
           </Button>
           
-          <Button size="sm" className="gap-2 gradient-primary text-primary-foreground hover:opacity-90 hidden sm:flex" onClick={() => setAddSensorOpen(true)}>
+          <Button 
+            size="sm" 
+            className="gap-2 gradient-primary text-primary-foreground hover:opacity-90 hidden sm:flex" 
+            onClick={() => setAddSensorOpen(true)}
+            data-tour="add-sensor"
+          >
             <Plus className="w-4 h-4" />
             <span className="hidden lg:inline">Ajouter un Capteur</span>
           </Button>
 
           <div className="flex items-center gap-1 ml-1 md:ml-2">
+             <Tooltip>
+               <TooltipTrigger asChild>
+                 <button
+                   onClick={startTour}
+                   className="p-2 rounded-lg hover:bg-muted transition-colors"
+                   aria-label="Guide de visite"
+                   data-tour="tour-button"
+                 >
+                   <HelpCircle className="w-5 h-5 text-muted-foreground" />
+                 </button>
+               </TooltipTrigger>
+               <TooltipContent>
+                 <p>Guide de visite</p>
+               </TooltipContent>
+             </Tooltip>
+ 
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Toggle theme"
+               data-tour="theme"
             >
               {theme === 'dark' ? (
                 <Moon className="w-5 h-5 text-muted-foreground" />
@@ -104,6 +139,7 @@ export function TopBar({ title = "Dashboard", subtitle }: TopBarProps) {
             <button 
               className="relative p-2 rounded-lg hover:bg-muted transition-colors"
               onClick={() => setNotificationsOpen(true)}
+               data-tour="notifications"
             >
               <Bell className="w-5 h-5 text-muted-foreground" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />

@@ -16,6 +16,8 @@ import { useSensors } from '@/hooks/useSensors';
 import { apiClient } from '@/lib/apiClient';
 import AddSensorDialog from '@/components/sensors/AddSensorDialog';
 import { Button } from '@/components/ui/button';
+ import { TourGuide } from '@/components/tour/TourGuide';
+ import { useTourContext } from '@/contexts/TourContext';
 import { 
   getHealthScore,
   Alert,
@@ -24,6 +26,16 @@ import {
 
 const Dashboard = () => {
   const { sensors, isLoading } = useSensors();
+   const { 
+     isOpen: isTourOpen, 
+     currentStep, 
+     totalSteps, 
+     currentStepData, 
+     nextStep, 
+     prevStep, 
+     skipTour, 
+     completeTour 
+   } = useTourContext();
   const [trendData, setTrendData] = useState<Reading[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -210,12 +222,12 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+       <div className="space-y-6" data-tour="dashboard">
         {/* KPI Cards */}
         {isLoading ? (
           <LoadingSkeleton variant="kpi" count={4} />
         ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="kpi-cards">
           <KPICard 
             label="CO₂ Moyen" 
             value={avgCo2} 
@@ -259,17 +271,19 @@ const Dashboard = () => {
           </div>
         ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <AirQualityOverviewCard
+           <div data-tour="air-quality">
+             <AirQualityOverviewCard
             key="air-quality-overview"
             avgCo2={avgCo2}
             trendData={trendData}
             isRefreshing={isRefreshing}
             sensorsOnline={sensorsOnline}
             totalSensors={totalSensors}
-          />
+             />
+           </div>
 
           {/* Right Column - Alerts and Insights */}
-          <div className="space-y-4">
+           <div className="space-y-4" data-tour="alerts">
             {/* Recent Alerts */}
             {isAlertsLoading ? (
               <LoadingSkeleton variant="alerts" count={3} />
@@ -317,7 +331,7 @@ const Dashboard = () => {
         </div>
 
         {/* Active Sensors */}
-        <div>
+         <div data-tour="sensors">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground">Capteurs Actifs</h2>
             <Button 
@@ -369,6 +383,18 @@ const Dashboard = () => {
 
         {/* Add Sensor Dialog */}
         <AddSensorDialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen} />
+         
+         {/* Tour Guide */}
+         <TourGuide
+           isOpen={isTourOpen}
+           currentStep={currentStep}
+           totalSteps={totalSteps}
+           stepData={currentStepData}
+           onNext={nextStep}
+           onPrev={prevStep}
+           onSkip={skipTour}
+           onComplete={completeTour}
+         />
       </div>
     </AppLayout>
   );
