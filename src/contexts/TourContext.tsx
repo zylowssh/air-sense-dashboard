@@ -1,17 +1,19 @@
  import React, { createContext, useContext, ReactNode } from 'react';
- import { useTour } from '@/hooks/useTour';
+ import { useTour, TourStep } from '@/hooks/useTour';
  
- interface TourContextType {
+  interface TourContextType {
    isOpen: boolean;
    currentStep: number;
    totalSteps: number;
-   currentStepData: any;
+   currentStepData: TourStep;
    hasCompletedTour: boolean;
    startTour: () => void;
    nextStep: () => void;
    prevStep: () => void;
    skipTour: () => void;
    completeTour: () => void;
+   startPageTour: () => void;
+   currentPageSteps: TourStep[];
  }
  
  const TourContext = createContext<TourContextType | undefined>(undefined);

@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { WebSocketProvider } from "./contexts/WebSocketContext";
- import { TourProvider } from "./contexts/TourContext";
+  import { TourProvider } from "./contexts/TourContext";
+  import { BackendProvider } from "./contexts/BackendContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -31,11 +32,12 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <SettingsProvider>
       <WebSocketProvider>
-         <TourProvider>
-           <TooltipProvider>
-             <Toaster />
-             <Sonner />
-             <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <BackendProvider>
+                <TourProvider>
                <Routes>
                  <Route path="/" element={<Landing />} />
                  <Route path="/auth" element={<Auth />} />
@@ -56,9 +58,10 @@ const App = () => (
                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                  <Route path="*" element={<NotFound />} />
                </Routes>
-             </BrowserRouter>
-           </TooltipProvider>
-         </TourProvider>
+                </TourProvider>
+              </BackendProvider>
+            </BrowserRouter>
+          </TooltipProvider>
       </WebSocketProvider>
     </SettingsProvider>
   </QueryClientProvider>

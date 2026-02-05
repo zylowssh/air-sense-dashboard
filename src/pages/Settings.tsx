@@ -1,6 +1,6 @@
 import { AppLayout } from '@/components/layout/AppLayout';
 import { motion } from 'framer-motion';
-import { Building, Bell, Users, Plug, Palette, Moon, Sun } from 'lucide-react';
+ import { Building, Bell, Users, Plug, Palette, Moon, Sun, Server } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettings } from '@/contexts/SettingsContext';
 import { cn } from '@/lib/utils';
+ import { BackendStatusWidget } from '@/components/widgets/BackendStatusWidget';
 
 const Settings = () => {
   const { theme, toggleTheme } = useTheme();
@@ -279,6 +280,9 @@ const Settings = () => {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-4"
             >
+             {/* Backend Status Widget */}
+             <BackendStatusWidget />
+ 
               {[
                 { name: 'Slack', description: 'Envoyer les alertes sur des canaux Slack', connected: true },
                 { name: 'Google Home', description: 'Commandes vocales et intégration domotique', connected: false },
