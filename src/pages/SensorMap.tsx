@@ -44,11 +44,11 @@ const SensorMap = () => {
   };
 
   return (
-    <AppLayout title="Carte des Capteurs" subtitle="Visualisez l'emplacement de tous vos capteurs">
-      <div className="space-y-6">
+     <AppLayout title="Carte des Capteurs" subtitle="Visualisez l'emplacement de tous vos capteurs">
+       <div className="space-y-6" data-tour="map-page">
         {/* Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between">
-          <div className="flex gap-3">
+         <div className="flex flex-col sm:flex-row gap-4 justify-between" data-tour="map-filters">
+           <div className="flex gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -71,7 +71,7 @@ const SensorMap = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex gap-2">
+           <div className="flex gap-2" data-tour="map-grid">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'outline'}
               size="icon"
@@ -132,7 +132,9 @@ const SensorMap = () => {
             viewMode === 'grid' 
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
               : "space-y-3"
-          )}>
+           )}
+           data-tour="map-sensors"
+           >
             {filteredSensors.map((sensor, index) => (
               <motion.div
                 key={sensor.id}
